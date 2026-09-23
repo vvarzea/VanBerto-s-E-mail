@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VanBerto's Detetive do E-mail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #140f2b;
+    --bg-vignette: #0a0718;
+    --panel: #1f1a3f;
+    --panel-2: #241d4a;
+    --line: #3a3268;
+    --ink: #f4f2ff;
+    --ink-dim: #ada6d4;
+    --danger: #ff5470;
+    --danger-dim: #4a2233;
+    --safe: #2fd9c4;
+    --safe-dim: #17423d;
+    --warn: #ffca4b;
+    --radius: 18px;
+    --radius-sm: 10px;
+    --font-display: 'Baloo 2', 'Segoe UI', sans-serif;
+    --font-body: 'Inter', 'Segoe UI', sans-serif;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse at 20% -10%, #2a2258 0%, transparent 55%),
+      radial-gradient(ellipse at 100% 110%, #221b46 0%, transparent 50%),
+      var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding: 24px 16px 60px;
+  }
+
+  .stage{ width:100%; max-width: 880px; }
+
+  /* ---------- shared bits ---------- */
+  h1,h2,h3{ font-family: var(--font-display); margin:0; }
+  button{ font-family: var(--font-body); cursor:pointer; }
+  .btn{
+    border:none; border-radius: 999px; padding: 13px 26px;
+    font-weight:700; font-size:16px; color:#0d0a1f;
+    background: var(--warn);
+    box-shadow: 0 4px 0 #b8912a, 0 10px 18px rgba(0,0,0,.35);
+    transition: transform .12s ease;
+  }
+  .btn:active{ transform: translateY(3px); box-shadow: 0 1px 0 #b8912a; }
+  .btn.ghost{
+    background: transparent; color: var(--ink);
+    border: 2px solid var(--line);
+    box-shadow:none;
+  }
+  .btn.ghost:active{ transform: translateY(1px); }
+  .btn.safe{ background: var(--safe); box-shadow: 0 4px 0 #1c9585, 0 10px 18px rgba(0,0,0,.35); color:#08211e;}
+  .btn.danger{ background: var(--danger); box-shadow: 0 4px 0 #b13049, 0 10px 18px rgba(0,0,0,.35); color:#2a0912;}
+  .btn:disabled{ opacity:.4; pointer-events:none; }
+
+  .pill{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:4px 12px; border-radius:999px; font-size:13px; font-weight:600;
+    background: var(--panel-2); color:var(--ink-dim); border:1px solid var(--line);
+  }
+
+  .screen{ display:none; }
+  .screen.active{ display:block; animation: rise .35s ease; }
+  @keyframes rise{ from{ opacity:0; transform: translateY(10px);} to{opacity:1; transform:none;} }
+
+  /* ---------- VanBerto mascot ---------- */
+  .vanberto{ width:120px; height:120px; filter: drop-shadow(0 8px 14px rgba(0,0,0,.35)) drop-shadow(0 0 12px rgba(255,110,180,.45)) drop-shadow(0 0 6px rgba(56,189,248,.3)); }
+  .vanberto.big{ width:150px; height:150px; }
+  .vanberto.idle{ animation: vbFloat 3s ease-in-out infinite; }
+  @keyframes vbFloat{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-6px);} }
+  .vb-bounce{ animation: bounce .6s ease; }
+  @keyframes bounce{ 0%{transform:translateY(0)} 30%{transform:translateY(-14px)} 55%{transform:translateY(0)} 75%{transform:translateY(-6px)} 100%{transform:translateY(0)} }
+  .vb-shake{ animation: shake .45s ease; }
+  @keyframes shake{ 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+
+  /* ---------- intro ---------- */
+  .hero{
+    text-align:center; padding: 18px 12px 8px;
+  }
+  .hero .badge{
+    display:inline-flex; align-items:center; gap:8px;
+    background: var(--panel); border:1px solid var(--line);
+    padding:6px 14px; border-radius:999px; font-size:13px; color: var(--ink-dim);
+    margin-bottom: 18px;
+  }
+  .hero h1{ font-size: clamp(30px, 6vw, 46px); line-height:1.05; }
+  .hero h1 span{ color: var(--warn); }
+  .hero p.lede{ color: var(--ink-dim); font-size:17px; max-width:520px; margin: 14px auto 26px; line-height:1.5; }
+
+  .name-row{
+    display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:22px;
+  }
+  .name-row input{
+    background: var(--panel); border:2px solid var(--line); color:var(--ink);
+    border-radius: 999px; padding: 12px 18px; font-size:16px; font-family:var(--font-body);
+    width:240px; max-width:70vw;
+  }
+  .name-row input:focus{ outline:none; border-color: var(--warn); }
+
+  .mode-grid{
+    display:flex; gap:16px; flex-wrap:wrap; justify-content:center;
+    max-width:760px; margin: 10px auto 0;
+  }
+  .mode-card{
+    background: var(--panel); border:1px solid var(--line); border-radius: var(--radius);
+    padding:22px 18px; flex:1 1 210px; max-width:230px;
+    display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;
+  }
+  .mode-icon{ font-size:34px; line-height:1; }
+  .mode-card h3{ font-size:16px; margin:2px 0 0; }
+  .mode-card p{ font-size:13px; color:var(--ink-dim); line-height:1.5; margin:0; flex:1; }
+  .mode-card .btn{ width:100%; margin-top:4px; }
+  .mode-setup{ font-size:12.5px; color:var(--ink-dim); display:flex; align-items:center; gap:6px; }
+  .mode-setup select{
+    background: var(--panel-2); border:1px solid var(--line); color:var(--ink);
+    border-radius: 999px; padding:4px 10px; font-size:12.5px; font-family:var(--font-body);
+  }
+  .mode-best{ font-size:12px; color: var(--warn); font-weight:600; }
+
+  .how-card{
+    background: var(--panel); border:1px solid var(--line); border-radius: var(--radius);
+    padding: 20px 22px; max-width:560px; margin: 30px auto 0; text-align:left;
+  }
+  .how-card h3{ font-size:18px; margin-bottom:10px; display:flex; align-items:center; gap:8px;}
+  .how-card ul{ margin:0; padding-left:20px; color:var(--ink-dim); line-height:1.7; font-size:15px;}
+  .how-card li strong{ color: var(--ink); }
+
+  /* ---------- game screen ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; margin-bottom:18px; flex-wrap:wrap;
+  }
+  .progress-wrap{ flex:1; min-width:160px; }
+  .progress-label{ font-size:13px; color:var(--ink-dim); margin-bottom:6px; display:flex; justify-content:space-between;}
+  .progress-bar{ height:10px; border-radius:999px; background:var(--panel-2); overflow:hidden; border:1px solid var(--line);}
+  .progress-fill{ height:100%; background: linear-gradient(90deg, var(--safe), var(--warn)); border-radius:999px; transition: width .4s ease;}
+
+  .case-panel{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow:hidden;
+    margin-bottom: 20px;
+  }
+  .case-tab{
+    display:flex; align-items:center; gap:10px;
+    background: var(--panel-2); padding: 10px 18px;
+    font-family: var(--font-display); font-size:15px; color: var(--ink-dim);
+    border-bottom:1px solid var(--line);
+  }
+  .case-tab .dot{ width:9px; height:9px; border-radius:50%; background: var(--warn);}
+
+  .mail{ padding: 20px 22px; }
+  .mail-row{ display:flex; gap:10px; font-size:14px; padding:6px 0; border-bottom:1px solid var(--line); }
+  .mail-row:last-of-type{ border-bottom:none; }
+  .mail-row .k{ width:74px; flex-shrink:0; color: var(--ink-dim); font-weight:600; }
+  .mail-row .v{ color: var(--ink); word-break: break-word; }
+  .mail-row .v.caps{ text-transform:uppercase; letter-spacing:.3px; }
+  .mail-row .v.empty{ color: var(--ink-dim); font-style:italic; }
+  .mail-body{ padding: 16px 0 6px; font-size:15px; line-height:1.6; color: var(--ink); }
+  .mail-body .caps-text{ text-transform:uppercase; letter-spacing:.3px; }
+  .mail-link{
+    display:inline-block; margin-top:8px; padding:7px 12px; border-radius:8px;
+    background: var(--panel-2); border:1px dashed var(--line); font-size:13px; color:#8fb8ff;
+  }
+  .mail-attach{
+    display:inline-flex; align-items:center; gap:8px; margin-top:14px; padding:9px 14px;
+    background: var(--panel-2); border:1px solid var(--line); border-radius: var(--radius-sm); font-size:13px;
+  }
+
+  .clue-heading{ font-size:14px; color: var(--ink-dim); margin: 4px 4px 10px; }
+  .clue-grid{ display:flex; flex-wrap:wrap; gap:9px; margin: 0 0 20px; }
+  .clue-chip{
+    background: var(--panel); border:2px solid var(--line); color: var(--ink);
+    padding:9px 15px; border-radius:999px; font-size:14px; font-weight:600;
+    display:flex; align-items:center; gap:7px;
+  }
+  .clue-chip.on{ border-color: var(--warn); background: #3a2f14; }
+
+  .action-row{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top: 4px;}
+
+  /* ---------- inbox list ---------- */
+  .inbox-list{ padding: 10px 14px 16px; display:flex; flex-direction:column; gap:10px; }
+  .inbox-item{
+    display:flex; align-items:center; gap:14px; width:100%; text-align:left;
+    background: var(--panel-2); border:1px solid var(--line); border-radius: var(--radius-sm);
+    padding: 12px 14px; cursor:pointer; transition: border-color .15s ease, transform .1s ease;
+    font-family: var(--font-body); color: var(--ink); appearance:none; -webkit-appearance:none;
+  }
+  .inbox-item:focus-visible{ outline:2px solid var(--warn); outline-offset:2px; }
+  .inbox-item:hover{ border-color: var(--warn); }
+  .inbox-item:active{ transform: scale(.99); }
+  .inbox-item.done{ cursor:default; opacity:.68; }
+  .inbox-item.done:hover{ border-color: var(--line); }
+  .inbox-icon{
+    width:40px; height:40px; border-radius:12px; background: var(--panel);
+    display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0;
+  }
+  .inbox-text{ flex:1; min-width:0; }
+  .inbox-sender{ font-weight:700; font-size:14.5px; color:var(--ink); word-break:break-word; }
+  .inbox-subject{ font-size:13.5px; color:var(--ink-dim); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .inbox-status{
+    flex-shrink:0; padding:5px 12px; border-radius:999px; font-size:12px; font-weight:700;
+    border:1px solid var(--line); color: var(--ink-dim); white-space:nowrap;
+  }
+  .inbox-status.pending{ background:#3a2f14; border-color: var(--warn); color: var(--warn); }
+  .inbox-status.ok{ background: var(--safe-dim); border-color: var(--safe); color: var(--safe); }
+  .inbox-status.bad{ background: var(--danger-dim); border-color: var(--danger); color: var(--danger); }
+
+  /* ---------- mail detail modal ---------- */
+  .mail-modal{
+    position:fixed; inset:0; background: rgba(6,4,16,.72);
+    display:flex; align-items:center; justify-content:center; padding:18px;
+    z-index: 45; opacity:0; pointer-events:none; transition: opacity .2s ease;
+  }
+  .mail-modal.show{ opacity:1; pointer-events:auto; }
+  .mail-modal-card{
+    background: var(--panel); border:1px solid var(--line); border-radius: var(--radius);
+    max-width: 560px; width:100%; max-height:88vh; overflow-y:auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  }
+  .mail-modal-head{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding: 16px 18px 0;
+  }
+  .mail-actions-wrap{ padding: 4px 22px 22px; }
+
+  /* ---------- feedback overlay ---------- */
+  .overlay{
+    position:fixed; inset:0; background: rgba(6,4,16,.72);
+    display:flex; align-items:center; justify-content:center; padding:18px;
+    z-index: 50; opacity:0; pointer-events:none; transition: opacity .2s ease;
+  }
+  .overlay.show{ opacity:1; pointer-events:auto; }
+  .feedback-card{
+    background: var(--panel); border:1px solid var(--line); border-radius: var(--radius);
+    max-width: 480px; width:100%; padding: 26px 26px 22px; text-align:center;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  }
+  .feedback-card .verdict{ font-family: var(--font-display); font-size:22px; margin: 10px 0 4px; }
+  .feedback-card .verdict.good{ color: var(--safe); }
+  .feedback-card .verdict.bad{ color: var(--danger); }
+  .feedback-card .points{ font-size:14px; color: var(--ink-dim); margin-bottom:16px; }
+  .clue-report{ text-align:left; background: var(--panel-2); border-radius: var(--radius-sm); padding:14px 16px; margin-bottom:18px; }
+  .clue-report .row{ display:flex; gap:8px; font-size:14px; padding:6px 0; align-items:flex-start; }
+  .clue-report .row .mk{ width:18px; flex-shrink:0; margin-top:1px; font-weight:700; }
+  .clue-report .row .lbl-wrap{ flex:1; min-width:0; }
+  .clue-report .row .hint{ font-size:12px; color: var(--ink-dim); margin-top:1px; }
+  .clue-report .row .pts{ flex-shrink:0; font-size:12px; font-weight:800; color: var(--ink-dim); padding-top:1px; white-space:nowrap; }
+  .clue-report .row.ok .mk{ color: var(--safe); }
+  .clue-report .row.ok .pts{ color: var(--safe); }
+  .clue-report .row.miss .mk{ color: var(--warn); }
+  .clue-report .row.false .mk{ color: var(--danger); }
+  .clue-report .row.decision{ padding-bottom:12px; margin-bottom:8px; border-bottom:1px solid var(--line); font-size:14.5px; }
+  .clue-report .row.decision .mk{ font-size:16px; }
+  .clue-report .row.decision .pts{ font-size:12.5px; }
+  .clue-report .row.note{ margin-top:8px; padding-top:12px; border-top:1px dashed var(--line); }
+  .clue-report .row.note .mk{ color: var(--warn); font-weight:400; }
+  .clue-report .row.note .lbl-wrap{ font-size:13px; line-height:1.55; color: var(--ink-dim); }
+
+  /* ---------- end screen ---------- */
+  .end-card{
+    background: var(--panel); border:1px solid var(--line); border-radius: var(--radius);
+    padding: 32px 26px; text-align:center;
+  }
+  .rank{ font-family: var(--font-display); font-size:26px; color: var(--warn); margin: 6px 0 2px; }
+  .score-big{ font-size: 52px; font-family: var(--font-display); margin: 8px 0; }
+  .score-big span{ font-size:22px; color: var(--ink-dim); font-family: var(--font-body);}
+  .end-actions{ display:flex; gap:12px; justify-content:center; margin-top:22px; flex-wrap:wrap;}
+
+  .elements-options{ display:flex; flex-direction:column; gap:10px; }
+  .elements-options .btn{ width:100%; text-align:left; }
+
+  .certificate{
+    margin-top: 26px; border:2px dashed var(--line); border-radius: var(--radius);
+    padding: 26px; text-align:center; background: var(--panel-2);
+    box-shadow: inset 0 0 0 6px rgba(255,202,75,.06);
+    position:relative;
+  }
+  .cert-main{ display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .cert-brand{ display:flex; flex-direction:column; align-items:center; gap:4px; flex-shrink:0; }
+  .cert-brand .cbrand-name{ font-family: var(--font-display); font-size:15px; color: var(--warn); }
+  .cert-body{ text-align:center; }
+  .certificate h3{ font-size:15px; letter-spacing:.4px; color: var(--ink-dim); font-family:var(--font-body); font-weight:600; }
+  .certificate .cname{ font-family: var(--font-display); font-size:28px; margin:10px 0; color: var(--warn); }
+  .certificate .ctitle{ font-size:17px; margin-bottom:6px; }
+  .certificate .cscore{ font-size:14.5px; font-weight:700; color: var(--safe); margin-bottom:8px; }
+  .certificate .csub{ font-size:13px; color: var(--ink-dim); }
+  .certificate .cdate{ font-size:12px; color: var(--ink-dim); margin-top:10px; }
+  .cert-hint{ font-size:12px; color: var(--ink-dim); margin-top:10px; }
+
+  /* a partir daqui o certificado passa a horizontal (paisagem), com o VanBerto's à esquerda */
+  @media (min-width:560px){
+    .cert-main{ flex-direction:row; align-items:center; justify-content:center; gap:30px; text-align:left; }
+    .cert-brand{ padding-right:26px; border-right:1px dashed var(--line); }
+    .cert-body{ text-align:left; }
+  }
+
+  /* ---------- mute button ---------- */
+  #btn-mute{
+    position:fixed; top:14px; right:14px; z-index:60;
+    padding:9px 13px; font-size:15px; line-height:1;
+  }
+
+  /* ---------- status bar (Início + nome do jogador), visível nas fases 1-3 ---------- */
+  .status-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px; flex-wrap:wrap; margin-bottom:16px;
+  }
+  .status-bar .btn{ padding:8px 15px; font-size:13px; flex-shrink:0; }
+  .status-bar .pill{ font-size:12.5px; font-weight:700; max-width:100%; }
+  .status-bar .pill span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:inline-block; max-width:180px; vertical-align:bottom; }
+
+  /* ---------- review panel ---------- */
+  .review-panel{
+    margin-top: 26px; text-align:left; background: var(--panel-2);
+    border:1px solid var(--line); border-radius: var(--radius); padding: 18px 20px;
+  }
+  .review-panel h4{ font-size:15px; margin: 14px 0 8px; color: var(--ink-dim); }
+  .review-panel h4:first-child{ margin-top:0; }
+  .review-row{
+    display:flex; gap:10px; align-items:flex-start; font-size:13.5px;
+    padding:7px 0; border-bottom:1px solid var(--line); line-height:1.4;
+  }
+  .review-row:last-child{ border-bottom:none; }
+  .review-row .mk{ flex-shrink:0; }
+  .review-row.ok .mk{ color: var(--safe); }
+  .review-row.bad .mk{ color: var(--danger); }
+  .review-row .answer-correct{ color: var(--ink-dim); font-size:12.5px; margin-top:2px; }
+
+  .copy-feedback{ font-size:13px; color: var(--safe); margin-top:8px; min-height:16px; }
+
+  /* ---------- print certificate ---------- */
+  @media print{
+    @page{ size: landscape; margin: 1.2cm; }
+    body.print-cert-mode *{ visibility:hidden !important; }
+    body.print-cert-mode #certificate,
+    body.print-cert-mode #certificate *{ visibility:visible !important; }
+    body.print-cert-mode #certificate{
+      position:absolute; left:0; top:0; width:100%; min-height:100vh;
+      display:flex; align-items:center; justify-content:center;
+      background:#ffffff !important; color:#111111 !important;
+      border-color:#999 !important; margin:0; box-shadow:none !important;
+    }
+    body.print-cert-mode #certificate .cname{ color:#8a6400 !important; }
+    body.print-cert-mode #certificate .cscore{ color:#1a7a4a !important; }
+    body.print-cert-mode #certificate .cbrand-name{ color:#8a6400 !important; }
+    body.print-cert-mode #certificate .cert-brand{ border-color:#999 !important; }
+    body.print-cert-mode #btn-print-cert,
+    body.print-cert-mode .cert-hint{ display:none !important; }
+  }
+
+  footer{ margin-top: 34px; color: var(--ink-dim); font-size:12px; text-align:center; }
+
+  @media (max-width:600px){
+    .mail-row{ flex-direction:column; gap:2px; }
+    .mail-row .k{ width:auto; }
+    .action-row .btn{ flex:1; min-width: 140px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .vb-bounce, .vb-shake, .screen.active{ animation:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<button class="btn ghost" id="btn-mute" title="Ligar/desligar som">🔊</button>
+
+<div class="stage">
+
+  <!-- ============ SCREEN 0: INTRO ============ -->
+  <section id="screen-intro" class="screen active">
+    <div class="hero">
+      <div class="badge">🔎 VanBerto's</div>
+      <canvas id="vb-intro" class="vanberto big idle"></canvas>
+      <h1>Detetive do <span>E-mail</span></h1>
+      <p class="lede">Três missões à tua espera: apanhar armadilhas de phishing, acertar no tom certo e conhecer os elementos de um e-mail. Escolhe uma para começar.</p>
+      <div class="name-row" style="margin-bottom:8px;">
+        <input id="player-name" type="text" placeholder="Como te chamas, detetive?" maxlength="24">
+      </div>
+
+      <div class="mode-grid">
+        <div class="mode-card">
+          <div class="mode-icon">🕵️</div>
+          <h3>Deteção de Phishing</h3>
+          <p>Inspeciona a caixa de entrada, marca as pistas suspeitas e decide: confias ou eliminas?</p>
+          <div class="mode-setup">
+            <label for="round-count">📥 Mensagens:</label>
+            <select id="round-count">
+              <option value="6">6</option>
+              <option value="8" selected>8</option>
+              <option value="10">10</option>
+            </select>
+          </div>
+          <button class="btn" id="start-detective-btn">Começar a investigação</button>
+          <div class="mode-best" id="best-detective" style="display:none;"></div>
+        </div>
+
+        <div class="mode-card">
+          <div class="mode-icon">💬</div>
+          <h3>Formal ou Informal?</h3>
+          <p>Lê cada mensagem e decide qual é o tom certo — formal ou informal.</p>
+          <button class="btn" id="start-tone-btn">Jogar este modo</button>
+          <div class="mode-best" id="best-tone" style="display:none;"></div>
+        </div>
+
+        <div class="mode-card">
+          <div class="mode-icon">📧</div>
+          <h3>Elementos do E-mail</h3>
+          <p>Que campo é este? Escolhe a função certa — De, Cc, Anexo e muito mais.</p>
+          <button class="btn" id="start-elements-btn">Jogar este modo</button>
+          <div class="mode-best" id="best-elements" style="display:none;"></div>
+        </div>
+      </div>
+
+      <div class="how-card">
+        <h3>🕵️ Como se joga</h3>
+        <ul>
+          <li>Escolhe um dos três modos acima — podes jogar só um ou repetir todos.</li>
+          <li>Cada modo tem a sua própria pontuação, ranking e certificado.</li>
+          <li>No fim de cada modo, podes rever as respostas ou voltar ao menu para escolher outro.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 1: GAME ============ -->
+  <section id="screen-game" class="screen">
+    <div class="status-bar">
+      <button class="btn ghost restart-btn" title="Voltar ao início">🏠 Início</button>
+      <div class="pill player-pill">🕵️ <span id="name-tag-game">Detetive</span></div>
+    </div>
+    <div class="topbar">
+      <canvas id="vb-game" class="vanberto" style="width:64px;height:64px;"></canvas>
+      <div class="progress-wrap" aria-live="polite">
+        <div class="progress-label"><span id="round-label">0 de 8 analisados</span><span id="score-label">0 pontos</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      </div>
+      <div class="pill" id="clues-pill">Sinais encontrados: 0/0</div>
+    </div>
+
+    <div class="case-panel">
+      <div class="case-tab"><span class="dot"></span> Caixa de entrada</div>
+      <div class="inbox-list" id="inbox-list"></div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 2: TOM DO E-MAIL ============ -->
+  <section id="screen-tone" class="screen">
+    <div class="status-bar">
+      <button class="btn ghost restart-btn" title="Voltar ao início">🏠 Início</button>
+      <div class="pill player-pill">🕵️ <span id="name-tag-tone">Detetive</span></div>
+    </div>
+    <div class="hero" style="padding-top:6px; padding-bottom:0;">
+      <canvas id="vb-tone" class="vanberto" style="width:80px;height:80px;"></canvas>
+      <h2 style="font-family:var(--font-display); font-size:24px; margin:10px 0 4px;">Fase 2 — Formal ou Informal?</h2>
+      <p class="lede" style="margin:6px auto 18px; font-size:15px;">Lê a mensagem e decide qual é o tom certo.</p>
+    </div>
+    <div class="case-panel">
+      <div class="case-tab"><span class="dot"></span> <span id="tone-count">1 de 4</span></div>
+      <div class="mail" style="padding:22px;">
+        <div class="mail-body" id="tone-text" style="white-space:pre-line;"></div>
+      </div>
+      <div class="mail-actions-wrap" style="padding-top:0;">
+        <div class="action-row">
+          <button class="btn" id="btn-formal">📝 Formal</button>
+          <button class="btn ghost" id="btn-informal">💬 Informal</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 3: ELEMENTOS DO E-MAIL ============ -->
+  <section id="screen-elements" class="screen">
+    <div class="status-bar">
+      <button class="btn ghost restart-btn" title="Voltar ao início">🏠 Início</button>
+      <div class="pill player-pill">🕵️ <span id="name-tag-elements">Detetive</span></div>
+    </div>
+    <div class="hero" style="padding-top:6px; padding-bottom:0;">
+      <canvas id="vb-elements" class="vanberto" style="width:80px;height:80px;"></canvas>
+      <h2 style="font-family:var(--font-display); font-size:24px; margin:10px 0 4px;">Fase 3 — Elementos do E-mail</h2>
+      <p class="lede" style="margin:6px auto 18px; font-size:15px;">Que campo é este? Escolhe a função certa.</p>
+    </div>
+    <div class="case-panel">
+      <div class="case-tab"><span class="dot"></span> <span id="elements-count">1 de 6</span></div>
+      <div class="mail" style="padding:26px; text-align:center;">
+        <div id="elements-term" style="font-family:var(--font-display); font-size:30px; color:var(--warn);"></div>
+      </div>
+      <div class="mail-actions-wrap" style="padding-top:0;">
+        <div class="elements-options" id="elements-options"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 4: END ============ -->
+  <section id="screen-end" class="screen">
+    <div class="end-card">
+      <canvas id="vb-end" class="vanberto big idle"></canvas>
+      <div class="pill" id="end-mode-pill" style="margin-bottom:10px;">🕵️ Deteção de Phishing</div>
+      <div class="rank" id="end-rank">Detetive</div>
+      <div class="score-big"><span id="end-score">0</span><span id="end-max">/38</span></div>
+      <p id="end-msg" style="color:var(--ink-dim); max-width:420px; margin:0 auto;"></p>
+      <div class="end-actions">
+        <button class="btn ghost" id="btn-again">🏠 Voltar ao menu</button>
+        <button class="btn ghost" id="btn-review">🔎 Rever respostas</button>
+        <button class="btn ghost" id="btn-copy">📋 Copiar resultados</button>
+        <button class="btn" id="btn-cert">🎓 Ver certificado</button>
+      </div>
+      <div class="copy-feedback" id="copy-feedback"></div>
+      <div class="review-panel" id="review-panel" style="display:none;"></div>
+      <div class="certificate" id="certificate" style="display:none;">
+        <div class="cert-main">
+          <div class="cert-brand">
+            <canvas id="vb-cert" class="vanberto" style="width:56px;height:56px;"></canvas>
+            <div class="cbrand-name">VanBerto's</div>
+          </div>
+          <div class="cert-body">
+            <h3>CERTIFICADO DE DETETIVE DIGITAL</h3>
+            <div class="cname" id="cert-name">—</div>
+            <div class="ctitle" id="cert-title">—</div>
+            <div class="cscore" id="cert-score">—</div>
+            <div class="csub" id="cert-sub">—</div>
+            <div class="cdate" id="cert-date"></div>
+          </div>
+        </div>
+        <button class="btn ghost" id="btn-print-cert" style="margin-top:18px; padding:9px 16px; font-size:13px;">🖨️ Imprimir / Guardar em PDF</button>
+        <div class="cert-hint">Se a janela de impressão não abrir sozinha, usa Ctrl+P (Windows) ou Cmd+P (Mac).</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>VanBerto's — Profª Vanda Várzea</footer>
+</div>
+
+<!-- mail detail modal -->
+<div class="mail-modal" id="mail-modal">
+  <div class="mail-modal-card" role="dialog" aria-modal="true" aria-labelledby="mail-subject">
+    <div class="mail-modal-head">
+      <span class="pill">🔎 Ficheiro do caso</span>
+      <button class="btn ghost" id="btn-close-mail" style="padding:8px 14px; font-size:13px;">← Caixa de entrada</button>
+    </div>
+    <div class="mail">
+      <div class="mail-row"><div class="k">De</div><div class="v" id="mail-sender"></div></div>
+      <div class="mail-row"><div class="k">Assunto</div><div class="v" id="mail-subject"></div></div>
+      <div class="mail-body" id="mail-body"></div>
+      <div id="mail-link-wrap"></div>
+      <div id="mail-attach-wrap"></div>
+    </div>
+    <div class="mail-actions-wrap">
+      <div class="clue-heading">Marca o que te parece suspeito (podes não marcar nada):</div>
+      <div class="clue-grid" id="clue-grid"></div>
+      <div class="action-row">
+        <button class="btn safe" id="btn-confiar">✅ Confiar e responder</button>
+        <button class="btn danger" id="btn-eliminar">🚫 Eliminar / Reportar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- confirm dialog (voltar ao início) -->
+<div class="overlay" id="confirm-overlay">
+  <div class="feedback-card" role="dialog" aria-modal="true" style="max-width:380px;">
+    <div class="verdict" style="font-size:18px;">Voltar ao início?</div>
+    <p style="color:var(--ink-dim); font-size:14px; margin:6px 0 20px;">Vais perder o progresso desta partida.</p>
+    <div class="action-row">
+      <button class="btn ghost" id="btn-confirm-cancel">Cancelar</button>
+      <button class="btn danger" id="btn-confirm-restart">Sim, voltar ao início</button>
+    </div>
+  </div>
+</div>
+
+<!-- feedback overlay -->
+<div class="overlay" id="overlay">
+  <div class="feedback-card" role="dialog" aria-modal="true" aria-live="assertive" aria-labelledby="fb-verdict">
+    <canvas id="vb-feedback" class="vanberto" style="width:90px;height:90px;"></canvas>
+    <div class="verdict" id="fb-verdict">—</div>
+    <div class="points" id="fb-points">—</div>
+    <div class="clue-report" id="fb-report"></div>
+    <button class="btn" id="btn-next">Continuar →</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- VanBerto — desenho fiel ao robô usado nos jogos VanBerto's ---------------- */
+  /* (mesmo código usado na Sopa de Letras / Palavras Cruzadas / Puzzle) */
+  function rrVan(ctx,x,y,w,h,r){
+    const rr=Math.min(r,w/2,h/2);
+    ctx.beginPath();ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();
+  }
+  function cfVan(ctx,x,y,r,color){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();}
+
+  function drawVanBerto(ctx,blink,step,armsUp){
+    const w=96,h=96;
+    ctx.clearRect(0,0,w,h);
+    ctx.lineJoin="round"; ctx.lineCap="round";
+    ctx.save(); ctx.translate(0,6);
+    const NAVY="#16233e", NAVY2="#26365a", OUT="#101a30";
+    function white(x0,y0,x1,y1){const g=ctx.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,"#ffffff");g.addColorStop(0.55,"#e6edf7");g.addColorStop(1,"#b4c4dc");return g;}
+
+    const LIFT=8, STRIDE=3;
+    let lTop=70, rTop=70, lDX=0, rDX=0;
+    if(step===0){ lTop=70-LIFT; lDX=STRIDE; rDX=-STRIDE; }
+    else if(step===1){ rTop=70-LIFT; rDX=STRIDE; lDX=-STRIDE; }
+    function leg(cx,top){
+      rrVan(ctx,cx-5,top,10,11,4.5); ctx.fillStyle=white(cx-5,top,cx+5,top); ctx.fill();
+      ctx.lineWidth=2.6; ctx.strokeStyle=OUT; ctx.stroke();
+      const fy=top+9;
+      rrVan(ctx,cx-6.5,fy,13,9,4); ctx.fillStyle=NAVY; ctx.fill();
+      ctx.lineWidth=2.6; ctx.strokeStyle=OUT; ctx.stroke();
+      rrVan(ctx,cx-6.5,fy+2,13,2.4,1.2); ctx.fillStyle="rgba(255,255,255,0.85)"; ctx.fill();
+      cfVan(ctx,cx-2.5,fy+4.5,1.4,"rgba(255,255,255,0.5)");
+    }
+    leg(41+lDX,lTop); leg(55+rDX,rTop);
+
+    const ARM_SWING = 0.24;
+    const JUMP_RAISE = 2.9;
+    let lArmSwing = 0, rArmSwing = 0;
+    if(armsUp){ lArmSwing = JUMP_RAISE; rArmSwing = -JUMP_RAISE; }
+    else if(step===0){ lArmSwing=-ARM_SWING; rArmSwing=ARM_SWING; }
+    else if(step===1){ lArmSwing=ARM_SWING; rArmSwing=-ARM_SWING; }
+    function arm(sx,swing){
+      ctx.save();
+      const px=sx+4.5, py=52;
+      ctx.translate(px,py); ctx.rotate(swing); ctx.translate(-px,-py);
+      rrVan(ctx,sx,52,9,13,4.5); ctx.fillStyle=white(sx,52,sx+9,52); ctx.fill();
+      ctx.lineWidth=2.6; ctx.strokeStyle=OUT; ctx.stroke();
+      const hx=sx+4.5, hy=67;
+      cfVan(ctx,hx,hy,5,NAVY);
+      ctx.lineWidth=2.3; ctx.strokeStyle=OUT; ctx.beginPath(); ctx.arc(hx,hy,5,0,Math.PI*2); ctx.stroke();
+      cfVan(ctx,hx-2,hy+1.6,1.4,NAVY2); cfVan(ctx,hx+0.5,hy+2.4,1.4,NAVY2); cfVan(ctx,hx+2.5,hy+1.6,1.4,NAVY2);
+      ctx.restore();
+    }
+    arm(17,lArmSwing); arm(70,rArmSwing);
+
+    rrVan(ctx,26,44,44,32,15); ctx.fillStyle=white(28,46,68,46); ctx.fill();
+    ctx.save(); rrVan(ctx,26,44,44,32,15); ctx.clip();
+    const wg=ctx.createLinearGradient(0,64,0,76); wg.addColorStop(0,"rgba(22,35,62,0)"); wg.addColorStop(0.4,"#1c2c4c"); wg.addColorStop(1,"#142038");
+    ctx.fillStyle=wg; ctx.fillRect(26,62,44,16);
+    ctx.strokeStyle="rgba(16,26,48,0.6)"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(28,64); ctx.lineTo(68,64); ctx.stroke();
+    ctx.fillStyle="rgba(255,255,255,0.5)"; ctx.beginPath(); ctx.ellipse(36,52,9,5.5,-0.5,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+    ctx.lineWidth=3; ctx.strokeStyle=OUT; rrVan(ctx,26,44,44,32,15); ctx.stroke();
+
+    cfVan(ctx,48,56,8,NAVY);
+    ctx.lineWidth=2.5; ctx.strokeStyle=OUT; ctx.beginPath(); ctx.arc(48,56,8,0,Math.PI*2); ctx.stroke();
+    const dome=ctx.createRadialGradient(45.5,53.5,1,48,56,7); dome.addColorStop(0,"#aebccf"); dome.addColorStop(0.6,"#5a6a85"); dome.addColorStop(1,"#2b3a57");
+    ctx.fillStyle=dome; ctx.beginPath(); ctx.arc(48,56,5.7,0,Math.PI*2); ctx.fill();
+    cfVan(ctx,46,53.8,1.5,"rgba(255,255,255,0.85)");
+
+    function pod(cx){
+      cfVan(ctx,cx,32,6,NAVY);
+      ctx.lineWidth=2.3; ctx.strokeStyle=OUT; ctx.beginPath(); ctx.arc(cx,32,6,0,Math.PI*2); ctx.stroke();
+      cfVan(ctx,cx,32,2.8,NAVY2); cfVan(ctx,cx-0.8,31,1,"rgba(255,255,255,0.6)");
+    }
+    pod(25); pod(71);
+
+    ctx.fillStyle=NAVY; ctx.beginPath(); ctx.moveTo(45,16); ctx.lineTo(51,16); ctx.lineTo(49.2,8); ctx.lineTo(46.8,8); ctx.closePath(); ctx.fill();
+    const halo=ctx.createRadialGradient(48,5,1,48,5,11); halo.addColorStop(0,"rgba(90,200,255,0.55)"); halo.addColorStop(1,"rgba(90,200,255,0)");
+    ctx.fillStyle=halo; ctx.beginPath(); ctx.arc(48,5,11,0,Math.PI*2); ctx.fill();
+    const bg=ctx.createRadialGradient(46.3,3.5,0.5,48,5,5.5); bg.addColorStop(0,"#e6f7ff"); bg.addColorStop(0.4,"#48b4ff"); bg.addColorStop(1,"#1670d8");
+    ctx.fillStyle=bg; ctx.beginPath(); ctx.arc(48,5,5.5,0,Math.PI*2); ctx.fill();
+    cfVan(ctx,46.2,3.4,1.6,"#ffffff");
+
+    rrVan(ctx,26,14,44,34,17); ctx.fillStyle=white(28,15,68,15); ctx.fill();
+    ctx.lineWidth=3; ctx.strokeStyle=OUT; ctx.stroke();
+    ctx.save(); rrVan(ctx,26,14,44,34,17); ctx.clip();
+    ctx.fillStyle="rgba(255,255,255,0.6)"; ctx.beginPath(); ctx.ellipse(38,19,10,4,-0.5,0,Math.PI*2); ctx.fill(); ctx.restore();
+
+    rrVan(ctx,30,20,36,23,12); ctx.fillStyle=NAVY; ctx.fill();
+    rrVan(ctx,32.5,22,31,19,10);
+    const vg=ctx.createLinearGradient(0,22,0,41); vg.addColorStop(0,"#7fd4ff"); vg.addColorStop(0.5,"#2a9bf0"); vg.addColorStop(1,"#1366c6");
+    ctx.fillStyle=vg; ctx.fill();
+    ctx.save(); rrVan(ctx,32.5,22,31,19,10); ctx.clip();
+    ctx.fillStyle="rgba(255,255,255,0.45)"; ctx.beginPath(); ctx.ellipse(42,25,9,3.5,-0.4,0,Math.PI*2); ctx.fill(); ctx.restore();
+
+    if(!blink){
+      ctx.fillStyle="#0a0f1c";
+      ctx.beginPath(); ctx.ellipse(41,30,3.3,4,0,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(55,30,3.3,4,0,0,Math.PI*2); ctx.fill();
+      cfVan(ctx,42.3,28.4,1.5,"#fff"); cfVan(ctx,39.9,31,0.8,"#fff");
+      cfVan(ctx,56.3,28.4,1.5,"#fff"); cfVan(ctx,53.9,31,0.8,"#fff");
+    } else if(blink==="wink"){
+      ctx.fillStyle="#0a0f1c";
+      ctx.beginPath(); ctx.ellipse(41,30,3.3,4,0,0,Math.PI*2); ctx.fill();
+      cfVan(ctx,42.3,28.4,1.5,"#fff"); cfVan(ctx,39.9,31,0.8,"#fff");
+      ctx.lineWidth=3; ctx.strokeStyle="#0a0f1c"; ctx.lineCap="round";
+      ctx.beginPath(); ctx.arc(55,31,3.5,0.15*Math.PI,0.85*Math.PI); ctx.stroke();
+    } else if(blink==="happy"){
+      ctx.lineWidth=3.2; ctx.strokeStyle="#0a0f1c"; ctx.lineCap="round";
+      ctx.beginPath(); ctx.arc(41,31,3.9,0.10*Math.PI,0.90*Math.PI); ctx.stroke();
+      ctx.beginPath(); ctx.arc(55,31,3.9,0.10*Math.PI,0.90*Math.PI); ctx.stroke();
+      cfVan(ctx,33.5,35.5,3,"rgba(255,120,120,0.55)");
+      cfVan(ctx,62.5,35.5,3,"rgba(255,120,120,0.55)");
+    } else if(blink==="sad"){
+      ctx.strokeStyle="#0a0f1c"; ctx.lineWidth=2.3; ctx.lineCap="round";
+      ctx.beginPath(); ctx.moveTo(37,24); ctx.lineTo(44.5,27); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(59,24); ctx.lineTo(51.5,27); ctx.stroke();
+      ctx.fillStyle="#0a0f1c";
+      ctx.beginPath(); ctx.ellipse(41,32,2.8,3.1,0,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(55,32,2.8,3.1,0,0,Math.PI*2); ctx.fill();
+      cfVan(ctx,42,30.7,1.1,"#fff"); cfVan(ctx,56,30.7,1.1,"#fff");
+      ctx.fillStyle="#6fd0ff";
+      ctx.beginPath();
+      ctx.moveTo(56,35); ctx.quadraticCurveTo(59,40,56,43.5); ctx.quadraticCurveTo(53,40,56,35);
+      ctx.closePath(); ctx.fill();
+    } else {
+      ctx.lineWidth=3; ctx.strokeStyle="#0a0f1c";
+      ctx.beginPath(); ctx.arc(41,31,3.5,0.15*Math.PI,0.85*Math.PI); ctx.stroke();
+      ctx.beginPath(); ctx.arc(55,31,3.5,0.15*Math.PI,0.85*Math.PI); ctx.stroke();
+    }
+    ctx.fillStyle="#0a0f1c";
+    if(blink==="wink"){
+      ctx.beginPath(); ctx.ellipse(48,36,5.6,3.6,0,0,Math.PI); ctx.fill();
+      ctx.fillStyle="#ff7a7a";
+      ctx.beginPath(); ctx.ellipse(48,37.6,2.9,1.7,0,0,Math.PI); ctx.fill();
+    } else if(blink==="happy"){
+      ctx.beginPath(); ctx.ellipse(48,36,6.2,4.2,0,0,Math.PI); ctx.fill();
+      ctx.fillStyle="#ff7a7a";
+      ctx.beginPath(); ctx.ellipse(48,38,3.2,1.9,0,0,Math.PI); ctx.fill();
+    } else if(blink==="sad"){
+      ctx.strokeStyle="#0a0f1c"; ctx.lineWidth=2.4; ctx.lineCap="round";
+      ctx.beginPath(); ctx.arc(48,40,4.2,Math.PI,Math.PI*2); ctx.stroke();
+    } else {
+      ctx.beginPath(); ctx.ellipse(48,36,4.6,3.2,0,0,Math.PI); ctx.fill();
+      ctx.fillStyle="#ff7a7a";
+      ctx.beginPath(); ctx.ellipse(48,37.4,2.4,1.5,0,0,Math.PI); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  var vbCtxMap = {}, vbBusyMap = {};
+  function vbInit(id, scale){
+    var el = document.getElementById(id);
+    el.width = 96*scale; el.height = 96*scale;
+    var ctx = el.getContext('2d');
+    ctx.scale(scale, scale);
+    vbCtxMap[id] = ctx;
+  }
+  function paint(id, mood, armsUp){
+    var ctx = vbCtxMap[id];
+    if(!ctx) return;
+    var blink = mood==='happy' ? 'happy' : mood==='sad' ? 'sad' : mood==='wink' ? 'wink' : false;
+    drawVanBerto(ctx, blink, -1, !!armsUp);
+  }
+  function vbBlinkOnce(id){
+    if(vbBusyMap[id]) return;
+    var ctx = vbCtxMap[id];
+    drawVanBerto(ctx, true, -1, false);
+    setTimeout(function(){ if(!vbBusyMap[id]) drawVanBerto(ctx, false, -1, false); }, 180);
+  }
+  function vbWalkOnce(id){
+    if(vbBusyMap[id]) return;
+    vbBusyMap[id] = true;
+    var ctx = vbCtxMap[id], i = 0;
+    var iv = setInterval(function(){
+      drawVanBerto(ctx, false, i%2===0?0:1, false); i++;
+      if(i >= 6){ clearInterval(iv); drawVanBerto(ctx, false, -1, false); vbBusyMap[id] = false; }
+    }, 170);
+  }
+  ['vb-intro','vb-game','vb-tone','vb-elements','vb-end','vb-feedback','vb-cert'].forEach(function(id){ vbInit(id, 3); paint(id,'neutral'); });
+  setInterval(function(){
+    if(!document.getElementById('screen-intro').classList.contains('active')) return;
+    if(vbBusyMap['vb-intro']) return;
+    if(Math.random() < 0.4) vbWalkOnce('vb-intro'); else vbBlinkOnce('vb-intro');
+  }, 4200);
+
+  /* ---------------- sound (Web Audio API, no assets) ---------------- */
+  var actx;
+  var soundOn = true;
+  try{ soundOn = localStorage.getItem('vb_detetive_sound') !== 'off'; }catch(e){}
+  function updateMuteBtn(){
+    var b = document.getElementById('btn-mute');
+    if(b) b.textContent = soundOn ? '🔊' : '🔇';
+  }
+  function getCtx(){ if(!actx){ actx = new (window.AudioContext||window.webkitAudioContext)(); } return actx; }
+  function tone(freq, dur, type, gain){
+    if(!soundOn) return;
+    try{
+      var ctx = getCtx();
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = type||'sine'; o.frequency.value = freq;
+      g.gain.value = gain||0.05;
+      o.connect(g); g.connect(ctx.destination);
+      o.start();
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+      o.stop(ctx.currentTime + dur);
+    }catch(e){}
+  }
+  function sfxClick(){ tone(520,.08,'square',.04); }
+  function sfxGood(){ tone(660,.12,'triangle',.06); setTimeout(function(){tone(880,.16,'triangle',.06);},110); }
+  function sfxBad(){ tone(180,.22,'sawtooth',.05); }
+  function sfxWin(){ [523,659,784,1046].forEach(function(f,i){ setTimeout(function(){tone(f,.18,'triangle',.06);}, i*120); }); }
+
+  updateMuteBtn();
+  document.getElementById('btn-mute').addEventListener('click', function(){
+    soundOn = !soundOn;
+    try{ localStorage.setItem('vb_detetive_sound', soundOn ? 'on' : 'off'); }catch(e){}
+    updateMuteBtn();
+  });
+
+  /* ---------------- round data ---------------- */
+  var CLUE_DEFS = [
+    {key:'sender',       label:'Remetente estranho',      hint:'Sinal de phishing — remetente desconhecido ou estranho'},
+    {key:'subjectEmpty', label:'Assunto vazio',           hint:'Sinal de phishing — mensagem enviada sem assunto'},
+    {key:'subjectAlarm', label:'Assunto alarmante',       hint:'Sinal de phishing — assunto feito para alarmar, pressionar ou atrair com uma oferta boa demais para ser verdade'},
+    {key:'caps',         label:'Texto em maiúsculas',     hint:'Regra de netiqueta — evita escrever tudo em maiúsculas'},
+    {key:'brand',        label:'Domínio a imitar uma marca', hint:'Sinal de phishing — domínio ou remetente construído para imitar uma marca ou entidade conhecida'},
+    {key:'link',         label:'Link suspeito',           hint:'Sinal de phishing — link inesperado ou estranho'},
+    {key:'attach',       label:'Anexo inesperado',        hint:'Sinal de phishing — anexo suspeito ou inesperado'},
+    {key:'urgency',      label:'Pedido urgente ou de dados', hint:'Sinal de phishing — pedido urgente de dados ou ação imediata'},
+    {key:'typo',         label:'Erros de escrita no texto', hint:'Sinal de phishing — erros de escrita pouco habituais numa entidade oficial'}
+  ];
+
+  /* pool de e-mails (armadilhas + seguros, incluindo um caso cinzento e uma conta pirateada) — cada sessão sorteia uma amostra equilibrada */
+  var ALL_ROUNDS = [
+    { sender:'suporte@paytal-seguro.info', subject:'', subjectEmpty:true,
+      body:'URGENTE!!! A TUA CONTA FOI BLOQUEADA. Clica no link abaixo para a reativares imediatamente:',
+      bodyCaps:true, link:'paytal-verifica-conta.info', icon:'🏦',
+      trueClues:['sender','brand','subjectEmpty','caps','link','urgency'], correctAction:'eliminar' },
+
+    { sender:'seguranca@instagrarn-ajuda.com', subject:'A TUA CONTA VAI SER ELIMINADA', subjectCaps:true,
+      body:'Detetámos atividade suspeita na tua conta. Introduz a tua palavra-passe no link abaixo para confirmares a tua identidade:',
+      link:'instagrarn-confirmar.net', icon:'📱',
+      trueClues:['sender','brand','subjectAlarm','caps','link','urgency'], correctAction:'eliminar' },
+
+    { sender:'cobranca@financas-aviso.net', subject:'FATURA EM ATRASO — AÇÃO NECESSÁRIA', subjectCaps:true,
+      body:'Segue em anexo a fatura em atrazo. Efetua o pagamento nas próximas 24 horas para evitares uma penalização.',
+      attach:'Fatura_2026.zip', icon:'💸',
+      trueClues:['sender','brand','subjectAlarm','caps','attach','urgency','typo'], correctAction:'eliminar' },
+
+    { sender:'prendas@promo-exclusiva.co', subject:'🎁 Foste selecionado! Prémio de 100€',
+      body:'Parabéns! Foste escolhido para receberes um cartão-presente. Clica no link e preenche os teus dados para o receberes agora:',
+      link:'levantar-premio-agora.co', icon:'🎁',
+      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar' },
+
+    { sender:'notificacoes@ctt-entregas-pt.info', subject:'📦 Encomenda retida — paga a taxa aduaneira',
+      body:'A tua encomenda está retida nos correios. Paga uma pequena taxa aduaneira nas proximas 2 horas ou a encomenda sera devolvida ao remetente.',
+      link:'ctt-pagar-taxa.info', icon:'📦',
+      trueClues:['sender','brand','subjectAlarm','link','urgency','typo'], correctAction:'eliminar' },
+
+    { sender:'recrutamento@trabalha-facil24.com', subject:'Ganha 300€ por semana sem sair de casa!',
+      body:'Selecionamos jovens para um trabalho online simples. Envia o teu nome completo, morada e número de contribuinte para começares já hoje!',
+      link:'inscricao-trabalha-facil24.com', icon:'💼',
+      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar' },
+
+    { sender:'vanda.varzea@edu.azores.gov.pt', subject:'Correção do teste de sexta-feira',
+      body:'Boa tarde. A correção dos testes será feita na próxima aula — tragam o vosso caderno. Cumprimentos, Profª Vanda.',
+      icon:'🏫',
+      trueClues:[], correctAction:'confiar' },
+
+    { sender:'biblioteca.escolar@edu.azores.gov.pt', subject:'O teu livro reservado já está disponível',
+      body:'Olá! O livro que reservaste já pode ser levantado na biblioteca. Cumprimentos, Biblioteca Escolar.',
+      icon:'📚',
+      trueClues:[], correctAction:'confiar' },
+
+    { sender:'joao.silva23@edu.azores.gov.pt', subject:'Trabalho de Ciências',
+      body:'Olá! Já viste o trabalho de Ciências? Podemos juntar-nos amanhã para o acabar? Abraço, João.',
+      icon:'🎒',
+      trueClues:[], correctAction:'confiar' },
+
+    { sender:'vanda.varzea@edu.azores.gov.pt', subject:'Ficha de trabalho — Correio Eletrónico',
+      body:'Boa tarde. Envio em anexo a ficha de trabalho para a próxima aula — tragam-na resolvida. Cumprimentos, Profª Vanda.',
+      attach:'Ficha_Correio_Eletronico.pdf', icon:'📝',
+      trueClues:[], correctAction:'confiar' },
+
+    { sender:'secretaria@edu.azores.gov.pt', subject:'Alteração de horário — quinta-feira',
+      body:'Bom dia. Informamos que, na próxima quinta-feira, a aula de Educação Física passa para as 10h. Cumprimentos, Secretaria.',
+      icon:'🗓️',
+      trueClues:[], correctAction:'confiar' },
+
+    { sender:'clube.robotica@edu.azores.gov.pt', subject:'Inscrições abertas — Clube de Robótica',
+      body:'Olá! As inscrições para o Clube de Robótica estão abertas até sexta-feira. Fala com o Prof. Marco se quiseres participar. Até já!',
+      icon:'🤖',
+      trueClues:[], correctAction:'confiar' },
+
+    { sender:'seguranca@roblox-conta-segura.net', subject:'A TUA CONTA ROBLOX VAI SER BANIDA', subjectCaps:true,
+      body:'Detetámos uma tentativa de acesso não autorizada. Confirma a tua conta no link abaixo nas próximas 24 horas ou perdes todos os teus itens:',
+      link:'roblox-verificar-conta.net', icon:'🎮',
+      trueClues:['sender','brand','subjectAlarm','caps','link','urgency'], correctAction:'eliminar' },
+
+    { sender:'suporte@portal-aluno-acores.info', subject:'', subjectEmpty:true,
+      body:'A tua palavra-passe expira hoje. Clica no link para não perderes o acesso às tuas notas e trabalhos:',
+      link:'portal-aluno-acesso.info', icon:'🔑',
+      trueClues:['sender','brand','subjectEmpty','link','urgency'], correctAction:'eliminar' },
+
+    { sender:'premios@sorteio-tech24.com', subject:'📱 Foste o vencedor do sorteio de hoje!',
+      body:'Parabéns! O teu número foi selecionado para receberes um telemóvel novo grátis. Preenche o formulário com o teu nome e morada para o enviarmos ainda esta semana:',
+      link:'confirmar-premio-tech24.com', icon:'🎉',
+      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar' },
+
+    { sender:'seloverificado@tiktok-selo.co', subject:'O TEU PEDIDO DE SELO AZUL FOI APROVADO', subjectCaps:true,
+      body:'O teu perfil foi aprovado para receber o selo de verificado. Descarrega o certificado em anexo e segue as instruçoes nas proximas 24 horas para ativares o teu novo estatuto.',
+      attach:'Certificado_Selo.zip', icon:'✅',
+      trueClues:['sender','brand','subjectAlarm','caps','attach','urgency','typo'], correctAction:'eliminar' },
+
+    { sender:'prof.pedro.melo@edu.azores.gov.pt', subject:'Aula de Educação Musical adiada',
+      body:'Bom dia. A aula de Educação Musical de amanhã foi adiada para sexta-feira. Cumprimentos, Prof. Pedro Melo.',
+      icon:'🎵',
+      trueClues:[], correctAction:'confiar' },
+
+    { sender:'ines.pereira19@edu.azores.gov.pt', subject:'Apontamentos de Geografia',
+      body:'Olá! Podes enviar-me os apontamentos da última aula de Geografia? Faltei por estar doente. Obrigada, Inês.',
+      icon:'🗺️',
+      trueClues:[], correctAction:'confiar' },
+
+    { sender:'cantina@edu.azores.gov.pt', subject:'Ementa da semana',
+      body:'Bom dia a todos. Segue em anexo a ementa da cantina para esta semana. Cumprimentos, Serviço de Cantina.',
+      attach:'Ementa_Semana.pdf', icon:'🍽️',
+      trueClues:[], correctAction:'confiar' },
+
+    { sender:'clube.teatro@edu.azores.gov.pt', subject:'Ensaios da peça de Natal',
+      body:'Olá! Os ensaios da peça de Natal começam na próxima terça-feira, às 15h30, no auditório. Até lá! Prof. Sara',
+      icon:'🎭',
+      trueClues:[], correctAction:'confiar' },
+
+    /* --- caso "cinzento": parece alarmante (prazo apertado) mas é legítimo --- */
+    { sender:'associacao.pais@edu.azores.gov.pt', subject:'Autorização da visita de estudo — responde até amanhã',
+      body:'Boa tarde. A visita de estudo ao Museu do Vulcanismo está confirmada para sexta-feira. Precisamos da autorização assinada até amanhã às 9h, ou o lugar fica disponível para outro aluno. Entrega-a na secretaria ou digitaliza e envia em resposta a este e-mail. Obrigada, Associação de Pais.',
+      icon:'📋',
+      trueClues:[], correctAction:'confiar',
+      note:'Este e-mail tem um prazo apertado — mas isso, sozinho, não o torna suspeito. Vem de um endereço @edu.azores.gov.pt, não pede palavras-passe, dinheiro nem dados pessoais, e o pedido faz sentido no contexto da escola. Nem toda a pressa é uma armadilha: o que importa é veres sempre quem envia e o que está realmente a pedir.' },
+
+    /* --- cenário: conta de um amigo foi pirateada (hackeada) --- */
+    { sender:'miguel.ramos21@edu.azores.gov.pt', subject:'PRECISO DA TUA AJUDA AGORA', subjectCaps:true,
+      body:'Olá! Preciso mesmo da tua ajuda urgente. Fiquei sem acesso à minha conta e só resolvo comprando um cartão-presente de 20€. Compra um e manda-me o código aqui, depois devolvo-te o dinheiro já a seguir. Não contes a ninguém, é urgente!',
+      icon:'🆘',
+      trueClues:['subjectAlarm','caps','urgency'], correctAction:'eliminar',
+      note:'O endereço até pode ser mesmo de um colega — mas contas reais também podem ser pirateadas (hackeadas)! Um pedido de dinheiro urgente e em segredo ("não contes a ninguém") é um sinal clássico de phishing, mesmo vindo de alguém que conheces. Na dúvida, confirma sempre por outro meio — fala com essa pessoa ao vivo ou por telefone — antes de agires.' }
+  ];
+
+  /* ---------------- fase 2: formal ou informal ---------------- */
+  var TONE_ROUNDS = [
+    { text:'Boa tarde, professora,\nEscrevo para confirmar se devemos entregar o trabalho de Matemática em suporte digital.\nCom os melhores cumprimentos,\nBeatriz, 9ºB, nº14',
+      correct:'formal', explain:'Saudação e despedida cuidadas, linguagem cuidada e assinatura com turma e número — é um e-mail formal.' },
+    { text:'Oláá! Vais à festa de anos do Tiago sábado? Diz-me só para eu saber se levo bolo tb 😄',
+      correct:'informal', explain:'Linguagem descontraída, abreviaturas ("tb") e emoji — é um e-mail informal, entre amigos.' },
+    { text:'Boa tarde,\nVenho por este meio solicitar informação sobre os horários da biblioteca municipal durante as férias.\nAtentamente,\nPedro Sousa',
+      correct:'formal', explain:'Dirigido a uma entidade pública, com linguagem cuidada e despedida formal ("Atentamente").' },
+    { text:'Oi! Combinamos amanhã às 15h para o trabalho de grupo? Manda-me mensagem qd puderes.\nAbraço, Marta',
+      correct:'informal', explain:'Tom próximo entre colegas e abreviatura ("qd") — é um e-mail informal.' },
+    { text:'Bom dia, Professor,\nVenho por este meio informar que faltarei à aula de amanhã por motivos de saúde, anexando a devida justificação.\nCom os melhores cumprimentos,\nRodrigo, 8ºC, nº7',
+      correct:'formal', explain:'Linguagem cuidada, justificação formal e assinatura completa com turma e número — é um e-mail formal.' },
+    { text:'Boaaa, ainda vais emprestar-me o jogo?? Passo aí depois das aulas, ok? 🎮',
+      correct:'informal', explain:'Pontuação exagerada, emoji e tom muito descontraído entre amigos — é um e-mail informal.' },
+    { text:'Exmo. Senhor Diretor,\nSolicito, respeitosamente, autorização para a realização de uma visita de estudo ao Museu do Baleal no próximo mês.\nCom os melhores cumprimentos,\nA Delegada de Turma',
+      correct:'formal', explain:'Forma de tratamento cerimoniosa ("Exmo. Senhor Diretor") e pedido formal — é claramente um e-mail formal.' },
+    { text:'Malta, alguém tem os apontamentos de hoje? Faltei e preciso mesmo deles até logo à noite, obrigadaaa 🙏',
+      correct:'informal', explain:'Tratamento coloquial ("Malta"), abreviaturas e emoji — é um e-mail informal.' }
+  ];
+
+  /* ---------------- fase 3: elementos do e-mail ---------------- */
+  var ELEMENT_DEFS = [
+    {term:'Para', def:'Endereço(s) de e-mail do(s) destinatário(s) principal(is).'},
+    {term:'Cc', def:'Envia uma cópia da mensagem a outras pessoas, que ficam visíveis para os destinatários.'},
+    {term:'Bcc', def:'Envia uma cópia sem revelar esse endereço aos restantes destinatários.'},
+    {term:'Assunto', def:'Indica de forma clara o tema da mensagem.'},
+    {term:'Anexo', def:'Ficheiro enviado juntamente com a mensagem.'},
+    {term:'Assinatura', def:'Identificação de quem escreve — nome, turma e número — nas últimas linhas da mensagem.'},
+    {term:'Corpo da mensagem', def:'O texto principal do e-mail, onde se escreve o assunto da mensagem em detalhe.'},
+    {term:'Responder a Todos', def:'Envia a resposta ao remetente e a todos os outros destinatários da mensagem original.'},
+    {term:'Reencaminhar', def:'Envia a mensagem recebida, tal como está, para outra(s) pessoa(s).'},
+    {term:'Rascunho', def:'Mensagem guardada mas ainda não enviada, para continuar a escrever mais tarde.'}
+  ];
+
+  /* ---------------- state ---------------- */
+  var lastFocusedEl = null;
+  var state = { round:0, score:0, selected:{}, playerName:'', results:[], order:[],
+    maxScore:0, totalClues:0, phase:'detective',
+    toneIndex:0, toneScore:0, toneOrder:[], toneResults:[],
+    elementsIndex:0, elementsScore:0, elementsOrder:[], elementsResults:[] };
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function pickSession(total){
+    var n = Math.max(2, Math.floor((total||8)/2));
+    var phishIdx = [], safeIdx = [];
+    ALL_ROUNDS.forEach(function(r,i){ (r.correctAction==='eliminar' ? phishIdx : safeIdx).push(i); });
+    n = Math.min(n, phishIdx.length, safeIdx.length);
+    var chosen = shuffle(phishIdx).slice(0,n).concat(shuffle(safeIdx).slice(0,n));
+    return shuffle(chosen);
+  }
+
+  /* ---------------- DOM refs ---------------- */
+  var screens = {
+    intro: document.getElementById('screen-intro'),
+    game: document.getElementById('screen-game'),
+    tone: document.getElementById('screen-tone'),
+    elements: document.getElementById('screen-elements'),
+    end: document.getElementById('screen-end')
+  };
+  function showScreen(name){
+    Object.keys(screens).forEach(function(k){ screens[k].classList.toggle('active', k===name); });
+  }
+
+  function updateNameTags(){
+    ['name-tag-game','name-tag-tone','name-tag-elements'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.textContent = state.playerName;
+    });
+  }
+
+  /* ---------------- info por modo (independentes) ---------------- */
+  var MODE_INFO = {
+    detective: {
+      label: '🕵️ Deteção de Phishing', icon: '🕵️', storageKey: 'vb_best_detective',
+      ranks: [
+        {min:0.9, rank:'Detetive-Chefe VanBerto\'s 🏆', msg:'Olho de lince — não te escapa nenhuma armadilha.', mood:'happy'},
+        {min:0.7, rank:'Detetive Sénior 🕵️', msg:'Muito boa investigação! Só alguns pormenores por afinar.', mood:'happy'},
+        {min:0.5, rank:'Detetive Estagiário 🔍', msg:'Bom começo — revê os sinais de phishing e tenta outra vez.', mood:'neutral'},
+        {min:0,   rank:'Recruta em treino 📋', msg:'Ainda a aprender o ofício. Revê a ficha sobre phishing e tenta de novo!', mood:'sad'}
+      ]
+    },
+    tone: {
+      label: '💬 Formal ou Informal', icon: '💬', storageKey: 'vb_best_tone',
+      ranks: [
+        {min:0.9, rank:'Mestre da Netiqueta VanBerto\'s 🏆', msg:'Distingues logo o tom certo em qualquer mensagem!', mood:'happy'},
+        {min:0.7, rank:'Especialista em Tom 💬', msg:'Muito bom trabalho! Só alguns casos por afinar.', mood:'happy'},
+        {min:0.5, rank:'Aprendiz de Netiqueta 🔍', msg:'Bom começo — revê a diferença entre e-mails formais e informais.', mood:'neutral'},
+        {min:0,   rank:'Recruta em treino 📋', msg:'Ainda a aprender o tom certo. Revê a ficha e tenta de novo!', mood:'sad'}
+      ]
+    },
+    elements: {
+      label: '📧 Elementos do E-mail', icon: '📧', storageKey: 'vb_best_elements',
+      ranks: [
+        {min:0.9, rank:'Mestre do E-mail VanBerto\'s 🏆', msg:'Conheces na perfeição todos os elementos de um e-mail!', mood:'happy'},
+        {min:0.7, rank:'Especialista em E-mail 📧', msg:'Muito bom! Só alguns termos por afinar.', mood:'happy'},
+        {min:0.5, rank:'Aprendiz de E-mail 🔍', msg:'Bom começo — revê os elementos do e-mail e tenta outra vez.', mood:'neutral'},
+        {min:0,   rank:'Recruta em treino 📋', msg:'Ainda a aprender os elementos do e-mail. Revê a ficha e tenta de novo!', mood:'sad'}
+      ]
+    }
+  };
+
+  function updateBestPills(){
+    Object.keys(MODE_INFO).forEach(function(mode){
+      try{
+        var best = parseInt(localStorage.getItem(MODE_INFO[mode].storageKey)||'0',10);
+        var el = document.getElementById('best-' + mode);
+        if(!el) return;
+        if(best > 0){
+          el.style.display = 'block';
+          el.textContent = '🏆 Melhor: ' + best + ' pts';
+        }
+      }catch(e){}
+    });
+  }
+  updateBestPills();
+
+  function capturePlayerName(){
+    var nameEl = document.getElementById('player-name');
+    state.playerName = (nameEl.value||'').trim() || 'Detetive';
+    updateNameTags();
+  }
+
+  document.getElementById('player-name').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ document.getElementById('start-detective-btn').click(); }
+  });
+
+  document.getElementById('start-detective-btn').addEventListener('click', function(){
+    capturePlayerName();
+    state.score = 0;
+    state.phase = 'detective';
+    var roundCountEl = document.getElementById('round-count');
+    var roundCount = roundCountEl ? parseInt(roundCountEl.value, 10) : 8;
+    state.order = pickSession(roundCount);
+    state.results = state.order.map(function(){ return null; });
+    state.maxScore = state.order.reduce(function(s,gi){ return s + ALL_ROUNDS[gi].trueClues.length + 3; },0);
+    state.totalClues = state.order.reduce(function(s,gi){ return s + ALL_ROUNDS[gi].trueClues.length; },0);
+    showScreen('game');
+    renderInbox();
+  });
+
+  document.getElementById('start-tone-btn').addEventListener('click', function(){
+    capturePlayerName();
+    startTonePhase();
+  });
+
+  document.getElementById('start-elements-btn').addEventListener('click', function(){
+    capturePlayerName();
+    startElementsPhase();
+  });
+
+  function solvedCount(){
+    return state.results.filter(function(x){ return x; }).length;
+  }
+  function cluesFound(){
+    var n = 0;
+    state.results.forEach(function(res, pos){
+      if(!res) return;
+      var gi = state.order[pos];
+      ALL_ROUNDS[gi].trueClues.forEach(function(k){ if(res.picked && res.picked[k]) n++; });
+    });
+    return n;
+  }
+
+  function renderInbox(){
+    paint('vb-game','neutral');
+    document.getElementById('round-label').textContent = solvedCount() + ' de ' + state.order.length + ' analisados';
+    document.getElementById('score-label').textContent = state.score + ' pontos';
+    document.getElementById('progress-fill').style.width = Math.round((solvedCount()/state.order.length)*100) + '%';
+    document.getElementById('clues-pill').textContent = 'Sinais encontrados: ' + cluesFound() + '/' + state.totalClues;
+
+    var list = document.getElementById('inbox-list');
+    list.innerHTML = '';
+    state.order.forEach(function(gi, pos){
+      var r = ALL_ROUNDS[gi];
+      var res = state.results[pos];
+      var item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'inbox-item' + (res ? ' done' : '');
+      if(res) item.disabled = true;
+      var statusClass = !res ? 'pending' : (res.correct ? 'ok' : 'bad');
+      var statusText = !res ? 'Por analisar' : (res.action === 'eliminar' ? 'Eliminado' : 'Confiado');
+      item.innerHTML =
+        '<div class="inbox-icon">' + (r.icon || '✉️') + '</div>' +
+        '<div class="inbox-text">' +
+          '<div class="inbox-sender"></div>' +
+          '<div class="inbox-subject"></div>' +
+        '</div>' +
+        '<div class="inbox-status ' + statusClass + '">' + statusText + '</div>';
+      item.querySelector('.inbox-sender').textContent = r.sender;
+      item.querySelector('.inbox-subject').textContent = r.subjectEmpty ? '(sem assunto)' : r.subject;
+      if(!res){
+        item.addEventListener('click', function(){ openMail(pos); });
+      }
+      list.appendChild(item);
+    });
+  }
+
+  function openMail(pos){
+    state.round = pos;
+    state.selected = {};
+    var gi = state.order[pos];
+    var r = ALL_ROUNDS[gi];
+
+    document.getElementById('mail-sender').textContent = r.sender;
+
+    var subjEl = document.getElementById('mail-subject');
+    subjEl.className = 'v' + (r.subjectEmpty ? ' empty' : '') + (r.subjectCaps ? ' caps' : '');
+    subjEl.textContent = r.subjectEmpty ? '(sem assunto)' : r.subject;
+
+    var bodyEl = document.getElementById('mail-body');
+    bodyEl.innerHTML = '';
+    var span = document.createElement('span');
+    if(r.bodyCaps) span.className = 'caps-text';
+    span.textContent = r.body;
+    bodyEl.appendChild(span);
+
+    var linkWrap = document.getElementById('mail-link-wrap');
+    linkWrap.innerHTML = r.link ? '<div class="mail-link">🔗 ' + r.link + '</div>' : '';
+
+    var attachWrap = document.getElementById('mail-attach-wrap');
+    attachWrap.innerHTML = r.attach ? '<div class="mail-attach">📎 ' + r.attach + '</div>' : '';
+
+    var grid = document.getElementById('clue-grid');
+    grid.innerHTML = '';
+    CLUE_DEFS.forEach(function(c){
+      var chip = document.createElement('button');
+      chip.className = 'clue-chip'; chip.type = 'button';
+      chip.textContent = c.label;
+      chip.setAttribute('aria-pressed', 'false');
+      chip.addEventListener('click', function(){
+        state.selected[c.key] = !state.selected[c.key];
+        var on = state.selected[c.key];
+        chip.classList.toggle('on', on);
+        chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+        chip.textContent = (on ? '✓ ' : '') + c.label;
+        sfxClick();
+      });
+      grid.appendChild(chip);
+    });
+
+    lastFocusedEl = document.activeElement;
+    document.getElementById('mail-modal').classList.add('show');
+    document.getElementById('btn-close-mail').focus();
+  }
+
+  document.getElementById('btn-close-mail').addEventListener('click', function(){
+    document.getElementById('mail-modal').classList.remove('show');
+    if(lastFocusedEl){ lastFocusedEl.focus(); lastFocusedEl = null; }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Escape') return;
+    var overlay = document.getElementById('overlay');
+    var modal = document.getElementById('mail-modal');
+    if(modal.classList.contains('show') && !overlay.classList.contains('show')){
+      modal.classList.remove('show');
+      if(lastFocusedEl){ lastFocusedEl.focus(); lastFocusedEl = null; }
+    }
+  });
+
+  function evaluate(action){
+    var gi = state.order[state.round];
+    var r = ALL_ROUNDS[gi];
+    var report = [];
+    var cluePts = 0;
+    var maxCluePts = r.trueClues.length;
+    CLUE_DEFS.forEach(function(c){
+      var picked = !!state.selected[c.key];
+      var isTrue = r.trueClues.indexOf(c.key) !== -1;
+      if(isTrue && picked){
+        cluePts += 1;
+        report.push({row:c.label, cls:'ok', mk:'✔', hint:c.hint, pts:'+1'});
+      } else if(isTrue && !picked){
+        report.push({row:'Não assinalaste: ' + c.label, cls:'miss', mk:'○', hint:c.hint, pts:'0'});
+      } else if(!isTrue && picked){
+        report.push({row:'Marcaste, mas não era: ' + c.label, cls:'false', mk:'✖', hint:'Não era um sinal de alerta neste e-mail — não fazia parte da armadilha.', pts:'0'});
+      }
+    });
+    var actionRight = action === r.correctAction;
+    var actionPts = actionRight ? 3 : 0;
+    var roundPts = cluePts + actionPts;
+    var maxRoundPts = maxCluePts + 3;
+    state.score = Math.max(0, state.score + roundPts);
+
+    var overlay = document.getElementById('overlay');
+    var verdictEl = document.getElementById('fb-verdict');
+    if(actionRight){
+      verdictEl.textContent = r.correctAction==='eliminar' ? 'Boa! Era mesmo uma armadilha.' : 'Boa! Este era de confiança.';
+      verdictEl.className = 'verdict good';
+      paint('vb-feedback','happy'); paint('vb-game','happy');
+      sfxGood();
+    } else {
+      verdictEl.textContent = r.correctAction==='eliminar' ? 'Cuidado — este era uma armadilha.' : 'Calma — este e-mail era seguro.';
+      verdictEl.className = 'verdict bad';
+      paint('vb-feedback','sad'); paint('vb-game','sad');
+      sfxBad();
+    }
+    document.getElementById('fb-points').textContent = roundPts + ' de ' + maxRoundPts + ' pontos possíveis nesta ronda';
+
+    state.results[state.round] = { action: action, correct: actionRight, picked: state.selected, roundPts: roundPts, maxRoundPts: maxRoundPts };
+
+    var decisionLabel = action === 'eliminar' ? 'Eliminar / Reportar' : 'Confiar e responder';
+    var correctLabel = r.correctAction === 'eliminar' ? 'Eliminar / Reportar' : 'Confiar e responder';
+    var decisionHtml =
+      '<div class="row decision ' + (actionRight ? 'ok' : 'false') + '">' +
+        '<span class="mk">' + (actionRight ? '✔' : '✖') + '</span>' +
+        '<div class="lbl-wrap">A tua decisão: <strong>' + decisionLabel + '</strong>' +
+          (actionRight ? '' : ' — a certa era <strong>' + correctLabel + '</strong>') +
+        '</div>' +
+        '<div class="pts">' + (actionRight ? '+3' : '0') + '</div>' +
+      '</div>';
+
+    var reportEl = document.getElementById('fb-report');
+    var clueHtml;
+    if(report.length === 0){
+      clueHtml = '<div class="row ok"><span class="mk">✔</span><div class="lbl-wrap">Não havia pistas suspeitas neste e-mail — e não marcaste nenhuma. Boa leitura!</div></div>';
+    } else {
+      clueHtml = report.map(function(x){
+        return '<div class="row '+x.cls+'"><span class="mk">'+x.mk+'</span><div class="lbl-wrap"><div>'+x.row+'</div>'+(x.hint ? '<div class="hint">'+x.hint+'</div>' : '')+'</div><div class="pts">'+x.pts+'</div></div>';
+      }).join('');
+    }
+    reportEl.innerHTML = decisionHtml + clueHtml;
+    if(r.note){
+      reportEl.innerHTML += '<div class="row note"><span class="mk">💡</span><div class="lbl-wrap">'+r.note+'</div></div>';
+    }
+
+    overlay.classList.add('show');
+    document.getElementById('btn-next').focus();
+    document.getElementById('vb-feedback').classList.add(actionRight?'vb-bounce':'vb-shake');
+    setTimeout(function(){ document.getElementById('vb-feedback').classList.remove('vb-bounce','vb-shake'); }, 650);
+  }
+
+  document.getElementById('btn-confiar').addEventListener('click', function(){ evaluate('confiar'); });
+  document.getElementById('btn-eliminar').addEventListener('click', function(){ evaluate('eliminar'); });
+
+  document.getElementById('btn-next').addEventListener('click', function(){
+    document.getElementById('overlay').classList.remove('show');
+    document.getElementById('mail-modal').classList.remove('show');
+    if(state.phase === 'detective'){
+      if(solvedCount() >= state.order.length){
+        finishGame();
+      } else {
+        renderInbox();
+      }
+    } else if(state.phase === 'tone'){
+      state.toneIndex++;
+      if(state.toneIndex >= state.toneOrder.length){
+        finishGame();
+      } else {
+        renderTone();
+      }
+    } else if(state.phase === 'elements'){
+      state.elementsIndex++;
+      if(state.elementsIndex >= state.elementsOrder.length){
+        finishGame();
+      } else {
+        renderElements();
+      }
+    }
+    setTimeout(function(){
+      var activeScreen = document.querySelector('.screen.active');
+      var focusable = activeScreen && activeScreen.querySelector('button, [tabindex]');
+      if(focusable) focusable.focus();
+    }, 0);
+  });
+
+  /* ---------------- fase 2: formal ou informal ---------------- */
+  function startTonePhase(){
+    state.phase = 'tone';
+    state.toneIndex = 0;
+    state.toneScore = 0;
+    state.toneResults = [];
+    var toneCount = Math.min(5, TONE_ROUNDS.length);
+    state.toneOrder = shuffle(TONE_ROUNDS.map(function(_,i){ return i; })).slice(0, toneCount);
+    showScreen('tone');
+    renderTone();
+  }
+
+  function renderTone(){
+    paint('vb-tone','neutral');
+    var t = TONE_ROUNDS[state.toneOrder[state.toneIndex]];
+    document.getElementById('tone-count').textContent = (state.toneIndex+1) + ' de ' + state.toneOrder.length;
+    document.getElementById('tone-text').textContent = t.text;
+  }
+
+  function evaluateTone(choice){
+    var t = TONE_ROUNDS[state.toneOrder[state.toneIndex]];
+    var right = choice === t.correct;
+    var pts = right ? 2 : 0;
+    state.toneScore += pts;
+    state.toneResults[state.toneIndex] = { choice: choice, correct: right, textIdx: state.toneOrder[state.toneIndex] };
+
+    var overlay = document.getElementById('overlay');
+    var verdictEl = document.getElementById('fb-verdict');
+    if(right){
+      verdictEl.textContent = 'Boa! Acertaste no tom.';
+      verdictEl.className = 'verdict good';
+      paint('vb-feedback','happy'); paint('vb-tone','happy');
+      sfxGood();
+    } else {
+      verdictEl.textContent = t.correct === 'formal' ? 'Este e-mail era formal.' : 'Este e-mail era informal.';
+      verdictEl.className = 'verdict bad';
+      paint('vb-feedback','sad'); paint('vb-tone','sad');
+      sfxBad();
+    }
+    document.getElementById('fb-points').textContent = '+' + pts + ' pontos nesta ronda';
+    document.getElementById('fb-report').innerHTML = '<div class="row ok"><span class="mk">💬</span><span>' + t.explain + '</span></div>';
+
+    overlay.classList.add('show');
+    document.getElementById('btn-next').focus();
+    document.getElementById('vb-feedback').classList.add(right?'vb-bounce':'vb-shake');
+    setTimeout(function(){ document.getElementById('vb-feedback').classList.remove('vb-bounce','vb-shake'); }, 650);
+  }
+
+  document.getElementById('btn-formal').addEventListener('click', function(){ evaluateTone('formal'); });
+  document.getElementById('btn-informal').addEventListener('click', function(){ evaluateTone('informal'); });
+
+  /* ---------------- fase 3: elementos do e-mail ---------------- */
+  function startElementsPhase(){
+    state.phase = 'elements';
+    state.elementsIndex = 0;
+    state.elementsScore = 0;
+    state.elementsResults = [];
+    var elementsCount = Math.min(6, ELEMENT_DEFS.length);
+    state.elementsOrder = shuffle(ELEMENT_DEFS.map(function(_,i){ return i; })).slice(0, elementsCount);
+    showScreen('elements');
+    renderElements();
+  }
+
+  function renderElements(){
+    paint('vb-elements','neutral');
+    var idx = state.elementsOrder[state.elementsIndex];
+    var item = ELEMENT_DEFS[idx];
+    document.getElementById('elements-count').textContent = (state.elementsIndex+1) + ' de ' + state.elementsOrder.length;
+    document.getElementById('elements-term').textContent = item.term;
+
+    var others = ELEMENT_DEFS.filter(function(_,i){ return i !== idx; });
+    var distractors = shuffle(others).slice(0,2).map(function(d){ return d.def; });
+    var options = shuffle([item.def].concat(distractors));
+
+    var wrap = document.getElementById('elements-options');
+    wrap.innerHTML = '';
+    options.forEach(function(optDef){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn ghost';
+      btn.textContent = optDef;
+      btn.addEventListener('click', function(){ evaluateElement(optDef === item.def); });
+      wrap.appendChild(btn);
+    });
+  }
+
+  function evaluateElement(right){
+    var idx = state.elementsOrder[state.elementsIndex];
+    var item = ELEMENT_DEFS[idx];
+    var pts = right ? 2 : 0;
+    state.elementsScore += pts;
+    state.elementsResults[state.elementsIndex] = { correct: right, termIdx: idx };
+
+    var overlay = document.getElementById('overlay');
+    var verdictEl = document.getElementById('fb-verdict');
+    if(right){
+      verdictEl.textContent = 'Boa! É isso mesmo.';
+      verdictEl.className = 'verdict good';
+      paint('vb-feedback','happy'); paint('vb-elements','happy');
+      sfxGood();
+    } else {
+      verdictEl.textContent = 'Não era essa a função.';
+      verdictEl.className = 'verdict bad';
+      paint('vb-feedback','sad'); paint('vb-elements','sad');
+      sfxBad();
+    }
+    document.getElementById('fb-points').textContent = '+' + pts + ' pontos nesta ronda';
+    document.getElementById('fb-report').innerHTML = '<div class="row ok"><span class="mk">📧</span><span><strong>' + item.term + '</strong> — ' + item.def + '</span></div>';
+
+    overlay.classList.add('show');
+    document.getElementById('btn-next').focus();
+    document.getElementById('vb-feedback').classList.add(right?'vb-bounce':'vb-shake');
+    setTimeout(function(){ document.getElementById('vb-feedback').classList.remove('vb-bounce','vb-shake'); }, 650);
+  }
+
+  function finishGame(){
+    showScreen('end');
+    var info = MODE_INFO[state.phase];
+    var totalScore, totalMax;
+    if(state.phase === 'detective'){
+      document.getElementById('progress-fill').style.width = '100%';
+      totalScore = state.score;
+      totalMax = state.maxScore;
+    } else if(state.phase === 'tone'){
+      totalScore = state.toneScore;
+      totalMax = state.toneOrder.length * 2;
+    } else {
+      totalScore = state.elementsScore;
+      totalMax = state.elementsOrder.length * 2;
+    }
+    var pct = totalMax > 0 ? totalScore / totalMax : 0;
+    var tier = info.ranks[info.ranks.length - 1];
+    for(var i = 0; i < info.ranks.length; i++){
+      if(pct >= info.ranks[i].min){ tier = info.ranks[i]; break; }
+    }
+
+    document.getElementById('end-mode-pill').textContent = info.label;
+    document.getElementById('end-rank').textContent = tier.rank;
+    document.getElementById('end-score').textContent = totalScore;
+    document.getElementById('end-max').textContent = '/' + totalMax;
+    document.getElementById('end-msg').textContent = tier.msg;
+    paint('vb-end', tier.mood, pct >= 0.9);
+    if(pct >= 0.7) sfxWin(); else sfxClick();
+
+    paint('vb-cert', tier.mood, pct >= 0.9);
+    document.getElementById('cert-name').textContent = state.playerName;
+    document.getElementById('cert-title').textContent = tier.rank;
+    document.getElementById('cert-score').textContent = totalScore + ' de ' + totalMax + ' pontos (' + Math.round(pct*100) + '%)';
+    document.getElementById('cert-sub').textContent = info.label;
+    document.getElementById('cert-date').textContent = new Date().toLocaleDateString('pt-PT');
+    document.getElementById('certificate').style.display = 'none';
+    document.getElementById('review-panel').style.display = 'none';
+    document.getElementById('review-panel').innerHTML = '';
+    document.getElementById('btn-review').textContent = '🔎 Rever respostas';
+    document.getElementById('copy-feedback').textContent = '';
+    document.body.classList.remove('print-cert-mode');
+
+    try{
+      var best = parseInt(localStorage.getItem(info.storageKey)||'0',10);
+      if(totalScore > best) localStorage.setItem(info.storageKey, totalScore);
+    }catch(e){}
+    updateBestPills();
+  }
+
+  document.getElementById('btn-again').addEventListener('click', function(){
+    showScreen('intro');
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.restart-btn'), function(btn){
+    btn.addEventListener('click', function(){
+      sfxClick();
+      document.getElementById('confirm-overlay').classList.add('show');
+    });
+  });
+  document.getElementById('btn-confirm-cancel').addEventListener('click', function(){
+    sfxClick();
+    document.getElementById('confirm-overlay').classList.remove('show');
+  });
+  document.getElementById('btn-confirm-restart').addEventListener('click', function(){
+    document.getElementById('confirm-overlay').classList.remove('show');
+    document.getElementById('mail-modal').classList.remove('show');
+    document.getElementById('overlay').classList.remove('show');
+    sfxClick();
+    showScreen('intro');
+  });
+  document.getElementById('btn-cert').addEventListener('click', function(){
+    var c = document.getElementById('certificate');
+    c.style.display = c.style.display === 'none' ? 'block' : 'none';
+  });
+
+  /* ---------------- rever respostas ---------------- */
+  function esc(s){ return String(s).replace(/</g,'&lt;'); }
+
+  function buildReviewPanel(){
+    var html = '';
+
+    if(state.phase === 'detective'){
+      html += '<h4>🕵️ Deteção de phishing</h4>';
+      state.order.forEach(function(gi, pos){
+        var r = ALL_ROUNDS[gi];
+        var res = state.results[pos];
+        var ok = !!(res && res.correct);
+        var yourAction = res ? (res.action === 'eliminar' ? 'Eliminaste' : 'Confiaste') : '—';
+        var subjLabel = r.subjectEmpty ? '(sem assunto)' : r.subject;
+        html += '<div class="review-row ' + (ok?'ok':'bad') + '">' +
+          '<span class="mk">' + (ok?'✔':'✖') + '</span>' +
+          '<div><div><strong>' + esc(subjLabel) + '</strong> — ' + esc(r.sender) + '</div>' +
+          (!ok ? '<div class="answer-correct">' + yourAction + '. A resposta certa era: ' + (r.correctAction==='eliminar'?'Eliminar / Reportar':'Confiar') + '.</div>' : '') +
+          '</div></div>';
+      });
+    } else if(state.phase === 'tone'){
+      html += '<h4>💬 Formal ou Informal</h4>';
+      state.toneOrder.forEach(function(ti, pos){
+        var t = TONE_ROUNDS[ti];
+        var res = state.toneResults[pos];
+        var ok = !!(res && res.correct);
+        var snippet = t.text.split('\n')[0];
+        html += '<div class="review-row ' + (ok?'ok':'bad') + '">' +
+          '<span class="mk">' + (ok?'✔':'✖') + '</span>' +
+          '<div><div>' + esc(snippet) + '…</div>' +
+          (!ok ? '<div class="answer-correct">Era um e-mail ' + (t.correct==='formal'?'formal':'informal') + '.</div>' : '') +
+          '</div></div>';
+      });
+    } else if(state.phase === 'elements'){
+      html += '<h4>📧 Elementos do E-mail</h4>';
+      state.elementsOrder.forEach(function(idx, pos){
+        var item = ELEMENT_DEFS[idx];
+        var res = state.elementsResults[pos];
+        var ok = !!(res && res.correct);
+        html += '<div class="review-row ' + (ok?'ok':'bad') + '">' +
+          '<span class="mk">' + (ok?'✔':'✖') + '</span>' +
+          '<div><strong>' + esc(item.term) + '</strong>' + (!ok ? '<div class="answer-correct">' + esc(item.def) + '</div>' : '') + '</div></div>';
+      });
+    }
+
+    document.getElementById('review-panel').innerHTML = html;
+  }
+
+  document.getElementById('btn-review').addEventListener('click', function(){
+    var panel = document.getElementById('review-panel');
+    var showing = panel.style.display !== 'none';
+    if(!showing){
+      buildReviewPanel();
+      panel.style.display = 'block';
+      this.textContent = '🔎 Ocultar respostas';
+    } else {
+      panel.style.display = 'none';
+      this.textContent = '🔎 Rever respostas';
+    }
+    sfxClick();
+  });
+
+  /* ---------------- copiar resultados (modo professor) ---------------- */
+  document.getElementById('btn-copy').addEventListener('click', function(){
+    var totalScore, totalMax;
+    if(state.phase === 'detective'){ totalScore = state.score; totalMax = state.maxScore; }
+    else if(state.phase === 'tone'){ totalScore = state.toneScore; totalMax = state.toneOrder.length*2; }
+    else { totalScore = state.elementsScore; totalMax = state.elementsOrder.length*2; }
+    var rank = document.getElementById('end-rank').textContent;
+    var modeLabel = MODE_INFO[state.phase].label;
+    var summary = state.playerName + ' — ' + modeLabel + ' — ' + rank + ' — ' + totalScore + '/' + totalMax + ' pontos (' + new Date().toLocaleDateString('pt-PT') + ')';
+    var feedback = document.getElementById('copy-feedback');
+    function done(ok){
+      feedback.textContent = ok ? '✅ Resultado copiado — cola-o numa mensagem ou folha de registo.' : summary;
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(summary).then(function(){ done(true); }).catch(function(){ done(false); });
+    } else {
+      done(false);
+    }
+  });
+
+  /* ---------------- imprimir / guardar certificado ---------------- */
+  document.getElementById('btn-print-cert').addEventListener('click', function(){
+    var c = document.getElementById('certificate');
+    c.style.display = 'block';
+    document.body.classList.add('print-cert-mode');
+    try{
+      window.print();
+    }catch(e){
+      /* alguns ambientes bloqueiam window.print(); a dica junto ao botão serve de alternativa manual (Ctrl+P / Cmd+P) */
+    }
+  });
+  window.addEventListener('afterprint', function(){
+    document.body.classList.remove('print-cert-mode');
+  });
+
+})();
+</script>
+</body>
+</html>
