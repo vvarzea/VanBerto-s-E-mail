@@ -402,7 +402,7 @@
       <div class="badge">🔎 VanBerto's</div>
       <canvas id="vb-intro" class="vanberto big idle"></canvas>
       <h1>Detetive do <span>E-mail</span></h1>
-      <p class="lede">Três missões à tua espera: apanhar armadilhas de phishing, acertar no tom certo e conhecer os elementos de um e-mail. Escolhe uma para começar.</p>
+      <p class="lede">Três missões à tua espera: apanhar armadilhas de phishing, acertar no tom certo e testar tudo sobre o e-mail — elementos, netiqueta e endereços. Escolhe uma para começar.</p>
       <div class="name-row" style="margin-bottom:8px;">
         <input id="player-name" type="text" placeholder="Como te chamas, detetive?" maxlength="24">
       </div>
@@ -436,7 +436,7 @@
               <option value="10">10</option>
             </select>
           </div>
-          <button class="btn" id="start-tone-btn">Decifrar o tom</button>
+          <button class="btn" id="start-tone-btn">Formal ou Informal?</button>
           <div class="mode-best" id="best-tone" style="display:none;"></div>
         </div>
 
@@ -452,7 +452,7 @@
               <option value="10">10</option>
             </select>
           </div>
-          <button class="btn" id="start-elements-btn">Resolver o desafio</button>
+          <button class="btn" id="start-elements-btn">Pôr o e-mail à prova</button>
           <div class="mode-best" id="best-elements" style="display:none;"></div>
         </div>
       </div>
@@ -1538,9 +1538,33 @@
     state.elementsResults = [];
     var elementsCountEl = document.getElementById('elements-count-select');
     var elementsCount = Math.min(elementsCountEl ? parseInt(elementsCountEl.value, 10) : 6, KNOWLEDGE_ITEMS.length);
-    state.elementsOrder = shuffle(KNOWLEDGE_ITEMS.map(function(_,i){ return i; })).slice(0, elementsCount);
+    state.elementsOrder = pickBalancedElements(elementsCount);
     showScreen('elements');
     renderElements();
+  }
+
+  function pickBalancedElements(total){
+    var types = ['term','netiqueta','address'];
+    var byType = {};
+    types.forEach(function(t){ byType[t] = []; });
+    KNOWLEDGE_ITEMS.forEach(function(item, i){ byType[item.type].push(i); });
+
+    var perType = Math.floor(total / types.length);
+    var chosen = [];
+    types.forEach(function(t){
+      var pool = shuffle(byType[t]);
+      chosen = chosen.concat(pool.slice(0, Math.min(perType, pool.length)));
+    });
+
+    var remainingPool = [];
+    types.forEach(function(t){
+      remainingPool = remainingPool.concat(byType[t].filter(function(i){ return chosen.indexOf(i) === -1; }));
+    });
+    remainingPool = shuffle(remainingPool);
+    var need = Math.max(0, Math.min(total - chosen.length, remainingPool.length));
+    chosen = chosen.concat(remainingPool.slice(0, need));
+
+    return shuffle(chosen);
   }
 
   function renderElements(){
