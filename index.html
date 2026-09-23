@@ -813,7 +813,7 @@
       b.setAttribute('aria-label', soundOn ? 'Som ligado — clicar para desligar' : 'Som desligado — clicar para ligar');
     }
   }
-  function getCtx(){ if(!actx){ actx = new (window.AudioContext||window.webkitAudioContext)(); } return actx; }
+  function getCtx(){ if(!actx){ actx = new (window.AudioContext||window.webkitAudioContext)(); } if(actx.state === 'suspended'){ try{ actx.resume(); }catch(e){} } return actx; }
   function tone(freq, dur, type, gain){
     if(!soundOn) return;
     try{
@@ -1133,19 +1133,25 @@
   };
 
   function updateBestPills(){
+    var nameEl = document.getElementById('player-name');
+    var currentName = (nameEl && nameEl.value || '').trim().toLowerCase();
     Object.keys(MODE_INFO).forEach(function(mode){
+      var el = document.getElementById('best-' + mode);
+      if(!el) return;
       try{
-        var best = parseInt(localStorage.getItem(MODE_INFO[mode].storageKey)||'0',10);
-        var el = document.getElementById('best-' + mode);
-        if(!el) return;
-        if(best > 0){
-          el.style.display = 'block';
-          el.textContent = '🏆 Melhor: ' + best + ' pts';
+        var raw = localStorage.getItem(MODE_INFO[mode].storageKey);
+        var data = raw ? JSON.parse(raw) : null;
+        if(!currentName || !data || !data.name || String(data.name).trim().toLowerCase() !== currentName || !(data.score > 0)){
+          el.style.display = 'none';
+          return;
         }
-      }catch(e){}
+        el.style.display = 'block';
+        el.textContent = '🏆 O teu melhor: ' + data.score + ' pts';
+      }catch(e){ el.style.display = 'none'; }
     });
   }
   updateBestPills();
+  document.getElementById('player-name').addEventListener('input', updateBestPills);
 
   function capturePlayerName(){
     var nameEl = document.getElementById('player-name');
@@ -1288,6 +1294,30 @@
     if(modal.classList.contains('show') && !overlay.classList.contains('show')){
       modal.classList.remove('show');
       if(lastFocusedEl){ lastFocusedEl.focus(); lastFocusedEl = null; }
+    }
+  });
+
+  /* prende o foco (Tab / Shift+Tab) dentro do modal/overlay visível, para não escapar para o fundo da página */
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Tab') return;
+    var overlayFeedback = document.getElementById('overlay');
+    var confirmOverlay = document.getElementById('confirm-overlay');
+    var mailModal = document.getElementById('mail-modal');
+    var activeModal = overlayFeedback.classList.contains('show') ? overlayFeedback
+      : confirmOverlay.classList.contains('show') ? confirmOverlay
+      : mailModal.classList.contains('show') ? mailModal
+      : null;
+    if(!activeModal) return;
+    var focusables = Array.prototype.filter.call(
+      activeModal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'),
+      function(el){ return el.offsetParent !== null && !el.disabled; }
+    );
+    if(!focusables.length) return;
+    var first = focusables[0], last = focusables[focusables.length - 1];
+    if(e.shiftKey){
+      if(document.activeElement === first || !activeModal.contains(document.activeElement)){ e.preventDefault(); last.focus(); }
+    } else {
+      if(document.activeElement === last || !activeModal.contains(document.activeElement)){ e.preventDefault(); first.focus(); }
     }
   });
 
@@ -1559,8 +1589,13 @@
     document.body.classList.remove('print-cert-mode');
 
     try{
-      var best = parseInt(localStorage.getItem(info.storageKey)||'0',10);
-      if(totalScore > best) localStorage.setItem(info.storageKey, totalScore);
+      var raw = localStorage.getItem(info.storageKey);
+      var prev = raw ? JSON.parse(raw) : null;
+      var sameOwner = prev && prev.name && String(prev.name).trim().toLowerCase() === state.playerName.trim().toLowerCase();
+      var best = sameOwner ? (prev.score||0) : 0;
+      if(totalScore > best){
+        localStorage.setItem(info.storageKey, JSON.stringify({ name: state.playerName, score: totalScore }));
+      }
     }catch(e){}
     updateBestPills();
   }
