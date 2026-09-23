@@ -2,7 +2,7 @@
 <html lang="pt-PT">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>VanBerto's Detetive do E-mail</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,7 +27,7 @@
     --font-body: 'Inter', 'Segoe UI', sans-serif;
   }
   *{ box-sizing: border-box; }
-  html,body{ margin:0; padding:0; }
+  html,body{ margin:0; padding:0; overflow-x:hidden; max-width:100%; }
   body{
     min-height:100vh;
     background:
@@ -39,7 +39,7 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    padding: 24px 16px 60px;
+    padding: calc(24px + env(safe-area-inset-top,0px)) max(16px, env(safe-area-inset-left,0px)) calc(60px + env(safe-area-inset-bottom,0px)) max(16px, env(safe-area-inset-right,0px));
   }
 
   .stage{ width:100%; max-width: 880px; }
@@ -122,10 +122,10 @@
   .mode-card h3{ font-size:16px; margin:2px 0 0; }
   .mode-card p{ font-size:13px; color:var(--ink-dim); line-height:1.5; margin:0; flex:1; }
   .mode-card .btn{ width:100%; margin-top:4px; }
-  .mode-setup{ font-size:12.5px; color:var(--ink-dim); display:flex; align-items:center; gap:6px; }
+  .mode-setup{ font-size:12.5px; color:var(--ink-dim); display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:center; }
   .mode-setup select{
     background: var(--panel-2); border:1px solid var(--line); color:var(--ink);
-    border-radius: 999px; padding:4px 10px; font-size:12.5px; font-family:var(--font-body);
+    border-radius: 999px; padding:6px 12px; font-size:16px; font-family:var(--font-body);
   }
   .mode-best{ font-size:12px; color: var(--warn); font-weight:600; }
 
@@ -174,18 +174,20 @@
   .mail-link{
     display:inline-block; margin-top:8px; padding:7px 12px; border-radius:8px;
     background: var(--panel-2); border:1px dashed var(--line); font-size:13px; color:#8fb8ff;
+    max-width:100%; overflow-wrap:anywhere; word-break:break-word;
   }
   .mail-attach{
     display:inline-flex; align-items:center; gap:8px; margin-top:14px; padding:9px 14px;
     background: var(--panel-2); border:1px solid var(--line); border-radius: var(--radius-sm); font-size:13px;
+    max-width:100%; overflow-wrap:anywhere; word-break:break-word;
   }
 
   .clue-heading{ font-size:14px; color: var(--ink-dim); margin: 4px 4px 10px; }
   .clue-grid{ display:flex; flex-wrap:wrap; gap:9px; margin: 0 0 20px; }
   .clue-chip{
     background: var(--panel); border:2px solid var(--line); color: var(--ink);
-    padding:9px 15px; border-radius:999px; font-size:14px; font-weight:600;
-    display:flex; align-items:center; gap:7px;
+    padding:11px 16px; border-radius:999px; font-size:14px; font-weight:600;
+    display:flex; align-items:center; gap:7px; min-height:40px;
   }
   .clue-chip.on{ border-color: var(--warn); background: #3a2f14; }
 
@@ -294,7 +296,7 @@
   .cert-brand .cbrand-name{ font-family: var(--font-display); font-size:15px; color: var(--warn); }
   .cert-body{ text-align:center; }
   .certificate h3{ font-size:15px; letter-spacing:.4px; color: var(--ink-dim); font-family:var(--font-body); font-weight:600; }
-  .certificate .cname{ font-family: var(--font-display); font-size:28px; margin:10px 0; color: var(--warn); }
+  .certificate .cname{ font-family: var(--font-display); font-size:28px; margin:10px 0; color: var(--warn); overflow-wrap:anywhere; word-break:break-word; }
   .certificate .ctitle{ font-size:17px; margin-bottom:6px; }
   .certificate .cscore{ font-size:14.5px; font-weight:700; color: var(--safe); margin-bottom:8px; }
   .certificate .csub{ font-size:13px; color: var(--ink-dim); }
@@ -308,11 +310,12 @@
     .cert-body{ text-align:left; }
   }
 
-  /* ---------- mute button ---------- */
-  #btn-mute{
-    position:fixed; top:14px; right:14px; z-index:60;
-    padding:9px 13px; font-size:15px; line-height:1;
+  /* ---------- top-right controls (som + ecrã inteiro) ---------- */
+  .top-controls{
+    position:fixed; top: calc(14px + env(safe-area-inset-top,0px)); right: calc(14px + env(safe-area-inset-right,0px));
+    z-index:60; display:flex; gap:8px;
   }
+  .top-controls .btn{ padding:9px 13px; font-size:15px; line-height:1; }
 
   /* ---------- status bar (Início + nome do jogador), visível nas fases 1-3 ---------- */
   .status-bar{
@@ -377,7 +380,10 @@
 </head>
 <body>
 
-<button class="btn ghost" id="btn-mute" title="Ligar/desligar som">🔊</button>
+<div class="top-controls">
+  <button class="btn ghost" id="btn-fullscreen" title="Ecrã inteiro" aria-label="Ver em ecrã inteiro">⛶</button>
+  <button class="btn ghost" id="btn-mute" title="Ligar/desligar som" aria-label="Ligar ou desligar som">🔊</button>
+</div>
 
 <div class="stage">
 
@@ -413,6 +419,14 @@
           <div class="mode-icon">💬</div>
           <h3>Formal ou Informal?</h3>
           <p>Lê cada mensagem e decide qual é o tom certo — formal ou informal.</p>
+          <div class="mode-setup">
+            <label for="tone-count">💬 Mensagens:</label>
+            <select id="tone-count">
+              <option value="5" selected>5</option>
+              <option value="8">8</option>
+              <option value="10">10</option>
+            </select>
+          </div>
           <button class="btn" id="start-tone-btn">Jogar este modo</button>
           <div class="mode-best" id="best-tone" style="display:none;"></div>
         </div>
@@ -421,6 +435,14 @@
           <div class="mode-icon">📧</div>
           <h3>Elementos do E-mail</h3>
           <p>Que campo é este? Escolhe a função certa — De, Cc, Anexo e muito mais.</p>
+          <div class="mode-setup">
+            <label for="elements-count-select">📧 Termos:</label>
+            <select id="elements-count-select">
+              <option value="6" selected>6</option>
+              <option value="8">8</option>
+              <option value="10">10</option>
+            </select>
+          </div>
           <button class="btn" id="start-elements-btn">Jogar este modo</button>
           <div class="mode-best" id="best-elements" style="display:none;"></div>
         </div>
@@ -786,7 +808,10 @@
   try{ soundOn = localStorage.getItem('vb_detetive_sound') !== 'off'; }catch(e){}
   function updateMuteBtn(){
     var b = document.getElementById('btn-mute');
-    if(b) b.textContent = soundOn ? '🔊' : '🔇';
+    if(b){
+      b.textContent = soundOn ? '🔊' : '🔇';
+      b.setAttribute('aria-label', soundOn ? 'Som ligado — clicar para desligar' : 'Som desligado — clicar para ligar');
+    }
   }
   function getCtx(){ if(!actx){ actx = new (window.AudioContext||window.webkitAudioContext)(); } return actx; }
   function tone(freq, dur, type, gain){
@@ -813,6 +838,44 @@
     try{ localStorage.setItem('vb_detetive_sound', soundOn ? 'on' : 'off'); }catch(e){}
     updateMuteBtn();
   });
+
+  /* ---------------- ecrã inteiro ---------------- */
+  (function(){
+    var btnFS = document.getElementById('btn-fullscreen');
+    var docEl = document.documentElement;
+    function fsRequestFn(el){ return el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen; }
+    var supported = !!fsRequestFn(docEl);
+    if(!supported){
+      /* ex.: Safari no iPhone não suporta ecrã inteiro para páginas web — esconde o botão em vez de mostrar algo que não funciona */
+      btnFS.style.display = 'none';
+      return;
+    }
+    function currentFsEl(){
+      return document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement || null;
+    }
+    function updateFSBtn(){
+      var isFS = !!currentFsEl();
+      btnFS.textContent = isFS ? '⤢' : '⛶';
+      var label = isFS ? 'Sair do ecrã inteiro' : 'Ver em ecrã inteiro';
+      btnFS.setAttribute('aria-label', label);
+      btnFS.title = label;
+    }
+    btnFS.addEventListener('click', function(){
+      sfxClick();
+      try{
+        if(currentFsEl()){
+          var exitFn = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+          if(exitFn) exitFn.call(document);
+        } else {
+          fsRequestFn(docEl).call(docEl);
+        }
+      }catch(e){}
+    });
+    ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange'].forEach(function(ev){
+      document.addEventListener(ev, updateFSBtn);
+    });
+    updateFSBtn();
+  })();
 
   /* ---------------- round data ---------------- */
   var CLUE_DEFS = [
@@ -961,7 +1024,19 @@
     { text:'Exmo. Senhor Diretor,\nSolicito, respeitosamente, autorização para a realização de uma visita de estudo ao Museu do Baleal no próximo mês.\nCom os melhores cumprimentos,\nA Delegada de Turma',
       correct:'formal', explain:'Forma de tratamento cerimoniosa ("Exmo. Senhor Diretor") e pedido formal — é claramente um e-mail formal.' },
     { text:'Malta, alguém tem os apontamentos de hoje? Faltei e preciso mesmo deles até logo à noite, obrigadaaa 🙏',
-      correct:'informal', explain:'Tratamento coloquial ("Malta"), abreviaturas e emoji — é um e-mail informal.' }
+      correct:'informal', explain:'Tratamento coloquial ("Malta"), abreviaturas e emoji — é um e-mail informal.' },
+    { text:'Bom dia,\nVenho por este meio solicitar uma declaração de matrícula para efeitos de candidatura a uma bolsa de estudo.\nCom os melhores cumprimentos,\nCarla Nunes, 12ºA, nº9',
+      correct:'formal', explain:'Pedido formal a uma entidade escolar, com linguagem cuidada e assinatura completa — é um e-mail formal.' },
+    { text:'Exma. Senhora Coordenadora,\nVenho por este meio solicitar autorização para a alteração do horário de apoio ao estudo.\nCom os melhores cumprimentos,\nEncarregada de Educação de Rui Costa',
+      correct:'formal', explain:'Forma de tratamento cerimoniosa e pedido formal a uma coordenadora — é claramente um e-mail formal.' },
+    { text:'Bom dia, Professora,\nInformo que entregarei o trabalho de grupo com um dia de atraso, devido a um problema técnico no computador.\nCom os melhores cumprimentos,\nDiogo Farias, 9ºC, nº11',
+      correct:'formal', explain:'Justificação apresentada com linguagem cuidada e assinatura completa — é um e-mail formal.' },
+    { text:'Ei, viste os resultados do jogo de ontem?? Foi incrível! Fala comigo mais logo 😅',
+      correct:'informal', explain:'Tom descontraído entre amigos e emoji — é um e-mail informal.' },
+    { text:'Oii, esqueci-me da mochila na sala. Podes verificar se ainda lá está? Obrigada desde já 🙏',
+      correct:'informal', explain:'Tratamento descontraído ("Oii") e tom próximo — é um e-mail informal.' },
+    { text:'Bora combinar o trabalho de Português? Podemos falar no intervalo, ok? 😉',
+      correct:'informal', explain:'Linguagem coloquial ("Bora") e emoji — é um e-mail informal.' }
   ];
 
   /* ---------------- fase 3: elementos do e-mail ---------------- */
@@ -975,7 +1050,11 @@
     {term:'Corpo da mensagem', def:'O texto principal do e-mail, onde se escreve o assunto da mensagem em detalhe.'},
     {term:'Responder a Todos', def:'Envia a resposta ao remetente e a todos os outros destinatários da mensagem original.'},
     {term:'Reencaminhar', def:'Envia a mensagem recebida, tal como está, para outra(s) pessoa(s).'},
-    {term:'Rascunho', def:'Mensagem guardada mas ainda não enviada, para continuar a escrever mais tarde.'}
+    {term:'Rascunho', def:'Mensagem guardada mas ainda não enviada, para continuar a escrever mais tarde.'},
+    {term:'Caixa de entrada', def:'Local onde ficam guardadas as mensagens recebidas.'},
+    {term:'Spam / Lixo eletrónico', def:'Mensagens não solicitadas, normalmente publicitárias ou fraudulentas.'},
+    {term:'Contactos', def:'Lista de endereços de e-mail guardados para facilitar o envio de mensagens.'},
+    {term:'Filtro de spam', def:'Sistema que identifica e separa automaticamente mensagens suspeitas ou indesejadas.'}
   ];
 
   /* ---------------- state ---------------- */
@@ -1227,14 +1306,16 @@
       } else if(isTrue && !picked){
         report.push({row:'Não assinalaste: ' + c.label, cls:'miss', mk:'○', hint:c.hint, pts:'0'});
       } else if(!isTrue && picked){
-        report.push({row:'Marcaste, mas não era: ' + c.label, cls:'false', mk:'✖', hint:'Não era um sinal de alerta neste e-mail — não fazia parte da armadilha.', pts:'0'});
+        cluePts -= 1;
+        report.push({row:'Marcaste, mas não era: ' + c.label, cls:'false', mk:'✖', hint:'Não era um sinal de alerta neste e-mail — não fazia parte da armadilha.', pts:'-1'});
       }
     });
+    cluePts = Math.max(0, cluePts);
     var actionRight = action === r.correctAction;
     var actionPts = actionRight ? 3 : 0;
     var roundPts = cluePts + actionPts;
     var maxRoundPts = maxCluePts + 3;
-    state.score = Math.max(0, state.score + roundPts);
+    state.score += roundPts;
 
     var overlay = document.getElementById('overlay');
     var verdictEl = document.getElementById('fb-verdict');
@@ -1324,7 +1405,8 @@
     state.toneIndex = 0;
     state.toneScore = 0;
     state.toneResults = [];
-    var toneCount = Math.min(5, TONE_ROUNDS.length);
+    var toneCountEl = document.getElementById('tone-count');
+    var toneCount = Math.min(toneCountEl ? parseInt(toneCountEl.value, 10) : 5, TONE_ROUNDS.length);
     state.toneOrder = shuffle(TONE_ROUNDS.map(function(_,i){ return i; })).slice(0, toneCount);
     showScreen('tone');
     renderTone();
@@ -1375,7 +1457,8 @@
     state.elementsIndex = 0;
     state.elementsScore = 0;
     state.elementsResults = [];
-    var elementsCount = Math.min(6, ELEMENT_DEFS.length);
+    var elementsCountEl = document.getElementById('elements-count-select');
+    var elementsCount = Math.min(elementsCountEl ? parseInt(elementsCountEl.value, 10) : 6, ELEMENT_DEFS.length);
     state.elementsOrder = shuffle(ELEMENT_DEFS.map(function(_,i){ return i; })).slice(0, elementsCount);
     showScreen('elements');
     renderElements();
@@ -1509,7 +1592,7 @@
   });
 
   /* ---------------- rever respostas ---------------- */
-  function esc(s){ return String(s).replace(/</g,'&lt;'); }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   function buildReviewPanel(){
     var html = '';
