@@ -284,6 +284,15 @@
 
   .elements-options{ display:flex; flex-direction:column; gap:10px; }
   .elements-options .btn{ width:100%; text-align:left; }
+  .elements-question{ font-size:13px; color:var(--ink-dim); font-weight:600; margin-bottom:10px; }
+  .elements-term{ font-family:var(--font-display); font-size:30px; color:var(--warn); }
+  .elements-term.prompt-text{
+    font-family: var(--font-body); font-size:16px; line-height:1.6; color: var(--ink);
+    text-align:left; white-space:pre-line; max-width:520px; margin:0 auto;
+  }
+  .elements-term.prompt-address{
+    font-family:'Courier New', monospace; font-size:19px; color:var(--warn); word-break:break-all;
+  }
 
   .certificate{
     margin-top: 26px; border:2px dashed var(--line); border-radius: var(--radius);
@@ -427,23 +436,23 @@
               <option value="10">10</option>
             </select>
           </div>
-          <button class="btn" id="start-tone-btn">Jogar este modo</button>
+          <button class="btn" id="start-tone-btn">Decifrar o tom</button>
           <div class="mode-best" id="best-tone" style="display:none;"></div>
         </div>
 
         <div class="mode-card">
           <div class="mode-icon">📧</div>
           <h3>Elementos do E-mail</h3>
-          <p>Que campo é este? Escolhe a função certa — De, Cc, Anexo e muito mais.</p>
+          <p>Elementos, regras de netiqueta e endereços de e-mail — quanto sabes de cada um?</p>
           <div class="mode-setup">
-            <label for="elements-count-select">📧 Termos:</label>
+            <label for="elements-count-select">📧 Perguntas:</label>
             <select id="elements-count-select">
               <option value="6" selected>6</option>
               <option value="8">8</option>
               <option value="10">10</option>
             </select>
           </div>
-          <button class="btn" id="start-elements-btn">Jogar este modo</button>
+          <button class="btn" id="start-elements-btn">Resolver o desafio</button>
           <div class="mode-best" id="best-elements" style="display:none;"></div>
         </div>
       </div>
@@ -513,13 +522,14 @@
     </div>
     <div class="hero" style="padding-top:6px; padding-bottom:0;">
       <canvas id="vb-elements" class="vanberto" style="width:80px;height:80px;"></canvas>
-      <h2 style="font-family:var(--font-display); font-size:24px; margin:10px 0 4px;">Fase 3 — Elementos do E-mail</h2>
-      <p class="lede" style="margin:6px auto 18px; font-size:15px;">Que campo é este? Escolhe a função certa.</p>
+      <h2 style="font-family:var(--font-display); font-size:24px; margin:10px 0 4px;">Fase 3 — Sobre o E-mail</h2>
+      <p class="lede" style="margin:6px auto 18px; font-size:15px;">Elementos, netiqueta e endereços — tudo à prova.</p>
     </div>
     <div class="case-panel">
       <div class="case-tab"><span class="dot"></span> <span id="elements-count">1 de 6</span></div>
       <div class="mail" style="padding:26px; text-align:center;">
-        <div id="elements-term" style="font-family:var(--font-display); font-size:30px; color:var(--warn);"></div>
+        <div class="elements-question" id="elements-question">Que campo é este? Escolhe a função certa.</div>
+        <div id="elements-term" class="elements-term"></div>
       </div>
       <div class="mail-actions-wrap" style="padding-top:0;">
         <div class="elements-options" id="elements-options"></div>
@@ -1057,6 +1067,45 @@
     {term:'Filtro de spam', def:'Sistema que identifica e separa automaticamente mensagens suspeitas ou indesejadas.'}
   ];
 
+  /* ---------------- fase 3 (extra): netiqueta ---------------- */
+  var NETIQUETA_RULES = [
+    { short:'Não escrever em maiúsculas', full:'Evita escrever tudo em maiúsculas — pode transmitir a ideia de que estás a gritar e dificulta a leitura.' },
+    { short:'Não abusar de abreviaturas', full:'Evita abreviaturas em excesso, sobretudo em mensagens formais — escreve de forma clara e cuidada.' },
+    { short:'Usar linguagem adequada ao destinatário', full:'A linguagem usada com um professor pode ser diferente da usada com um colega.' },
+    { short:'Ser claro e objetivo', full:'Inclui a informação necessária e evita conteúdo irrelevante.' },
+    { short:'Escolher um assunto adequado', full:'O destinatário deve perceber rapidamente o tema da mensagem.' },
+    { short:'Respeitar os outros', full:'Não uses o e-mail para insultar, ameaçar ou divulgar conteúdos inadequados.' },
+    { short:'Não enviar spam', full:'Não envies mensagens não solicitadas ou publicidade indesejada.' },
+    { short:'Não reencaminhar correntes', full:'Não reencaminhes correntes ou mensagens duvidosas — verifica a informação antes de a partilhares.' }
+  ];
+  var NETIQUETA_ROUNDS = [
+    { text:'ASSUNTO: PRECISO DE AJUDA JÁ!!!\nPROFESSORA, PODE RESPONDER-ME O MAIS DEPRESSA POSSÍVEL???', ruleIdx:0 },
+    { text:'bom dia prof, axo qq n consegui fzr o trab hj, pod ser amanha? obg', ruleIdx:1 },
+    { text:'Ó Diretor, então tá tudo fixe? Preciso que me safe com uma coisa, ok?', ruleIdx:2 },
+    { text:'Ora bem, hoje começou a chover e eu estava a pensar no fim de semana em que fui à praia e depois lembrei-me também de perguntar sobre o teste, já agora sabe se sai a matéria toda ou não, já não me lembro se era para entregar hoje ou amanhã...', ruleIdx:3 },
+    { text:'Assunto: (em branco)\nBoa tarde, professora. Escrevo-lhe sobre aquele assunto que falámos.', ruleIdx:4 },
+    { text:'Já disse que o teu trabalho está uma porcaria, nem sei como é que ainda andas nesta escola.', ruleIdx:5 },
+    { text:'Aproveita já! Desconto de 90% só hoje — clica aqui e ganha um prémio!!! (enviado a toda a turma sem ninguém ter pedido)', ruleIdx:6 },
+    { text:'Reencaminha esta mensagem a 10 amigos até à meia-noite ou terás azar durante 7 anos!', ruleIdx:7 }
+  ];
+
+  /* ---------------- fase 3 (extra): estrutura do endereço ---------------- */
+  var ADDRESS_ROUNDS = [
+    { address:'joao.silva@escola.pt', valid:true, reason:'Segue a forma utilizador@domínio, sem espaços nem acentos.' },
+    { address:'joão.silva@escola.pt', valid:false, reason:'Tem um acento ("ã"), e um endereço de e-mail não pode ter acentos.' },
+    { address:'joao silva@escola.pt', valid:false, reason:'Tem um espaço antes do "@", e um endereço de e-mail não pode ter espaços.' },
+    { address:'beatriz_costa9b@edu.azores.gov.pt', valid:true, reason:'Segue a forma utilizador@domínio, sem espaços nem acentos.' },
+    { address:'mariasilva@', valid:false, reason:'Falta o domínio depois do "@" (a entidade que fornece o serviço).' },
+    { address:'ana-rodrigues@colegio.pt', valid:true, reason:'Segue a forma utilizador@domínio, sem espaços nem acentos.' },
+    { address:'miguelferreira.pt', valid:false, reason:'Falta o símbolo "@" — sem ele, não é possível identificar o domínio.' },
+    { address:'rui.costa@escola pt', valid:false, reason:'Tem um espaço no domínio, em vez de um ponto (deveria ser "escola.pt").' }
+  ];
+
+  /* ---------------- fase 3: conjunto combinado de perguntas ---------------- */
+  var KNOWLEDGE_ITEMS = ELEMENT_DEFS.map(function(d){ return { type:'term', term:d.term, def:d.def }; })
+    .concat(NETIQUETA_ROUNDS.map(function(r){ return { type:'netiqueta', text:r.text, ruleIdx:r.ruleIdx }; }))
+    .concat(ADDRESS_ROUNDS.map(function(a){ return { type:'address', address:a.address, valid:a.valid, reason:a.reason }; }));
+
   /* ---------------- state ---------------- */
   var lastFocusedEl = null;
   var state = { round:0, score:0, selected:{}, playerName:'', results:[], order:[],
@@ -1488,8 +1537,8 @@
     state.elementsScore = 0;
     state.elementsResults = [];
     var elementsCountEl = document.getElementById('elements-count-select');
-    var elementsCount = Math.min(elementsCountEl ? parseInt(elementsCountEl.value, 10) : 6, ELEMENT_DEFS.length);
-    state.elementsOrder = shuffle(ELEMENT_DEFS.map(function(_,i){ return i; })).slice(0, elementsCount);
+    var elementsCount = Math.min(elementsCountEl ? parseInt(elementsCountEl.value, 10) : 6, KNOWLEDGE_ITEMS.length);
+    state.elementsOrder = shuffle(KNOWLEDGE_ITEMS.map(function(_,i){ return i; })).slice(0, elementsCount);
     showScreen('elements');
     renderElements();
   }
@@ -1497,48 +1546,80 @@
   function renderElements(){
     paint('vb-elements','neutral');
     var idx = state.elementsOrder[state.elementsIndex];
-    var item = ELEMENT_DEFS[idx];
+    var item = KNOWLEDGE_ITEMS[idx];
     document.getElementById('elements-count').textContent = (state.elementsIndex+1) + ' de ' + state.elementsOrder.length;
-    document.getElementById('elements-term').textContent = item.term;
 
-    var others = ELEMENT_DEFS.filter(function(_,i){ return i !== idx; });
-    var distractors = shuffle(others).slice(0,2).map(function(d){ return d.def; });
-    var options = shuffle([item.def].concat(distractors));
-
+    var qEl = document.getElementById('elements-question');
+    var termEl = document.getElementById('elements-term');
+    termEl.className = 'elements-term';
     var wrap = document.getElementById('elements-options');
     wrap.innerHTML = '';
-    options.forEach(function(optDef){
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'btn ghost';
-      btn.textContent = optDef;
-      btn.addEventListener('click', function(){ evaluateElement(optDef === item.def); });
-      wrap.appendChild(btn);
-    });
+
+    if(item.type === 'netiqueta'){
+      qEl.textContent = 'Que regra de netiqueta esta mensagem não respeita?';
+      termEl.classList.add('prompt-text');
+      termEl.textContent = item.text;
+      var correctRule = NETIQUETA_RULES[item.ruleIdx];
+      var otherRules = NETIQUETA_RULES.filter(function(_,i){ return i !== item.ruleIdx; });
+      var distractorRules = shuffle(otherRules).slice(0,2).map(function(r){ return r.short; });
+      var ruleOptions = shuffle([correctRule.short].concat(distractorRules));
+      ruleOptions.forEach(function(optLabel){
+        var btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'btn ghost'; btn.textContent = optLabel;
+        btn.addEventListener('click', function(){ evaluateElement(optLabel === correctRule.short, item); });
+        wrap.appendChild(btn);
+      });
+    } else if(item.type === 'address'){
+      qEl.textContent = 'Este endereço de e-mail é válido?';
+      termEl.classList.add('prompt-address');
+      termEl.textContent = item.address;
+      [{label:'✅ Válido', v:true},{label:'❌ Inválido', v:false}].forEach(function(opt){
+        var btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'btn ghost'; btn.textContent = opt.label;
+        btn.addEventListener('click', function(){ evaluateElement(opt.v === item.valid, item); });
+        wrap.appendChild(btn);
+      });
+    } else {
+      qEl.textContent = 'Que campo é este? Escolhe a função certa.';
+      termEl.textContent = item.term;
+      var others = KNOWLEDGE_ITEMS.filter(function(k){ return k.type === 'term' && k !== item; });
+      var distractors = shuffle(others).slice(0,2).map(function(d){ return d.def; });
+      var options = shuffle([item.def].concat(distractors));
+      options.forEach(function(optDef){
+        var btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'btn ghost'; btn.textContent = optDef;
+        btn.addEventListener('click', function(){ evaluateElement(optDef === item.def, item); });
+        wrap.appendChild(btn);
+      });
+    }
   }
 
-  function evaluateElement(right){
+  function evaluateElement(right, item){
     var idx = state.elementsOrder[state.elementsIndex];
-    var item = ELEMENT_DEFS[idx];
+    if(!item) item = KNOWLEDGE_ITEMS[idx];
     var pts = right ? 2 : 0;
     state.elementsScore += pts;
-    state.elementsResults[state.elementsIndex] = { correct: right, termIdx: idx };
+    state.elementsResults[state.elementsIndex] = { correct: right, idx: idx };
 
     var overlay = document.getElementById('overlay');
     var verdictEl = document.getElementById('fb-verdict');
-    if(right){
-      verdictEl.textContent = 'Boa! É isso mesmo.';
-      verdictEl.className = 'verdict good';
-      paint('vb-feedback','happy'); paint('vb-elements','happy');
-      sfxGood();
+    var icon, reportHtml;
+    if(item.type === 'netiqueta'){
+      var rule = NETIQUETA_RULES[item.ruleIdx];
+      verdictEl.textContent = right ? 'Boa! Identificaste bem a regra.' : 'Não era essa a regra.';
+      reportHtml = '<div class="row ok"><span class="mk">💬</span><span><strong>' + rule.short + '</strong> — ' + rule.full + '</span></div>';
+    } else if(item.type === 'address'){
+      verdictEl.textContent = right ? 'Boa! É isso mesmo.' : 'Não era essa a resposta certa.';
+      reportHtml = '<div class="row ok"><span class="mk">✉️</span><span><strong>' + item.address + '</strong> — ' + item.reason + '</span></div>';
     } else {
-      verdictEl.textContent = 'Não era essa a função.';
-      verdictEl.className = 'verdict bad';
-      paint('vb-feedback','sad'); paint('vb-elements','sad');
-      sfxBad();
+      verdictEl.textContent = right ? 'Boa! É isso mesmo.' : 'Não era essa a função.';
+      reportHtml = '<div class="row ok"><span class="mk">📧</span><span><strong>' + item.term + '</strong> — ' + item.def + '</span></div>';
     }
+    verdictEl.className = right ? 'verdict good' : 'verdict bad';
+    paint('vb-feedback', right?'happy':'sad'); paint('vb-elements', right?'happy':'sad');
+    if(right) sfxGood(); else sfxBad();
     document.getElementById('fb-points').textContent = '+' + pts + ' pontos nesta ronda';
-    document.getElementById('fb-report').innerHTML = '<div class="row ok"><span class="mk">📧</span><span><strong>' + item.term + '</strong> — ' + item.def + '</span></div>';
+    document.getElementById('fb-report').innerHTML = reportHtml;
 
     overlay.classList.add('show');
     document.getElementById('btn-next').focus();
@@ -1660,14 +1741,26 @@
           '</div></div>';
       });
     } else if(state.phase === 'elements'){
-      html += '<h4>📧 Elementos do E-mail</h4>';
+      html += '<h4>📧 Sobre o E-mail</h4>';
       state.elementsOrder.forEach(function(idx, pos){
-        var item = ELEMENT_DEFS[idx];
+        var item = KNOWLEDGE_ITEMS[idx];
         var res = state.elementsResults[pos];
         var ok = !!(res && res.correct);
+        var label, correctAnswer;
+        if(item.type === 'netiqueta'){
+          var rule = NETIQUETA_RULES[item.ruleIdx];
+          label = item.text.split('\n')[0];
+          correctAnswer = rule.short + ' — ' + rule.full;
+        } else if(item.type === 'address'){
+          label = item.address;
+          correctAnswer = (item.valid ? 'É válido' : 'Não é válido') + ' — ' + item.reason;
+        } else {
+          label = item.term;
+          correctAnswer = item.def;
+        }
         html += '<div class="review-row ' + (ok?'ok':'bad') + '">' +
           '<span class="mk">' + (ok?'✔':'✖') + '</span>' +
-          '<div><strong>' + esc(item.term) + '</strong>' + (!ok ? '<div class="answer-correct">' + esc(item.def) + '</div>' : '') + '</div></div>';
+          '<div><strong>' + esc(label) + '</strong>' + (!ok ? '<div class="answer-correct">' + esc(correctAnswer) + '</div>' : '') + '</div></div>';
       });
     }
 
