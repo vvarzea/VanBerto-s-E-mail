@@ -252,7 +252,7 @@
   .mail-modal.show{ opacity:1; pointer-events:auto; }
   .mail-modal-card{
     background: var(--panel); border:1px solid var(--line); border-radius: var(--radius);
-    max-width: 560px; width:100%; max-height:88vh; overflow-y:auto;
+    max-width: 560px; width:100%; max-height:88vh; max-height:calc(100dvh - 36px); overflow-y:auto; overscroll-behavior:contain;
     box-shadow: 0 20px 60px rgba(0,0,0,.5);
   }
   .mail-modal-head{
@@ -264,9 +264,13 @@
   /* ---------- feedback overlay ---------- */
   .overlay{
     position:fixed; inset:0; background: rgba(6,4,16,.72);
-    display:flex; align-items:center; justify-content:center; padding:18px;
+    display:flex; align-items:flex-start; justify-content:center; padding:18px;
+    overflow-y:auto; overscroll-behavior:contain;
     z-index: 50; opacity:0; pointer-events:none; transition: opacity .2s ease;
   }
+  /* margin:auto centra o cartão quando cabe e, quando é mais alto que o ecrã, deixa-o começar no topo
+     e o overlay faz scroll (com align-items:center o topo ficava cortado e inalcançável) */
+  .overlay > .feedback-card{ margin:auto; }
   .overlay.show{ opacity:1; pointer-events:auto; }
   .feedback-card{
     background: var(--panel); border:1px solid var(--line); border-radius: var(--radius);
@@ -277,6 +281,8 @@
   .feedback-card .verdict.good{ color: var(--safe); }
   .feedback-card .verdict.bad{ color: var(--danger); }
   .feedback-card .points{ font-size:14px; color: var(--ink-dim); margin-bottom:16px; }
+  .fb-actions{ position:sticky; bottom:0; z-index:1; margin: 0 -8px -6px; padding: 14px 8px 6px;
+    background: linear-gradient(to bottom, rgba(31,26,63,0), var(--panel) 30%); }
   .clue-report{ text-align:left; background: var(--panel-2); border-radius: var(--radius-sm); padding:14px 16px; margin-bottom:18px; }
   .clue-report .row{ display:flex; gap:8px; font-size:14px; padding:6px 0; align-items:flex-start; }
   .clue-report .row .mk{ width:18px; flex-shrink:0; margin-top:1px; font-weight:700; }
@@ -353,7 +359,7 @@
   /* ---------- top-right controls (som + ecrã inteiro) ---------- */
   .top-controls{
     position:fixed; top: calc(14px + env(safe-area-inset-top,0px)); right: calc(14px + env(safe-area-inset-right,0px));
-    z-index:60; display:flex; gap:8px;
+    z-index:40; display:flex; gap:8px; /* abaixo dos modais (45/50): não tapam o texto do feedback em ecrãs pequenos */
   }
   .top-controls .btn{ padding:9px 13px; font-size:15px; line-height:1; }
 
@@ -692,7 +698,7 @@
     <div class="verdict" id="fb-verdict">—</div>
     <div class="points" id="fb-points">—</div>
     <div class="clue-report" id="fb-report"></div>
-    <button class="btn" id="btn-next">Continuar →</button>
+    <div class="fb-actions"><button class="btn" id="btn-next">Continuar →</button></div>
   </div>
 </div>
 
