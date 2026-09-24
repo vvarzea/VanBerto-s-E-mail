@@ -4,10 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>VanBerto's Detetive do E-mail</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#140f2b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Detetive do E-mail">
 <style>
+  /* fontes alojadas localmente (pasta fonts/) — sem pedidos ao Google e a funcionar offline */
+  @font-face{ font-family:'Baloo 2'; font-style:normal; font-weight:500; font-display:swap; src:url('fonts/baloo-2-latin-500-normal.woff2') format('woff2'); }
+  @font-face{ font-family:'Baloo 2'; font-style:normal; font-weight:700; font-display:swap; src:url('fonts/baloo-2-latin-700-normal.woff2') format('woff2'); }
+  @font-face{ font-family:'Baloo 2'; font-style:normal; font-weight:800; font-display:swap; src:url('fonts/baloo-2-latin-800-normal.woff2') format('woff2'); }
+  @font-face{ font-family:'Inter'; font-style:normal; font-weight:400; font-display:swap; src:url('fonts/inter-latin-400-normal.woff2') format('woff2'); }
+  @font-face{ font-family:'Inter'; font-style:normal; font-weight:500; font-display:swap; src:url('fonts/inter-latin-500-normal.woff2') format('woff2'); }
+  @font-face{ font-family:'Inter'; font-style:normal; font-weight:600; font-display:swap; src:url('fonts/inter-latin-600-normal.woff2') format('woff2'); }
+  @font-face{ font-family:'Inter'; font-style:normal; font-weight:700; font-display:swap; src:url('fonts/inter-latin-700-normal.woff2') format('woff2'); }
+
   :root{
     --bg: #140f2b;
     --bg-vignette: #0a0718;
@@ -437,7 +450,7 @@
 
       <div class="missions-done" id="missions-done" style="display:none;" role="status">
         <strong>🏅 Detetive Completo!</strong>
-        Já tens pontuação nas três missões. Consegues bater os teus recordes?
+        Já tens pelo menos <span class="mission-min">50</span>% nas três missões. Consegues bater os teus recordes?
       </div>
 
       <div class="mode-grid">
@@ -495,7 +508,7 @@
         <ul>
           <li>Escolhe um dos três modos acima — podes jogar só um ou repetir todos.</li>
           <li>Cada modo tem a sua própria pontuação, ranking e certificado.</li>
-          <li>No fim de cada modo, podes rever as respostas ou voltar ao menu para escolher outro.</li>
+          <li>No fim de cada modo, podes rever as respostas, treinar só as que falhaste ou voltar ao menu para escolher outro.</li>
         </ul>
       </div>
     </div>
@@ -530,17 +543,18 @@
     </div>
     <div class="hero" style="padding-top:6px; padding-bottom:0;">
       <canvas id="vb-tone" class="vanberto" style="width:80px;height:80px;"></canvas>
-      <h2 style="font-family:var(--font-display); font-size:24px; margin:10px 0 4px;">Fase 2 — Formal ou Informal?</h2>
+      <h2 style="font-family:var(--font-display); font-size:24px; margin:10px 0 4px;">Missão 2 — Formal ou Informal?</h2>
       <p class="lede" style="margin:6px auto 18px; font-size:15px;">Lê a mensagem e decide qual é o tom certo.</p>
     </div>
     <div class="case-panel">
       <div class="case-tab"><span class="dot"></span> <span id="tone-count">1 de 4</span></div>
       <div class="mail" style="padding:22px;">
+        <div class="mail-row"><div class="k">Para</div><div class="v" id="tone-to"></div></div>
         <div class="mail-body" id="tone-text" style="white-space:pre-line;"></div>
       </div>
       <div class="mail-actions-wrap" style="padding-top:0;">
         <div class="action-row">
-          <button class="btn" id="btn-formal">📝 Formal</button>
+          <button class="btn ghost" id="btn-formal">📝 Formal</button>
           <button class="btn ghost" id="btn-informal">💬 Informal</button>
         </div>
       </div>
@@ -555,7 +569,7 @@
     </div>
     <div class="hero" style="padding-top:6px; padding-bottom:0;">
       <canvas id="vb-elements" class="vanberto" style="width:80px;height:80px;"></canvas>
-      <h2 style="font-family:var(--font-display); font-size:24px; margin:10px 0 4px;">Fase 3 — Sobre o E-mail</h2>
+      <h2 style="font-family:var(--font-display); font-size:24px; margin:10px 0 4px;">Missão 3 — Sobre o E-mail</h2>
       <p class="lede" style="margin:6px auto 18px; font-size:15px;">Elementos, netiqueta e endereços — tudo à prova.</p>
     </div>
     <div class="case-panel">
@@ -580,11 +594,12 @@
       <p id="end-msg" style="color:var(--ink-dim); max-width:420px; margin:0 auto;"></p>
       <div class="missions-done" id="end-missions" style="display:none; margin-top:16px;" role="status">
         <strong>🏅 Três missões cumpridas!</strong>
-        Já tens pontuação nos três modos — és oficialmente Detetive Completo.
+        Tens pelo menos <span class="mission-min">50</span>% nos três modos — és oficialmente Detetive Completo.
       </div>
       <div class="end-actions">
         <button class="btn ghost" id="btn-again">🏠 Voltar ao menu</button>
         <button class="btn ghost" id="btn-review">🔎 Rever respostas</button>
+        <button class="btn ghost" id="btn-practice" style="display:none;">🔁 Praticar as que falhei</button>
         <button class="btn ghost" id="btn-copy">📋 Copiar resultados</button>
         <button class="btn" id="btn-cert">🎓 Ver certificado</button>
       </div>
@@ -935,7 +950,7 @@
     {key:'caps',         label:'Texto em maiúsculas',     hint:'Regra de netiqueta — evita escrever tudo em maiúsculas'},
     {key:'brand',        label:'Domínio a imitar uma marca', hint:'Sinal de phishing — domínio ou remetente construído para imitar uma marca ou entidade conhecida'},
     {key:'link',         label:'Link suspeito',           hint:'Sinal de phishing — link inesperado ou estranho'},
-    {key:'attach',       label:'Anexo inesperado',        hint:'Sinal de phishing — anexo suspeito ou inesperado'},
+    {key:'attach',       label:'Anexo inesperado',        hint:'Sinal de phishing — anexo suspeito ou inesperado (atenção a extensões como .zip ou .exe)'},
     {key:'urgency',      label:'Pedido urgente ou de dados', hint:'Sinal de phishing — pedido urgente de dados ou ação imediata'},
     {key:'typo',         label:'Erros de escrita no texto', hint:'Sinal de phishing — erros de escrita pouco habituais numa entidade oficial'}
   ];
@@ -950,12 +965,14 @@
     { sender:'seguranca@instagrarn-ajuda.com', subject:'A TUA CONTA VAI SER ELIMINADA', subjectCaps:true,
       body:'Detetámos atividade suspeita na tua conta. Introduz a tua palavra-passe no link abaixo para confirmares a tua identidade:',
       link:'instagrarn-confirmar.net', icon:'📱',
-      trueClues:['sender','brand','subjectAlarm','caps','link','urgency'], correctAction:'eliminar' },
+      trueClues:['sender','brand','subjectAlarm','caps','link','urgency'], correctAction:'eliminar',
+      note:'Repara em "instagrarn": tem "rn" no lugar do "m" — de relance parece "instagram". Nos endereços falsos, ler devagar e letra a letra é meio caminho para os apanhar.' },
 
     { sender:'cobranca@financas-aviso.net', subject:'FATURA EM ATRASO — AÇÃO NECESSÁRIA', subjectCaps:true,
       body:'Segue em anexo a fatura em atrazo. Efetua o pagamento nas próximas 24 horas para evitares uma penalização.',
       attach:'Fatura_2026.zip', icon:'💸',
-      trueClues:['sender','brand','subjectAlarm','caps','attach','urgency','typo'], correctAction:'eliminar' },
+      trueClues:['sender','brand','subjectAlarm','caps','attach','urgency','typo'], correctAction:'eliminar',
+      note:'Olha para a extensão do anexo: uma fatura verdadeira raramente vem num .zip. Ficheiros como .zip, .exe ou .scr podem esconder programas maliciosos. Mesmo um .pdf só se abre se estavas à espera dele — na dúvida, confirma com quem o enviou.' },
 
     { sender:'prendas@promo-exclusiva.co', subject:'🎁 Foste selecionado! Prémio de 100€',
       body:'Parabéns! Foste escolhido para receberes um cartão-presente. Clica no link e preenche os teus dados para o receberes agora:',
@@ -1054,68 +1071,105 @@
       body:'Olá! Preciso mesmo da tua ajuda urgente. Fiquei sem acesso à minha conta e só resolvo comprando um cartão-presente de 20€. Compra um e manda-me o código aqui, depois devolvo-te o dinheiro já a seguir. Não contes a ninguém, é urgente!',
       icon:'🆘',
       trueClues:['subjectAlarm','caps','urgency'], correctAction:'eliminar',
-      note:'O endereço até pode ser mesmo de um colega — mas contas reais também podem ser pirateadas (hackeadas)! Um pedido de dinheiro urgente e em segredo ("não contes a ninguém") é um sinal clássico de phishing, mesmo vindo de alguém que conheces. Na dúvida, confirma sempre por outro meio — fala com essa pessoa ao vivo ou por telefone — antes de agires.' }
+      note:'O endereço até pode ser mesmo de um colega — mas contas reais também podem ser pirateadas (hackeadas)! Um pedido de dinheiro urgente e em segredo ("não contes a ninguém") é um sinal clássico de phishing, mesmo vindo de alguém que conheces. Na dúvida, confirma sempre por outro meio — fala com essa pessoa ao vivo ou por telefone — antes de agires.' },
+
+    /* --- seguros COM link: ter um link não torna o e-mail suspeito; o que conta é para onde leva --- */
+    { sender:'secretaria@edu.azores.gov.pt', subject:'Ficha de revisão já disponível',
+      body:'Bom dia. A ficha de revisão para o teste já está na plataforma da escola. Podes aceder pelo endereço abaixo, o mesmo que usas nas aulas. Cumprimentos, Secretaria.',
+      link:'edu.azores.gov.pt', icon:'🖥️',
+      trueClues:[], correctAction:'confiar',
+      note:'Este e-mail tem um link, mas o endereço é exatamente o da escola (edu.azores.gov.pt) e a mensagem não pede palavras-passe nem dados. Ter um link não torna um e-mail suspeito — o que conta é para onde ele leva. Lê sempre o endereço com atenção antes de clicar.' },
+
+    /* --- seguro de fora da escola, com o domínio oficial certo --- */
+    { sender:'notificacoes@ctt.pt', subject:'A tua encomenda foi entregue',
+      body:'Olá! A tua encomenda foi entregue hoje. Não precisas de fazer nada — se quiseres, podes consultar o histórico da entrega na tua conta.',
+      link:'ctt.pt', icon:'📬',
+      trueClues:[], correctAction:'confiar',
+      note:'Este vem de fora da escola e tem um link, mas o domínio é exatamente ctt.pt — nos e-mails falsos dos CTT costuma haver algo a mais (por exemplo, ctt-entregas-pt.info). Não pede pagamentos nem dados e não cria pressa. Um remetente externo não é suspeito só por ser externo: conta o domínio exato e o que o e-mail pede.' },
+
+    /* --- phishing a fingir a escola --- */
+    { sender:'secretaria.escola.acores@gmail.com', subject:'A tua conta da escola vai ser suspensa hoje',
+      body:'Bom dia. Por motivos de segurança, todos os alunos têm de confirmar a palavra-passe da conta da escola até ao fim do dia. Responde a este e-mail com a tua palavra-passe atual para não perderes o acesso.',
+      icon:'🏫',
+      trueClues:['sender','brand','subjectAlarm','urgency'], correctAction:'eliminar',
+      note:'As mensagens da escola vêm de @edu.azores.gov.pt. Este vem de um endereço Gmail — qualquer pessoa cria uma conta assim, com o nome que quiser. E nenhuma escola pede a palavra-passe por e-mail.' },
+
+    { sender:'secretaria@edu-azores-gov.pt', subject:'Notas do 1.º período — acede já à nova plataforma',
+      body:'Bom dia. As notas do 1.º período já estão disponíveis na nova plataforma. Entra com o teu utilizador e palavra-passe nas próximas 24 horas ou perdes o acesso.',
+      link:'edu-azores-gov.pt/notas', icon:'📊',
+      trueClues:['sender','brand','subjectAlarm','link','urgency'], correctAction:'eliminar',
+      note:'À primeira vista parece da escola, mas o domínio é edu-azores-gov.pt (com hífenes) em vez de edu.azores.gov.pt (com pontos). Lê o endereço letra a letra — pontos e hífenes fazem toda a diferença.' }
   ];
 
   /* ---------------- fase 2: formal ou informal ---------------- */
   var TONE_ROUNDS = [
-    { text:'Boa tarde, professora,\nEscrevo para confirmar se devemos entregar o trabalho de Matemática em suporte digital.\nCom os melhores cumprimentos,\nBeatriz, 9ºB, nº14',
+    { to:'Professora de Matemática', text:'Boa tarde, professora,\nEscrevo para confirmar se devemos entregar o trabalho de Matemática em suporte digital.\nCom os melhores cumprimentos,\nBeatriz, 9ºB, nº14',
       correct:'formal', explain:'Saudação e despedida cuidadas, linguagem cuidada e assinatura com turma e número — é um e-mail formal.' },
-    { text:'Oláá! Vais à festa de anos do Tiago sábado? Diz-me só para eu saber se levo bolo tb 😄',
+    { to:'Um amigo', text:'Oláá! Vais à festa de anos do Tiago sábado? Diz-me só para eu saber se levo bolo tb 😄',
       correct:'informal', explain:'Linguagem descontraída, abreviaturas ("tb") e emoji — é um e-mail informal, entre amigos.' },
-    { text:'Boa tarde,\nVenho por este meio solicitar informação sobre os horários da biblioteca municipal durante as férias.\nAtentamente,\nPedro Sousa',
+    { to:'Biblioteca Municipal', text:'Boa tarde,\nVenho por este meio solicitar informação sobre os horários da biblioteca municipal durante as férias.\nAtentamente,\nPedro Sousa',
       correct:'formal', explain:'Dirigido a uma entidade pública, com linguagem cuidada e despedida formal ("Atentamente").' },
-    { text:'Oi! Combinamos amanhã às 15h para o trabalho de grupo? Manda-me mensagem qd puderes.\nAbraço, Marta',
+    { to:'Colega de turma', text:'Oi! Combinamos amanhã às 15h para o trabalho de grupo? Manda-me mensagem qd puderes.\nAbraço, Marta',
       correct:'informal', explain:'Tom próximo entre colegas e abreviatura ("qd") — é um e-mail informal.' },
-    { text:'Bom dia, Professor,\nVenho por este meio informar que faltarei à aula de amanhã por motivos de saúde, anexando a devida justificação.\nCom os melhores cumprimentos,\nRodrigo, 8ºC, nº7',
+    { to:'Diretor de Turma', text:'Bom dia, Professor,\nVenho por este meio informar que faltarei à aula de amanhã por motivos de saúde, anexando a devida justificação.\nCom os melhores cumprimentos,\nRodrigo, 8ºC, nº7',
       correct:'formal', explain:'Linguagem cuidada, justificação formal e assinatura completa com turma e número — é um e-mail formal.' },
-    { text:'Boaaa, ainda vais emprestar-me o jogo?? Passo aí depois das aulas, ok? 🎮',
+    { to:'Um amigo', text:'Boaaa, ainda vais emprestar-me o jogo?? Passo aí depois das aulas, ok? 🎮',
       correct:'informal', explain:'Pontuação exagerada, emoji e tom muito descontraído entre amigos — é um e-mail informal.' },
-    { text:'Exmo. Senhor Diretor,\nSolicito, respeitosamente, autorização para a realização de uma visita de estudo ao Museu do Baleal no próximo mês.\nCom os melhores cumprimentos,\nA Delegada de Turma',
+    { to:'Diretor da escola', text:'Exmo. Senhor Diretor,\nSolicito, respeitosamente, autorização para a realização de uma visita de estudo ao Museu do Baleal no próximo mês.\nCom os melhores cumprimentos,\nA Delegada de Turma',
       correct:'formal', explain:'Forma de tratamento cerimoniosa ("Exmo. Senhor Diretor") e pedido formal — é claramente um e-mail formal.' },
-    { text:'Malta, alguém tem os apontamentos de hoje? Faltei e preciso mesmo deles até logo à noite, obrigadaaa 🙏',
+    { to:'Grupo de colegas', text:'Malta, alguém tem os apontamentos de hoje? Faltei e preciso mesmo deles até logo à noite, obrigadaaa 🙏',
       correct:'informal', explain:'Tratamento coloquial ("Malta"), abreviaturas e emoji — é um e-mail informal.' },
-    { text:'Bom dia,\nVenho por este meio solicitar uma declaração de matrícula para efeitos de candidatura a uma bolsa de estudo.\nCom os melhores cumprimentos,\nCarla Nunes, 12ºA, nº9',
+    { to:'Secretaria da escola', text:'Bom dia,\nVenho por este meio solicitar uma declaração de matrícula para efeitos de candidatura a apoio da Ação Social Escolar.\nCom os melhores cumprimentos,\nCarla Nunes, 9ºA, nº9',
       correct:'formal', explain:'Pedido formal a uma entidade escolar, com linguagem cuidada e assinatura completa — é um e-mail formal.' },
-    { text:'Exma. Senhora Coordenadora,\nVenho por este meio solicitar autorização para a alteração do horário de apoio ao estudo.\nCom os melhores cumprimentos,\nEncarregada de Educação de Rui Costa',
+    { to:'Coordenadora', text:'Exma. Senhora Coordenadora,\nVenho por este meio solicitar autorização para a alteração do horário de apoio ao estudo.\nCom os melhores cumprimentos,\nEncarregada de Educação de Rui Costa',
       correct:'formal', explain:'Forma de tratamento cerimoniosa e pedido formal a uma coordenadora — é claramente um e-mail formal.' },
-    { text:'Bom dia, Professora,\nInformo que entregarei o trabalho de grupo com um dia de atraso, devido a um problema técnico no computador.\nCom os melhores cumprimentos,\nDiogo Farias, 9ºC, nº11',
+    { to:'Professora', text:'Bom dia, Professora,\nInformo que entregarei o trabalho de grupo com um dia de atraso, devido a um problema técnico no computador.\nCom os melhores cumprimentos,\nDiogo Farias, 9ºC, nº11',
       correct:'formal', explain:'Justificação apresentada com linguagem cuidada e assinatura completa — é um e-mail formal.' },
-    { text:'Ei, viste os resultados do jogo de ontem?? Foi incrível! Fala comigo mais logo 😅',
+    { to:'Um amigo', text:'Ei, viste os resultados do jogo de ontem?? Foi incrível! Fala comigo mais logo 😅',
       correct:'informal', explain:'Tom descontraído entre amigos e emoji — é um e-mail informal.' },
-    { text:'Oii, esqueci-me da mochila na sala. Podes verificar se ainda lá está? Obrigada desde já 🙏',
+    { to:'Colega de turma', text:'Oii, esqueci-me da mochila na sala. Podes verificar se ainda lá está? Obrigada desde já 🙏',
       correct:'informal', explain:'Tratamento descontraído ("Oii") e tom próximo — é um e-mail informal.' },
-    { text:'Bora combinar o trabalho de Português? Podemos falar no intervalo, ok? 😉',
+    { to:'Colega de turma', text:'Bora combinar o trabalho de Português? Podemos falar no intervalo, ok? 😉',
       correct:'informal', explain:'Linguagem coloquial ("Bora") e emoji — é um e-mail informal.' },
-    { text:'Bom dia,\nVenho por este meio pedir desculpa pelo atraso na entrega do trabalho de Ciências, devido a um problema de saúde.\nCom os melhores cumprimentos,\nInês Ramos, 7ºA, nº18',
+    { to:'Professora de Ciências', text:'Bom dia,\nVenho por este meio pedir desculpa pelo atraso na entrega do trabalho de Ciências, devido a um problema de saúde.\nCom os melhores cumprimentos,\nInês Ramos, 7ºA, nº18',
       correct:'formal', explain:'Pedido de desculpa com linguagem cuidada e assinatura completa com turma e número — é um e-mail formal.' },
-    { text:'Eii, já viste o grupo da turma? Marcaram o trabalho para 6ª feira 😳 vamos combinar?',
+    { to:'Colega de turma', text:'Eii, já viste o grupo da turma? Marcaram o trabalho para 6ª feira 😳 vamos combinar?',
       correct:'informal', explain:'Tratamento descontraído ("Eii") e emoji entre colegas — é um e-mail informal.' },
-    { text:'Exmo. Senhor Presidente da Associação de Estudantes,\nSolicito autorização para afixar um cartaz sobre a angariação de fundos para a viagem de finalistas.\nCom os melhores cumprimentos,\nO Delegado de Turma',
+    { to:'Presidente da Associação de Estudantes', text:'Exmo. Senhor Presidente da Associação de Estudantes,\nSolicito autorização para afixar um cartaz sobre a angariação de fundos para a viagem de finalistas.\nCom os melhores cumprimentos,\nO Delegado de Turma',
       correct:'formal', explain:'Forma de tratamento cerimoniosa e pedido formal a um cargo da escola — é um e-mail formal.' },
-    { text:'Boa! Passas-me os apontamentos de Físico-Química? Prometo que devolvo já a seguir 🙏',
+    { to:'Colega de turma', text:'Boa! Passas-me os apontamentos de Físico-Química? Prometo que devolvo já a seguir 🙏',
       correct:'informal', explain:'Tom direto e próximo entre colegas, com emoji — é um e-mail informal.' },
-    { text:'Boa tarde, Professora,\nVenho por este meio solicitar o reagendamento do teste de Inglês, por coincidir com uma consulta médica.\nCom os melhores cumprimentos,\nMarco Andrade, 10ºB, nº21',
+    { to:'Professora de Inglês', text:'Boa tarde, Professora,\nVenho por este meio solicitar o reagendamento do teste de Inglês, por coincidir com uma consulta médica.\nCom os melhores cumprimentos,\nMarco Andrade, 8ºB, nº21',
       correct:'formal', explain:'Pedido formal justificado, com linguagem cuidada e assinatura completa — é um e-mail formal.' },
-    { text:'Oi maninha, esqueci-me da chave de casa, deixa a porta aberta pfff 😅',
+    { to:'Irmã', text:'Oi maninha, esqueci-me da chave de casa, deixa a porta aberta pfff 😅',
       correct:'informal', explain:'Tratamento familiar ("maninha") e abreviatura ("pfff") — é um e-mail informal.' },
-    { text:'Exma. Senhora Diretora,\nVenho por este meio informar que a turma do 9ºC gostaria de propor uma visita de estudo ao Observatório Astronómico.\nCom os melhores cumprimentos,\nA Delegada de Turma',
+    { to:'Diretora da escola', text:'Exma. Senhora Diretora,\nVenho por este meio informar que a turma do 9ºC gostaria de propor uma visita de estudo ao Observatório Astronómico.\nCom os melhores cumprimentos,\nA Delegada de Turma',
       correct:'formal', explain:'Forma de tratamento cerimoniosa e proposta formal à direção da escola — é um e-mail formal.' },
-    { text:'Ehh, vamos jogar à bola depois das aulas? Chama mais malta se quiseres 😄⚽',
+    { to:'Amigos', text:'Ehh, vamos jogar à bola depois das aulas? Chama mais malta se quiseres 😄⚽',
       correct:'informal', explain:'Tom descontraído e emoji entre amigos — é um e-mail informal.' },
-    { text:'Bom dia,\nSolicito, por favor, o envio da ficha de inscrição para o Clube de Robótica.\nCom os melhores cumprimentos,\nSofia Martins, 8ºA, nº9',
+    { to:'Clube de Robótica', text:'Bom dia,\nSolicito, por favor, o envio da ficha de inscrição para o Clube de Robótica.\nCom os melhores cumprimentos,\nSofia Martins, 8ºA, nº9',
       correct:'formal', explain:'Pedido cortês com linguagem cuidada e assinatura completa — é um e-mail formal.' },
-    { text:'Oii, foste à aula de hoje? Passa-me lá o que a stora disse sff',
+    { to:'Colega de turma', text:'Oii, foste à aula de hoje? Passa-me lá o que a stora disse sff',
       correct:'informal', explain:'Linguagem coloquial ("stora", "sff") — é um e-mail informal.' },
-    { text:'Exmo. Senhor Encarregado de Educação,\nVenho por este meio informar que o seu educando faltou hoje à aula sem justificação.\nCom os melhores cumprimentos,\nA Diretora de Turma',
+    { to:'Encarregado de Educação', text:'Exmo. Senhor Encarregado de Educação,\nVenho por este meio informar que o seu educando faltou hoje à aula sem justificação.\nCom os melhores cumprimentos,\nA Diretora de Turma',
       correct:'formal', explain:'Forma de tratamento cerimoniosa e comunicação formal da escola a um encarregado de educação — é um e-mail formal.' },
-    { text:'Boaaas, ainda tens aquele livro que te emprestei? Preciso dele para o teste de amanhã 📚',
+    { to:'Colega de turma', text:'Boaaas, ainda tens aquele livro que te emprestei? Preciso dele para o teste de amanhã 📚',
       correct:'informal', explain:'Tom próximo e descontraído entre colegas — é um e-mail informal.' },
-    { text:'Bom dia, Professor,\nGostaria de saber se é possível marcar um momento para esclarecer algumas dúvidas sobre a matéria de Matemática.\nCom os melhores cumprimentos,\nRicardo Nunes, 11ºC, nº15',
+    { to:'Professor de Matemática', text:'Bom dia, Professor,\nGostaria de saber se é possível marcar um momento para esclarecer algumas dúvidas sobre a matéria de Matemática.\nCom os melhores cumprimentos,\nRicardo Nunes, 9ºA, nº15',
       correct:'formal', explain:'Pedido cuidado e assinatura completa com turma e número — é um e-mail formal.' },
-    { text:'Malta, alguém sabe a que horas é o jogo do inter-turmas? Já não me lembro 😂',
-      correct:'informal', explain:'Tratamento coloquial ("Malta") e emoji — é um e-mail informal.' }
+    { to:'Grupo da turma', text:'Malta, alguém sabe a que horas é o jogo do inter-turmas? Já não me lembro 😂',
+      correct:'informal', explain:'Tratamento coloquial ("Malta") e emoji — é um e-mail informal.' },
+    { to:'Professora de Matemática', text:'Boa tarde, Professora!\nObrigado pela explicação de hoje, ajudou-me imenso a perceber as equações.\nBom fim de semana!\nFrancisco, 9ºB',
+      correct:'formal', explain:'Não tem fórmulas cerimoniosas, mas a saudação, o tratamento por \"Professora\" e a despedida cuidada mostram respeito — o destinatário é uma professora, por isso o tom é formal.' },
+    { to:'Colega de turma', text:'Olá Tiago, consegues enviar-me o link do documento partilhado? Não o encontro.\nObrigada, Marta',
+      correct:'informal', explain:'Sem emoji nem abreviaturas, mas o tratamento pelo primeiro nome e o tom próximo entre colegas fazem dele um e-mail informal.' },
+    { to:'Professor de História', text:'Bom dia, Professor.\nPodia dizer-me a que horas começa o teste de amanhã?\nObrigado,\nBruno, 8ºC',
+      correct:'formal', explain:'Pedido curto e direto, mas cortês e com o tratamento adequado a um professor — é um e-mail formal.' },
+    { to:'Mãe', text:'Boa noite, mãe! Vou chegar um bocadinho mais tarde, fico a estudar em casa da Rita.\nBeijinhos, Sofia',
+      correct:'informal', explain:'Mesmo com \"Boa noite\", o tom é familiar e afetuoso (\"mãe\", \"Beijinhos\") — é um e-mail informal. O que decide o tom é quem recebe.' }
   ];
+
+  
 
   /* ---------------- fase 3: elementos do e-mail ---------------- */
   var ELEMENT_DEFS = [
@@ -1125,7 +1179,7 @@
     {term:'Assunto', def:'Indica de forma clara o tema da mensagem.'},
     {term:'Anexo', def:'Ficheiro enviado juntamente com a mensagem.'},
     {term:'Assinatura', def:'Identificação de quem escreve — nome, turma e número — nas últimas linhas da mensagem.'},
-    {term:'Corpo da mensagem', def:'O texto principal do e-mail, onde se escreve o assunto da mensagem em detalhe.'},
+    {term:'Corpo da mensagem', def:'O texto principal do e-mail, onde se desenvolve aquilo que se quer dizer.'},
     {term:'Responder a Todos', def:'Envia a resposta ao remetente e a todos os outros destinatários da mensagem original.'},
     {term:'Reencaminhar', def:'Envia a mensagem recebida, tal como está, para outra(s) pessoa(s).'},
     {term:'Rascunho', def:'Mensagem guardada mas ainda não enviada, para continuar a escrever mais tarde.'},
@@ -1147,14 +1201,14 @@
     { short:'Não reencaminhar correntes', full:'Não reencaminhes correntes ou mensagens duvidosas — verifica a informação antes de a partilhares.' }
   ];
   var NETIQUETA_ROUNDS = [
-    { text:'ASSUNTO: PRECISO DE AJUDA JÁ!!!\nPROFESSORA, PODE RESPONDER-ME O MAIS DEPRESSA POSSÍVEL???', ruleIdx:0 },
-    { text:'bom dia prof, axo qq n consegui fzr o trab hj, pod ser amanha? obg', ruleIdx:1 },
-    { text:'Ó Diretor, então tá tudo fixe? Preciso que me safe com uma coisa, ok?', ruleIdx:2 },
-    { text:'Ora bem, hoje começou a chover e eu estava a pensar no fim de semana em que fui à praia e depois lembrei-me também de perguntar sobre o teste, já agora sabe se sai a matéria toda ou não, já não me lembro se era para entregar hoje ou amanhã...', ruleIdx:3 },
-    { text:'Assunto: (em branco)\nBoa tarde, professora. Escrevo-lhe sobre aquele assunto que falámos.', ruleIdx:4 },
-    { text:'Já disse que o teu trabalho está uma porcaria, nem sei como é que ainda andas nesta escola.', ruleIdx:5 },
-    { text:'Aproveita já! Desconto de 90% só hoje — clica aqui e ganha um prémio!!! (enviado a toda a turma sem ninguém ter pedido)', ruleIdx:6 },
-    { text:'Reencaminha esta mensagem a 10 amigos até à meia-noite ou terás azar durante 7 anos!', ruleIdx:7 }
+    { text:'ASSUNTO: PRECISO DE AJUDA JÁ!!!\nPROFESSORA, PODE RESPONDER-ME O MAIS DEPRESSA POSSÍVEL???', ruleIdx:0, distractors:[6,7] },
+    { text:'Boa tarde, professora. N consegui fzr o trabalho hj pq tive treino. Pod ser p amanha? Obg.', ruleIdx:1, distractors:[5,6] },
+    { text:'Ei Diretor, tudo fixe contigo? Preciso que me safes de uma cena, ok? Bora lá resolver isso.', ruleIdx:2, distractors:[6,7] },
+    { text:'Ora bem, hoje começou a chover e eu estava a pensar no fim de semana em que fui à praia e depois lembrei-me também de perguntar sobre o teste, já agora sabe se sai a matéria toda ou não, já não me lembro se era para entregar hoje ou amanhã...', ruleIdx:3, distractors:[0,6] },
+    { text:'Assunto: (em branco)\nBoa tarde, professora. Gostaria de saber se posso entregar o trabalho de Ciências na sexta-feira, por favor.', ruleIdx:4, distractors:[1,6] },
+    { text:'Já disse que o teu trabalho está uma porcaria, nem sei como é que ainda andas nesta escola.', ruleIdx:5, distractors:[1,6] },
+    { text:'Aproveita já! Desconto de 90% só hoje — clica aqui e ganha um prémio!!! (enviado a toda a turma sem ninguém ter pedido)', ruleIdx:6, distractors:[2,3] },
+    { text:'Reencaminha esta mensagem a 10 amigos até à meia-noite ou terás azar durante 7 anos!', ruleIdx:7, distractors:[1,2] }
   ];
 
   /* ---------------- fase 3 (extra): estrutura do endereço ---------------- */
@@ -1166,17 +1220,22 @@
     { address:'mariasilva@', valid:false, reason:'Falta o domínio depois do "@" (a entidade que fornece o serviço).' },
     { address:'ana-rodrigues@colegio.pt', valid:true, reason:'Segue a forma utilizador@domínio, sem espaços nem acentos.' },
     { address:'miguelferreira.pt', valid:false, reason:'Falta o símbolo "@" — sem ele, não é possível identificar o domínio.' },
-    { address:'rui.costa@escola pt', valid:false, reason:'Tem um espaço no domínio, em vez de um ponto (deveria ser "escola.pt").' }
+    { address:'rui.costa@escola pt', valid:false, reason:'Tem um espaço no domínio, em vez de um ponto (deveria ser "escola.pt").' },
+    { address:'joao.silva@@escola.pt', valid:false, reason:'Tem dois "@" seguidos — um endereço só pode ter um "@".' },
+    { address:'@escola.pt', valid:false, reason:'Falta o nome de utilizador antes do "@".' },
+    { address:'joao..silva@escola.pt', valid:false, reason:'Tem dois pontos seguidos no nome de utilizador — não é permitido.' },
+    { address:'ines.pereira19@edu.azores.gov.pt', valid:true, reason:'Pontos e números são permitidos: segue a forma utilizador@domínio, sem espaços nem acentos.' },
+    { address:'suporte@instagrarn-ajuda.com', valid:true, reason:'Está escrito de forma válida (utilizador@domínio) — mas válido não quer dizer de confiança! Repara em "instagrarn": tem "rn" no lugar do "m".' }
   ];
 
   /* ---------------- fase 3: conjunto combinado de perguntas ---------------- */
   var KNOWLEDGE_ITEMS = ELEMENT_DEFS.map(function(d){ return { type:'term', term:d.term, def:d.def }; })
-    .concat(NETIQUETA_ROUNDS.map(function(r){ return { type:'netiqueta', text:r.text, ruleIdx:r.ruleIdx }; }))
+    .concat(NETIQUETA_ROUNDS.map(function(r){ return { type:'netiqueta', text:r.text, ruleIdx:r.ruleIdx, distractors:r.distractors }; }))
     .concat(ADDRESS_ROUNDS.map(function(a){ return { type:'address', address:a.address, valid:a.valid, reason:a.reason }; }));
 
   /* ---------------- state ---------------- */
   var lastFocusedEl = null;
-  var state = { round:0, score:0, selected:{}, playerName:'', results:[], order:[],
+  var state = { practice:false, failed:[], round:0, score:0, selected:{}, playerName:'', results:[], order:[],
     maxScore:0, totalClues:0, phase:'detective',
     toneIndex:0, toneScore:0, toneOrder:[], toneResults:[],
     elementsIndex:0, elementsScore:0, elementsOrder:[], elementsResults:[] };
@@ -1218,10 +1277,14 @@
     });
   }
 
+  /* percentagem mínima em cada um dos 3 modos para ganhar o emblema "Detetive Completo" (0 = qualquer pontuação) */
+  var MISSION_MIN_PCT = 50;
+  Array.prototype.forEach.call(document.querySelectorAll('.mission-min'), function(el){ el.textContent = MISSION_MIN_PCT; });
+
   /* ---------------- info por modo (independentes) ---------------- */
   var MODE_INFO = {
     detective: {
-      label: '🕵️ Deteção de Phishing', icon: '🕵️', storageKey: 'vb_best_detective',
+      label: '🕵️ Deteção de Phishing', icon: '🕵️', storageKey: 'vb_best2_detective',
       certTitle: 'CERTIFICADO DE DETETIVE DIGITAL',
       ranks: [
         {min:0.9, rank:'Detetive-Chefe VanBerto\'s 🏆', msg:'Olho de lince — não te escapa nenhuma armadilha.', mood:'happy'},
@@ -1231,7 +1294,7 @@
       ]
     },
     tone: {
-      label: '💬 Formal ou Informal', icon: '💬', storageKey: 'vb_best_tone',
+      label: '💬 Formal ou Informal', icon: '💬', storageKey: 'vb_best2_tone',
       certTitle: 'CERTIFICADO DE TOM CERTO',
       ranks: [
         {min:0.9, rank:'Mestre da Netiqueta VanBerto\'s 🏆', msg:'Distingues logo o tom certo em qualquer mensagem!', mood:'happy'},
@@ -1241,7 +1304,7 @@
       ]
     },
     elements: {
-      label: '📧 Elementos do E-mail', icon: '📧', storageKey: 'vb_best_elements',
+      label: '📧 Elementos do E-mail', icon: '📧', storageKey: 'vb_best2_elements',
       certTitle: 'CERTIFICADO DE CONHECIMENTOS DE E-MAIL',
       ranks: [
         {min:0.9, rank:'Mestre do E-mail VanBerto\'s 🏆', msg:'Conheces na perfeição todos os elementos de um e-mail!', mood:'happy'},
@@ -1252,15 +1315,22 @@
     }
   };
 
-  /* quantas das 3 missões já têm pontuação para este jogador (nome em minúsculas) */
+  /* melhor resultado guardado (em %) deste jogador neste modo — ou null */
+  function readBest(mode, playerKey){
+    try{
+      var raw = localStorage.getItem(MODE_INFO[mode].storageKey);
+      var map = raw ? JSON.parse(raw) : null;
+      var e = (map && typeof map === 'object') ? map[playerKey] : null;
+      return (e && typeof e === 'object' && typeof e.pct === 'number') ? e : null;
+    }catch(err){ return null; }
+  }
+
+  /* quantas das 3 missões já estão cumpridas (>= MISSION_MIN_PCT) para este jogador (nome em minúsculas) */
   function countMissionsDone(playerKey){
     var n = 0;
     Object.keys(MODE_INFO).forEach(function(mode){
-      try{
-        var raw = localStorage.getItem(MODE_INFO[mode].storageKey);
-        var map = raw ? JSON.parse(raw) : null;
-        if(map && typeof map === 'object' && map[playerKey] > 0) n++;
-      }catch(e){}
+      var e = readBest(mode, playerKey);
+      if(e && e.pts > 0 && e.pct >= MISSION_MIN_PCT) n++;
     });
     return n;
   }
@@ -1275,17 +1345,13 @@
     Object.keys(MODE_INFO).forEach(function(mode){
       var el = document.getElementById('best-' + mode);
       if(!el) return;
-      try{
-        var raw = localStorage.getItem(MODE_INFO[mode].storageKey);
-        var map = raw ? JSON.parse(raw) : null;
-        var score = (map && typeof map === 'object') ? map[currentName] : null;
-        if(!currentName || !(score > 0)){
-          el.style.display = 'none';
-          return;
-        }
-        el.style.display = 'block';
-        el.textContent = '🏆 O teu melhor: ' + score + ' pts';
-      }catch(e){ el.style.display = 'none'; }
+      var e = currentName ? readBest(mode, currentName) : null;
+      if(!e || !(e.pts > 0)){
+        el.style.display = 'none';
+        return;
+      }
+      el.style.display = 'block';
+      el.textContent = '🏆 O teu melhor: ' + e.pct + '% (' + e.pts + '/' + e.max + ' pts)';
     });
   }
   updateBestPills();
@@ -1303,6 +1369,7 @@
 
   document.getElementById('start-detective-btn').addEventListener('click', function(){
     capturePlayerName();
+    state.practice = false;
     state.score = 0;
     state.phase = 'detective';
     var roundCountEl = document.getElementById('round-count');
@@ -1318,11 +1385,13 @@
 
   document.getElementById('start-tone-btn').addEventListener('click', function(){
     capturePlayerName();
+    state.practice = false;
     startTonePhase();
   });
 
   document.getElementById('start-elements-btn').addEventListener('click', function(){
     capturePlayerName();
+    state.practice = false;
     startElementsPhase();
   });
 
@@ -1535,6 +1604,9 @@
         report.push({row:'Marcaste, mas não era: ' + c.label, cls:'false', mk:'✖', hint:'Não era um sinal de alerta neste e-mail — não fazia parte da armadilha.', pts:'-1'});
       }
     });
+    if(cluePts < 0){
+      report.push({row:'Ajuste: nas pistas, cada ronda vale no mínimo 0 pontos', cls:'miss', mk:'○', hint:'', pts:'+' + (-cluePts)});
+    }
     cluePts = Math.max(0, cluePts);
     var actionRight = action === r.correctAction;
     var actionPts = actionRight ? 3 : 0;
@@ -1638,6 +1710,7 @@
     paint('vb-tone','neutral');
     var t = TONE_ROUNDS[state.toneOrder[state.toneIndex]];
     document.getElementById('tone-count').textContent = (state.toneIndex+1) + ' de ' + state.toneOrder.length;
+    document.getElementById('tone-to').textContent = t.to || '';
     document.getElementById('tone-text').textContent = t.text;
   }
 
@@ -1729,7 +1802,9 @@
       termEl.textContent = item.text;
       var correctRule = NETIQUETA_RULES[item.ruleIdx];
       var otherRules = NETIQUETA_RULES.filter(function(_,i){ return i !== item.ruleIdx; });
-      var distractorRules = shuffle(otherRules).slice(0,2).map(function(r){ return r.short; });
+      var distractorRules = item.distractors
+        ? item.distractors.map(function(i){ return NETIQUETA_RULES[i].short; })
+        : shuffle(otherRules).slice(0,2).map(function(r){ return r.short; });
       var ruleOptions = shuffle([correctRule.short].concat(distractorRules));
       ruleOptions.forEach(function(optLabel){
         var btn = document.createElement('button');
@@ -1795,6 +1870,51 @@
     setTimeout(function(){ document.getElementById('vb-feedback').classList.remove('vb-bounce','vb-shake'); }, 650);
   }
 
+  /* itens em que o aluno não teve pontuação máxima (para o botão "Praticar as que falhei") */
+  function collectFailed(){
+    if(state.phase === 'detective'){
+      return state.order.filter(function(gi, pos){
+        var res = state.results[pos];
+        return res && res.roundPts < res.maxRoundPts;
+      });
+    }
+    if(state.phase === 'tone'){
+      return state.toneOrder.filter(function(ti, pos){
+        var res = state.toneResults[pos];
+        return !(res && res.correct);
+      });
+    }
+    return state.elementsOrder.filter(function(idx, pos){
+      var res = state.elementsResults[pos];
+      return !(res && res.correct);
+    });
+  }
+
+  document.getElementById('btn-practice').addEventListener('click', function(){
+    var failed = shuffle(state.failed || []);
+    if(!failed.length) return;
+    sfxClick();
+    state.practice = true;
+    if(state.phase === 'detective'){
+      state.score = 0;
+      state.order = failed;
+      state.results = state.order.map(function(){ return null; });
+      state.maxScore = state.order.reduce(function(sum,gi){ return sum + ALL_ROUNDS[gi].trueClues.length + 3; },0);
+      state.totalClues = state.order.reduce(function(sum,gi){ return sum + ALL_ROUNDS[gi].trueClues.length; },0);
+      showScreen('game');
+      renderInbox();
+    } else if(state.phase === 'tone'){
+      state.toneOrder = failed; state.toneIndex = 0; state.toneScore = 0; state.toneResults = [];
+      showScreen('tone');
+      renderTone();
+    } else {
+      state.elementsOrder = failed; state.elementsIndex = 0; state.elementsScore = 0; state.elementsResults = [];
+      showScreen('elements');
+      renderElements();
+    }
+    setTimeout(focusPrimaryAnswer, 0);
+  });
+
   function finishGame(){
     showScreen('end');
     var info = MODE_INFO[state.phase];
@@ -1838,22 +1958,41 @@
     document.getElementById('copy-feedback').textContent = '';
     document.body.classList.remove('print-cert-mode');
 
+    var isPractice = !!state.practice;
+    var failedList = collectFailed();
+    state.failed = failedList;
+    var practiceBtn = document.getElementById('btn-practice');
+    practiceBtn.style.display = failedList.length ? '' : 'none';
+    practiceBtn.textContent = '🔁 Praticar as que falhei (' + failedList.length + ')';
+    document.getElementById('btn-cert').style.display = isPractice ? 'none' : '';
+    document.getElementById('btn-copy').style.display = isPractice ? 'none' : '';
+    if(isPractice){
+      document.getElementById('end-mode-pill').textContent = '🔁 Treino — ' + info.label;
+      document.getElementById('end-rank').textContent = 'Treino concluído';
+      document.getElementById('end-msg').textContent = pct >= 0.9
+        ? 'Muito bem — já dominas estas! O treino não conta para os recordes.'
+        : 'Vai melhorando! Repete o treino quando quiseres — não conta para os recordes.';
+    }
+
     var justCompleted = false;
-    try{
-      var raw = localStorage.getItem(info.storageKey);
-      var map = raw ? JSON.parse(raw) : {};
-      if(!map || typeof map !== 'object'){ map = {}; }
-      var key = state.playerName.trim().toLowerCase();
-      var totalModes = Object.keys(MODE_INFO).length;
-      var doneBefore = countMissionsDone(key);
-      var best = map[key] || 0;
-      if(totalScore > best){
-        map[key] = totalScore;
-        localStorage.setItem(info.storageKey, JSON.stringify(map));
-      }
-      /* só celebra no jogo em que a 3.ª missão passa a estar cumprida */
-      justCompleted = doneBefore < totalModes && countMissionsDone(key) === totalModes;
-    }catch(e){}
+    if(!isPractice){
+      try{
+        var raw = localStorage.getItem(info.storageKey);
+        var map = raw ? JSON.parse(raw) : {};
+        if(!map || typeof map !== 'object'){ map = {}; }
+        var key = state.playerName.trim().toLowerCase();
+        var totalModes = Object.keys(MODE_INFO).length;
+        var doneBefore = countMissionsDone(key);
+        var pctRounded = Math.round(pct * 100);
+        var best = readBest(state.phase, key);
+        if(!best || pctRounded > best.pct){
+          map[key] = { pct: pctRounded, pts: totalScore, max: totalMax };
+          localStorage.setItem(info.storageKey, JSON.stringify(map));
+        }
+        /* só celebra no jogo em que a 3.ª missão passa a estar cumprida */
+        justCompleted = doneBefore < totalModes && countMissionsDone(key) === totalModes;
+      }catch(e){}
+    }
     var endMissions = document.getElementById('end-missions');
     if(endMissions){ endMissions.style.display = justCompleted ? 'block' : 'none'; }
     if(justCompleted && pct < 0.7) sfxWin();
