@@ -1116,7 +1116,57 @@
       body:'Bom dia. As notas do 1.º período já estão disponíveis na nova plataforma. Entra com o teu utilizador e palavra-passe nas próximas 24 horas ou perdes o acesso.',
       link:'edu-azores-gov.pt/notas', icon:'📊',
       trueClues:['sender','brand','subjectAlarm','link','urgency'], correctAction:'eliminar',
-      note:'À primeira vista parece da escola, mas o domínio é edu-azores-gov.pt (com hífenes) em vez de edu.azores.gov.pt (com pontos). Lê o endereço letra a letra — pontos e hífenes fazem toda a diferença.' }
+      note:'À primeira vista parece da escola, mas o domínio é edu-azores-gov.pt (com hífenes) em vez de edu.azores.gov.pt (com pontos). Lê o endereço letra a letra — pontos e hífenes fazem toda a diferença.' },
+
+    /* --- seguros de domínios variados: o domínio certo é o da entidade, não o "final" do endereço --- */
+    { sender:'no-reply@spotify.com', subject:'Bem-vindo ao Spotify!',
+      body:'Olá! A tua conta Spotify foi criada com sucesso. Não precisas de fazer nada — já podes ouvir as tuas músicas favoritas.',
+      link:'spotify.com', icon:'🎧',
+      trueClues:[], correctAction:'confiar',
+      note:'O domínio é exatamente spotify.com e o e-mail não pede palavras-passe nem pagamentos. Se foste tu a criar a conta, é normal recebê-lo. Se não tivesses criado nenhuma, a história mudava: e-mails que chegam sem os esperares merecem sempre cuidado.' },
+
+    { sender:'noreply@khanacademy.org', subject:'Parabéns! Concluíste a unidade «Frações»',
+      body:'Olá! Concluíste a unidade «Frações» de Matemática. Quando quiseres, podes continuar a aprender a partir do ponto onde ficaste.',
+      link:'pt.khanacademy.org', icon:'🧮',
+      trueClues:[], correctAction:'confiar',
+      note:'Este e-mail vem de um endereço .org, não de .pt nem da escola, e mesmo assim é seguro: o domínio é o da própria entidade e a mensagem não pede nada de estranho. Ser diferente do que conheces não torna um e-mail suspeito — o que conta é o domínio exato e o que ele pede.' },
+
+    { sender:'avo.lurdes57@gmail.com', subject:'Saudades tuas',
+      body:'Olá, meu tesouro! Gostei tanto de te ver no domingo. Diz aos teus pais que o bolo ficou ótimo. Quando puderes, liga-me. Um beijinho da avó.',
+      icon:'👵',
+      trueClues:[], correctAction:'confiar',
+      note:'Um endereço Gmail não é suspeito só por ser Gmail: muitas pessoas reais usam-no. Aqui é alguém que conheces, a escrever de forma normal, sem pedir dinheiro, dados nem cliques. O que faz uma mensagem ser suspeita é o que ela pede, não o serviço de e-mail.' },
+
+    { sender:'no-reply@accounts.google.com', subject:'Alerta de segurança: novo início de sessão',
+      body:'Olá! Detetámos um novo início de sessão na tua conta Google, num telemóvel Android, hoje às 15:42. Se foste tu, não precisas de fazer nada. Se não reconheces, altera a tua palavra-passe diretamente em myaccount.google.com.',
+      icon:'🔔',
+      trueClues:[], correctAction:'confiar',
+      note:'Os alertas de segurança verdadeiros existem. Este vem do domínio certo (accounts.google.com), não te obriga a agir já e não pede a palavra-passe no e-mail. Mesmo assim, se tiveres dúvidas, não cliques em nada: abre tu próprio o site, escrevendo o endereço no browser.' },
+
+    /* --- falsos mais credíveis: .pt, sem erros, sem maiúsculas --- */
+    { sender:'apoio@mbway-seguranca.pt', subject:'Pedido de pagamento MB WAY pendente',
+      body:'Tens um pedido de pagamento de 4,99 € por aprovar. Se não o aprovares nas próximas 3 horas, será cobrada uma taxa adicional. Aprova no link abaixo:',
+      link:'mbway-seguranca.pt/aprovar', icon:'💳',
+      trueClues:['sender','brand','link','urgency'], correctAction:'eliminar',
+      note:'Acabar em .pt não chega para ser de confiança. O endereço verdadeiro do MB WAY é mbway.pt — este acrescenta «-seguranca», um truque comum nas imitações. Repara também na ameaça de uma «taxa adicional»: querem que ajas com pressa.' },
+
+    { sender:'organizacao@desenho-jovem.com', subject:'Ganhaste o 2.º lugar no concurso de desenho!',
+      body:'Parabéns! O teu desenho ficou em 2.º lugar. Para te enviarmos o prémio, responde a este e-mail com o teu nome completo, a tua morada e o nome da tua escola.',
+      icon:'🎨',
+      trueClues:['sender','subjectAlarm','urgency'], correctAction:'eliminar',
+      note:'Participaste neste concurso? Se não te lembras de te inscreveres, desconfia: ninguém ganha prémios de concursos em que não entrou. Repara também no que pedem — nome completo, morada e escola — dados que nunca deves enviar a quem não conheces. Aqui não há erros nem maiúsculas: nem todos os e-mails falsos são desleixados.' },
+
+    { sender:'duarte.ferreira.hist@outlook.com', subject:'Trabalho de História',
+      body:'Olá! Aqui está o trabalho de História de que falámos. Abre o ficheiro em anexo e diz-me o que achas.',
+      attach:'Trabalho_Historia.pdf.exe', icon:'📜',
+      trueClues:['sender','attach'], correctAction:'eliminar',
+      note:'Lê o nome do anexo até ao fim: Trabalho_Historia.pdf.exe. Parece um PDF, mas o que conta é a última extensão — .exe é um programa, que pode instalar vírus no teu computador. Os colegas costumam escrever da conta da escola (@edu.azores.gov.pt), e não de um endereço estranho. Se não estavas à espera do ficheiro, confirma com a pessoa por outro meio antes de o abrires.' },
+
+    { sender:'encomendas@amazon-pt.com', subject:'Confirma a tua encomenda n.º 48291',
+      body:'Recebemos o pedido n.º 48291 no valor de 89,90 €. Se não reconheces esta compra, cancela-a no link abaixo com o teu nome de utilizador e palavra-passe:',
+      link:'amazon-pt.com/cancelar-pedido', icon:'📦',
+      trueClues:['sender','brand','link','urgency'], correctAction:'eliminar',
+      note:'Não fizeste nenhuma encomenda? Então o e-mail é falso — e usa um truque muito comum: assustar-te com uma compra que não fizeste, para clicares sem pensares. O endereço amazon-pt.com não é da Amazon, e nenhuma loja verdadeira te pede a palavra-passe num link de e-mail. Na dúvida, abre tu próprio o site da loja, escrevendo o endereço no browser.' }
   ];
 
   /* ---------------- fase 2: formal ou informal ---------------- */
@@ -1268,11 +1318,15 @@
   }
 
   function pickSession(total){
-    var n = Math.max(2, Math.floor((total||8)/2));
+    total = Math.max(4, total || 8);
     var phishIdx = [], safeIdx = [];
     ALL_ROUNDS.forEach(function(r,i){ (r.correctAction==='eliminar' ? phishIdx : safeIdx).push(i); });
-    n = Math.min(n, phishIdx.length, safeIdx.length);
-    var chosen = shuffle(phishIdx).slice(0,n).concat(shuffle(safeIdx).slice(0,n));
+    /* proporção variável: metade ±1 e-mail falso, sempre com pelo menos 2 de cada tipo,
+       para os alunos não poderem contar com "metade são falsos" */
+    var nPhish = Math.floor(total / 2) + Math.floor(Math.random() * 3) - 1;
+    nPhish = Math.max(2, Math.min(nPhish, total - 2, phishIdx.length));
+    var nSafe = Math.min(total - nPhish, safeIdx.length);
+    var chosen = shuffle(phishIdx).slice(0, nPhish).concat(shuffle(safeIdx).slice(0, nSafe));
     return shuffle(chosen);
   }
 
