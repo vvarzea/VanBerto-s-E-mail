@@ -1,11 +1,17 @@
 /* Service worker do VanBerto's — Detetive do E-mail.
-   Estratégia simples: responde da cache se existir (para funcionar sem rede
-   depois da 1ª visita) e, em paralelo, tenta atualizar a cache a partir da
-   rede sempre que há ligação. As atualizações ficam guardadas para a abertura
-   seguinte. Coloca este ficheiro na MESMA pasta do index.html para o registo
-   funcionar (e mantém lá também o manifest, os ícones e a pasta fonts/). */
+   Duas estratégias:
+   • A PÁGINA (index.html): REDE PRIMEIRO, com limite de 3 segundos. Se a rede responder a
+     tempo, o aluno vê logo a versão mais recente (e a cache fica atualizada). Se a rede
+     estiver lenta ou sem ligação, abre a cópia em cache — por isso continua a funcionar
+     sem rede depois da 1ª visita.
+   • Ícones, fontes e manifest: cache primeiro (abrem logo), com atualização em segundo plano
+     para a abertura seguinte.
+   Coloca este ficheiro na MESMA pasta do index.html para o registo funcionar (e mantém lá
+   também o manifest, os ícones e a pasta fonts/). */
 
-const CACHE_NAME = 'vanbertos-detetive-email-v4';
+const CACHE_NAME = 'vanbertos-detetive-email-v5';
+const PAGE_TIMEOUT_MS = 3000;
+const INDEX_URL = new URL('./index.html', self.registration.scope).href;
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -47,12 +53,59 @@ self.addEventListener('activate', function(event){
   self.clients.claim();
 });
 
+/* é um pedido da página principal? (abrir o jogo, "./" ou "index.html") */
+function isPageRequest(req, url){
+  if(url.origin !== self.location.origin) return false;
+  return req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html');
+}
+
+/* Rede primeiro com limite de tempo; cache se a rede for lenta, falhar ou der erro. */
+function pageNetworkFirst(event, req){
+  var timer;
+
+  var network = fetch(req);
+
+  /* guarda a versão nova na cache assim que chegar (mesmo que já tenhamos aberto a cópia antiga);
+     o waitUntil impede que o browser interrompa a gravação. Guarda sempre sob o mesmo endereço,
+     para links com "?..." não criarem cópias diferentes. */
+  var stored = network.then(function(response){
+    if(response && response.ok){
+      var copy = response.clone();
+      return caches.open(CACHE_NAME).then(function(cache){ return cache.put(INDEX_URL, copy); });
+    }
+  }).catch(function(){ /* sem rede — ignorar */ });
+  event.waitUntil(stored);
+
+  var timeout = new Promise(function(resolve){
+    timer = setTimeout(function(){ resolve(null); }, PAGE_TIMEOUT_MS);
+  });
+
+  return Promise.race([network, timeout]).then(function(response){
+    clearTimeout(timer);
+    if(response && response.ok) return response;            /* rede a tempo: versão mais recente */
+    return caches.match(INDEX_URL).then(function(cached){   /* rede lenta ou com erro: cópia em cache */
+      if(cached) return cached;
+      return response || network;                           /* 1ª visita, sem cópia: espera pela rede */
+    });
+  }).catch(function(){                                       /* sem rede: cópia em cache */
+    clearTimeout(timer);
+    return caches.match(INDEX_URL).then(function(cached){ return cached || Response.error(); });
+  });
+}
+
 self.addEventListener('fetch', function(event){
   var req = event.request;
   if(req.method !== 'GET') return;
 
+  var url = new URL(req.url);
+  if(isPageRequest(req, url)){
+    event.respondWith(pageNetworkFirst(event, req));
+    return;
+  }
+
+  /* ícones, fontes e manifest: cache primeiro.
+     ignoreSearch: um link com "?..." (ex.: partilhado por mensagem) usa a mesma cópia em cache */
   event.respondWith(
-    /* ignoreSearch: um link com "?..." (ex.: partilhado por mensagem) usa a mesma cópia em cache */
     caches.match(req, { ignoreSearch: true }).then(function(cached){
       var network = fetch(req);
 
@@ -64,15 +117,9 @@ self.addEventListener('fetch', function(event){
       }).catch(function(){ /* sem rede — ignorar */ });
       event.waitUntil(stored);
 
-      /* mostra logo a versão em cache se existir (mais rápido e funciona offline);
-         sem cache, espera pela rede — e, se a rede falhar, cai para o index.html em cache */
+      /* mostra logo a versão em cache se existir; sem cache, espera pela rede */
       if(cached) return cached;
-      return network.catch(function(){
-        if(req.mode === 'navigate'){
-          return caches.match('./index.html').then(function(page){ return page || Response.error(); });
-        }
-        return Response.error();
-      });
+      return network.catch(function(){ return Response.error(); });
     })
   );
 });

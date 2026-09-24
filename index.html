@@ -302,6 +302,14 @@
   .rank{ font-family: var(--font-display); font-size:26px; color: var(--warn); margin: 6px 0 2px; }
   .score-big{ font-size: 52px; font-family: var(--font-display); margin: 8px 0; }
   .score-big span{ font-size:22px; color: var(--ink-dim); font-family: var(--font-body);}
+  .end-clues{ margin:20px auto 0; max-width:460px; text-align:left; background: var(--panel-2); border:1px solid var(--line); border-radius: var(--radius-sm); padding:14px 16px; }
+  .end-clues h4{ margin:0 0 4px; font-size:15px; color: var(--warn); }
+  .end-clues .clue-miss{ padding:9px 0; border-top:1px solid var(--line); }
+  .end-clues .clue-miss:first-of-type{ border-top:0; }
+  .end-clues .clue-miss .name{ font-weight:700; font-size:14px; }
+  .end-clues .clue-miss .count{ font-size:12px; color: var(--ink-dim); margin-left:6px; white-space:nowrap; }
+  .end-clues .clue-miss .tip{ font-size:13px; line-height:1.5; color: var(--ink-dim); margin-top:3px; }
+  .end-clues .all-found{ font-size:14px; padding-top:6px; }
   .end-actions{ display:flex; gap:12px; justify-content:center; margin-top:22px; flex-wrap:wrap;}
 
   .elements-options{ display:flex; flex-direction:column; gap:10px; }
@@ -432,7 +440,7 @@
 
 <div class="top-controls">
   <button class="btn ghost" id="btn-fullscreen" title="Ecrã inteiro" aria-label="Ver em ecrã inteiro">⛶</button>
-  <button class="btn ghost" id="btn-mute" title="Ligar/desligar som" aria-label="Ligar ou desligar som">🔊</button>
+  <button class="btn ghost" id="btn-mute" title="Ligar/desligar som" aria-label="Som desligado — clicar para ligar">🔇</button>
 </div>
 
 <div class="stage">
@@ -592,6 +600,10 @@
       <div class="rank" id="end-rank">Detetive</div>
       <div class="score-big"><span id="end-score">0</span><span id="end-max">/38</span></div>
       <p id="end-msg" style="color:var(--ink-dim); max-width:420px; margin:0 auto;"></p>
+      <div class="end-clues" id="end-clues" style="display:none;">
+        <h4>🔎 As pistas que mais te escaparam</h4>
+        <div id="end-clues-list"></div>
+      </div>
       <div class="missions-done" id="end-missions" style="display:none; margin-top:16px;" role="status">
         <strong>🏅 Três missões cumpridas!</strong>
         Tens pelo menos <span class="mission-min">50</span>% nos três modos — és oficialmente Detetive Completo.
@@ -869,8 +881,10 @@
 
   /* ---------------- sound (Web Audio API, no assets) ---------------- */
   var actx;
-  var soundOn = true;
-  try{ soundOn = localStorage.getItem('vb_detetive_sound') !== 'off'; }catch(e){}
+  /* Arranca SEMPRE silenciado: numa sala com vários alunos a abrir o jogo ao mesmo tempo,
+     o som só liga se o aluno quiser (botão 🔇/🔊). A escolha não é guardada. */
+  var soundOn = false;
+  try{ localStorage.removeItem('vb_detetive_sound'); }catch(e){} /* limpa a escolha guardada por versões antigas */
   function updateMuteBtn(){
     var b = document.getElementById('btn-mute');
     if(b){
@@ -900,8 +914,8 @@
   updateMuteBtn();
   document.getElementById('btn-mute').addEventListener('click', function(){
     soundOn = !soundOn;
-    try{ localStorage.setItem('vb_detetive_sound', soundOn ? 'on' : 'off'); }catch(e){}
     updateMuteBtn();
+    if(soundOn) sfxClick(); /* confirma que o som está ligado (e desbloqueia o áudio no browser) */
   });
 
   /* ---------------- ecrã inteiro ---------------- */
@@ -944,15 +958,15 @@
 
   /* ---------------- round data ---------------- */
   var CLUE_DEFS = [
-    {key:'sender',       label:'Remetente estranho',      hint:'Sinal de phishing — remetente desconhecido ou estranho'},
-    {key:'subjectEmpty', label:'Assunto vazio',           hint:'Sinal de phishing — mensagem enviada sem assunto'},
-    {key:'subjectAlarm', label:'Assunto alarmante',       hint:'Sinal de phishing — assunto feito para alarmar, pressionar ou atrair com uma oferta boa demais para ser verdade'},
-    {key:'caps',         label:'Texto em maiúsculas',     hint:'Regra de netiqueta — evita escrever tudo em maiúsculas'},
-    {key:'brand',        label:'Domínio a imitar uma marca', hint:'Sinal de phishing — domínio ou remetente construído para imitar uma marca ou entidade conhecida'},
-    {key:'link',         label:'Link suspeito',           hint:'Sinal de phishing — link inesperado ou estranho'},
-    {key:'attach',       label:'Anexo inesperado',        hint:'Sinal de phishing — anexo suspeito ou inesperado (atenção a extensões como .zip ou .exe)'},
-    {key:'urgency',      label:'Pedido urgente ou de dados', hint:'Sinal de phishing — pedido urgente de dados ou ação imediata'},
-    {key:'typo',         label:'Erros de escrita no texto', hint:'Sinal de phishing — erros de escrita pouco habituais numa entidade oficial'}
+    {key:'sender',       label:'Remetente estranho',      hint:'Sinal de phishing — remetente desconhecido ou estranho', tip:'Confere o endereço completo do remetente, não só o nome que aparece. Se não conheces a pessoa ou o domínio, desconfia.'},
+    {key:'subjectEmpty', label:'Assunto vazio',           hint:'Sinal de phishing — mensagem enviada sem assunto', tip:'Um e-mail sem assunto é pouco habitual em contactos sérios. Se não estavas à espera dele, desconfia.'},
+    {key:'subjectAlarm', label:'Assunto alarmante',       hint:'Sinal de phishing — assunto feito para alarmar, pressionar ou atrair com uma oferta boa demais para ser verdade', tip:'Assuntos que assustam, apressam ou prometem prémios querem que ajas sem pensar. Pára e respira antes de abrir.'},
+    {key:'caps',         label:'Texto em maiúsculas',     hint:'Regra de netiqueta — evita escrever tudo em maiúsculas', tip:'Escrever tudo em maiúsculas é uma forma de criar pressão. Entidades sérias não escrevem assim.'},
+    {key:'brand',        label:'Imita uma marca ou entidade', hint:'Sinal de phishing — domínio ou remetente construído para imitar uma marca ou entidade conhecida (a escola, um banco, uma rede social…)', tip:'Vê se o endereço é mesmo da entidade (escola, banco, rede social). Nomes quase iguais, com letras trocadas, são imitações.'},
+    {key:'link',         label:'Link suspeito',           hint:'Sinal de phishing — link inesperado ou estranho', tip:'Não cliques logo: passa o rato por cima (ou mantém o dedo premido) para ver o endereço verdadeiro. Se for estranho, não abras.'},
+    {key:'attach',       label:'Anexo inesperado',        hint:'Sinal de phishing — anexo suspeito ou inesperado (atenção a extensões como .zip ou .exe)', tip:'Não abras anexos que não esperavas, sobretudo .zip ou .exe. Pergunta primeiro a quem supostamente os enviou, por outro meio.'},
+    {key:'urgency',      label:'Pedido urgente ou de dados', hint:'Sinal de phishing — pedido urgente de dados ou ação imediata', tip:'Ninguém legítimo te pede a palavra-passe por e-mail nem te obriga a agir «já». Se tiveres dúvidas, fala com um adulto.'},
+    {key:'typo',         label:'Erros de escrita no texto', hint:'Sinal de phishing — erros de escrita pouco habituais numa entidade oficial', tip:'Uma escola ou um banco revê o que escreve. Muitos erros de escrita são sinal de que a mensagem é falsa.'}
   ];
 
   /* pool de e-mails (armadilhas + seguros, incluindo um caso cinzento e uma conta pirateada) — cada sessão sorteia uma amostra equilibrada */
@@ -1915,6 +1929,54 @@
     setTimeout(focusPrimaryAnswer, 0);
   });
 
+  /* Conclusão personalizada do modo phishing: as pistas que mais escaparam ao aluno, com a dica de cada uma.
+     Calculada a partir de state.results e mostrada só no ecrã do aluno — não é guardada nem enviada para lado nenhum. */
+  function renderMissedClues(){
+    var box = document.getElementById('end-clues');
+    var list = document.getElementById('end-clues-list');
+    list.innerHTML = '';
+    if(state.phase !== 'detective'){ box.style.display = 'none'; return; }
+    var stats = {}, anyClue = false, falseAlarms = 0;
+    state.order.forEach(function(gi, pos){
+      var res = state.results[pos];
+      if(!res) return;
+      Object.keys(res.picked || {}).forEach(function(k){
+        if(res.picked[k] && ALL_ROUNDS[gi].trueClues.indexOf(k) === -1) falseAlarms++;
+      });
+      ALL_ROUNDS[gi].trueClues.forEach(function(k){
+        if(!stats[k]) stats[k] = { total:0, missed:0 };
+        stats[k].total++;
+        anyClue = true;
+        if(!(res.picked && res.picked[k])) stats[k].missed++;
+      });
+    });
+    if(!anyClue){ box.style.display = 'none'; return; }
+    var missed = CLUE_DEFS.filter(function(c){ return stats[c.key] && stats[c.key].missed > 0; })
+      .sort(function(a, b){
+        var sa = stats[a.key], sb = stats[b.key];
+        return (sb.missed - sa.missed) || ((sb.missed / sb.total) - (sa.missed / sa.total));
+      })
+      .slice(0, 3);
+    if(!missed.length){
+      list.innerHTML = falseAlarms
+        ? '<div class="all-found">Não te escapou nenhuma pista, mas assinalaste algumas que não eram. Da próxima, marca só as de que tens a certeza. 🕵️</div>'
+        : '<div class="all-found">Não te escapou nenhuma pista. Excelente olho de detetive! 🕵️</div>';
+    } else {
+      missed.forEach(function(c){
+        var st = stats[c.key];
+        var count = st.total === 1 ? 'Escapou-te em 1 e-mail' : 'Escapou-te em ' + st.missed + ' de ' + st.total + ' e-mails';
+        var row = document.createElement('div');
+        row.className = 'clue-miss';
+        row.innerHTML = '<div><span class="name"></span><span class="count"></span></div><div class="tip"></div>';
+        row.querySelector('.name').textContent = c.label;
+        row.querySelector('.count').textContent = count;
+        row.querySelector('.tip').textContent = c.tip;
+        list.appendChild(row);
+      });
+    }
+    box.style.display = 'block';
+  }
+
   function finishGame(){
     showScreen('end');
     var info = MODE_INFO[state.phase];
@@ -1973,6 +2035,8 @@
         ? 'Muito bem — já dominas estas! O treino não conta para os recordes.'
         : 'Vai melhorando! Repete o treino quando quiseres — não conta para os recordes.';
     }
+
+    renderMissedClues();
 
     var justCompleted = false;
     if(!isPractice){
