@@ -310,6 +310,7 @@
   .end-clues .clue-miss .count{ font-size:12px; color: var(--ink-dim); margin-left:6px; white-space:nowrap; }
   .end-clues .clue-miss .tip{ font-size:13px; line-height:1.5; color: var(--ink-dim); margin-top:3px; }
   .end-clues .all-found{ font-size:14px; padding-top:6px; }
+  .end-noname{ margin:16px auto 0; max-width:460px; font-size:13px; line-height:1.5; color: var(--ink-dim); background: var(--panel-2); border:1px dashed var(--line); border-radius: var(--radius-sm); padding:10px 14px; }
   .end-actions{ display:flex; gap:12px; justify-content:center; margin-top:22px; flex-wrap:wrap;}
 
   .elements-options{ display:flex; flex-direction:column; gap:10px; }
@@ -607,6 +608,9 @@
       <div class="missions-done" id="end-missions" style="display:none; margin-top:16px;" role="status">
         <strong>🏅 Três missões cumpridas!</strong>
         Tens pelo menos <span class="mission-min">50</span>% nos três modos — és oficialmente Detetive Completo.
+      </div>
+      <div class="end-noname" id="end-noname" style="display:none;" role="status">
+        ✏️ Não escreveste o teu nome, por isso este resultado não ficou guardado nos recordes. Escreve-o no menu inicial para o guardares.
       </div>
       <div class="end-actions">
         <button class="btn ghost" id="btn-again">🏠 Voltar ao menu</button>
@@ -1249,7 +1253,7 @@
 
   /* ---------------- state ---------------- */
   var lastFocusedEl = null;
-  var state = { practice:false, failed:[], round:0, score:0, selected:{}, playerName:'', results:[], order:[],
+  var state = { hasName:false, practice:false, failed:[], round:0, score:0, selected:{}, playerName:'', results:[], order:[],
     maxScore:0, totalClues:0, phase:'detective',
     toneIndex:0, toneScore:0, toneOrder:[], toneResults:[],
     elementsIndex:0, elementsScore:0, elementsOrder:[], elementsResults:[] };
@@ -1373,7 +1377,9 @@
 
   function capturePlayerName(){
     var nameEl = document.getElementById('player-name');
-    state.playerName = (nameEl.value||'').trim() || 'Detetive';
+    var typed = (nameEl.value||'').trim();
+    state.hasName = !!typed; /* sem nome escrito, o resultado não entra nos recordes (evita juntar vários alunos num só "Detetive") */
+    state.playerName = typed || 'Detetive';
     updateNameTags();
   }
 
@@ -2038,8 +2044,11 @@
 
     renderMissedClues();
 
+    var noName = document.getElementById('end-noname');
+    if(noName){ noName.style.display = (!isPractice && !state.hasName) ? 'block' : 'none'; }
+
     var justCompleted = false;
-    if(!isPractice){
+    if(!isPractice && state.hasName){
       try{
         var raw = localStorage.getItem(info.storageKey);
         var map = raw ? JSON.parse(raw) : {};
@@ -2103,10 +2112,28 @@
         var ok = !!(res && res.correct);
         var yourAction = res ? (res.action === 'eliminar' ? 'Eliminaste' : 'Confiaste') : '—';
         var subjLabel = r.subjectEmpty ? '(sem assunto)' : r.subject;
+        /* pistas deste e-mail: encontradas, em falta e marcadas sem serem pista */
+        var picked = (res && res.picked) || {};
+        var found = 0, missedLbl = [], falseLbl = [];
+        CLUE_DEFS.forEach(function(c){
+          var isTrue = r.trueClues.indexOf(c.key) !== -1;
+          if(isTrue && picked[c.key]) found++;
+          else if(isTrue) missedLbl.push(c.label);
+          else if(picked[c.key]) falseLbl.push(c.label);
+        });
+        var clueLine = '';
+        if(res && (r.trueClues.length || falseLbl.length)){
+          clueLine = '<div class="answer-correct">' +
+            (r.trueClues.length ? 'Pistas: ' + found + ' de ' + r.trueClues.length + '.' : 'Não havia pistas suspeitas.') +
+            (missedLbl.length ? ' Faltaram: ' + esc(missedLbl.join(', ')) + '.' : '') +
+            (falseLbl.length ? ' Marcaste sem ser pista: ' + esc(falseLbl.join(', ')) + '.' : '') +
+            '</div>';
+        }
         html += '<div class="review-row ' + (ok?'ok':'bad') + '">' +
           '<span class="mk">' + (ok?'✔':'✖') + '</span>' +
           '<div><div><strong>' + esc(subjLabel) + '</strong> — ' + esc(r.sender) + '</div>' +
           (!ok ? '<div class="answer-correct">' + yourAction + '. A resposta certa era: ' + (r.correctAction==='eliminar'?'Eliminar / Reportar':'Confiar') + '.</div>' : '') +
+          clueLine +
           '</div></div>';
       });
     } else if(state.phase === 'tone'){
