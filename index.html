@@ -389,6 +389,7 @@
     body.print-cert-mode #certificate .csub{ font-size:21px !important; }
     body.print-cert-mode #certificate .cdate{ font-size:16px !important; margin-top:20px !important; }
     body.print-cert-mode #btn-print-cert,
+    body.print-cert-mode #btn-download-cert,
     body.print-cert-mode .cert-hint{ display:none !important; }
   }
 
@@ -578,7 +579,7 @@
             <div class="cbrand-name">VanBerto's</div>
           </div>
           <div class="cert-body">
-            <h3>CERTIFICADO DE DETETIVE DIGITAL</h3>
+            <h3 id="cert-heading">CERTIFICADO DE DETETIVE DIGITAL</h3>
             <div class="cname" id="cert-name">—</div>
             <div class="ctitle" id="cert-title">—</div>
             <div class="cscore" id="cert-score">—</div>
@@ -586,7 +587,10 @@
             <div class="cdate" id="cert-date"></div>
           </div>
         </div>
-        <button class="btn ghost" id="btn-print-cert" style="margin-top:18px; padding:9px 16px; font-size:13px;">🖨️ Imprimir / Guardar em PDF</button>
+        <div class="action-row" style="margin-top:18px;">
+          <button class="btn ghost" id="btn-print-cert" style="padding:9px 16px; font-size:13px;">🖨️ Imprimir / Guardar em PDF</button>
+          <button class="btn ghost" id="btn-download-cert" style="padding:9px 16px; font-size:13px;">🖼️ Guardar como imagem</button>
+        </div>
         <div class="cert-hint">Se a janela de impressão não abrir sozinha, usa Ctrl+P (Windows) ou Cmd+P (Mac).</div>
       </div>
     </div>
@@ -1064,7 +1068,35 @@
     { text:'Oii, esqueci-me da mochila na sala. Podes verificar se ainda lá está? Obrigada desde já 🙏',
       correct:'informal', explain:'Tratamento descontraído ("Oii") e tom próximo — é um e-mail informal.' },
     { text:'Bora combinar o trabalho de Português? Podemos falar no intervalo, ok? 😉',
-      correct:'informal', explain:'Linguagem coloquial ("Bora") e emoji — é um e-mail informal.' }
+      correct:'informal', explain:'Linguagem coloquial ("Bora") e emoji — é um e-mail informal.' },
+    { text:'Bom dia,\nVenho por este meio pedir desculpa pelo atraso na entrega do trabalho de Ciências, devido a um problema de saúde.\nCom os melhores cumprimentos,\nInês Ramos, 7ºA, nº18',
+      correct:'formal', explain:'Pedido de desculpa com linguagem cuidada e assinatura completa com turma e número — é um e-mail formal.' },
+    { text:'Eii, já viste o grupo da turma? Marcaram o trabalho para 6ª feira 😳 vamos combinar?',
+      correct:'informal', explain:'Tratamento descontraído ("Eii") e emoji entre colegas — é um e-mail informal.' },
+    { text:'Exmo. Senhor Presidente da Associação de Estudantes,\nSolicito autorização para afixar um cartaz sobre a angariação de fundos para a viagem de finalistas.\nCom os melhores cumprimentos,\nO Delegado de Turma',
+      correct:'formal', explain:'Forma de tratamento cerimoniosa e pedido formal a um cargo da escola — é um e-mail formal.' },
+    { text:'Boa! Passas-me os apontamentos de Físico-Química? Prometo que devolvo já a seguir 🙏',
+      correct:'informal', explain:'Tom direto e próximo entre colegas, com emoji — é um e-mail informal.' },
+    { text:'Boa tarde, Professora,\nVenho por este meio solicitar o reagendamento do teste de Inglês, por coincidir com uma consulta médica.\nCom os melhores cumprimentos,\nMarco Andrade, 10ºB, nº21',
+      correct:'formal', explain:'Pedido formal justificado, com linguagem cuidada e assinatura completa — é um e-mail formal.' },
+    { text:'Oi maninha, esqueci-me da chave de casa, deixa a porta aberta pfff 😅',
+      correct:'informal', explain:'Tratamento familiar ("maninha") e abreviatura ("pfff") — é um e-mail informal.' },
+    { text:'Exma. Senhora Diretora,\nVenho por este meio informar que a turma do 9ºC gostaria de propor uma visita de estudo ao Observatório Astronómico.\nCom os melhores cumprimentos,\nA Delegada de Turma',
+      correct:'formal', explain:'Forma de tratamento cerimoniosa e proposta formal à direção da escola — é um e-mail formal.' },
+    { text:'Ehh, vamos jogar à bola depois das aulas? Chama mais malta se quiseres 😄⚽',
+      correct:'informal', explain:'Tom descontraído e emoji entre amigos — é um e-mail informal.' },
+    { text:'Bom dia,\nSolicito, por favor, o envio da ficha de inscrição para o Clube de Robótica.\nCom os melhores cumprimentos,\nSofia Martins, 8ºA, nº9',
+      correct:'formal', explain:'Pedido cortês com linguagem cuidada e assinatura completa — é um e-mail formal.' },
+    { text:'Oii, foste à aula de hoje? Passa-me lá o que a stora disse sff',
+      correct:'informal', explain:'Linguagem coloquial ("stora", "sff") — é um e-mail informal.' },
+    { text:'Exmo. Senhor Encarregado de Educação,\nVenho por este meio informar que o seu educando faltou hoje à aula sem justificação.\nCom os melhores cumprimentos,\nA Diretora de Turma',
+      correct:'formal', explain:'Forma de tratamento cerimoniosa e comunicação formal da escola a um encarregado de educação — é um e-mail formal.' },
+    { text:'Boaaas, ainda tens aquele livro que te emprestei? Preciso dele para o teste de amanhã 📚',
+      correct:'informal', explain:'Tom próximo e descontraído entre colegas — é um e-mail informal.' },
+    { text:'Bom dia, Professor,\nGostaria de saber se é possível marcar um momento para esclarecer algumas dúvidas sobre a matéria de Matemática.\nCom os melhores cumprimentos,\nRicardo Nunes, 11ºC, nº15',
+      correct:'formal', explain:'Pedido cuidado e assinatura completa com turma e número — é um e-mail formal.' },
+    { text:'Malta, alguém sabe a que horas é o jogo do inter-turmas? Já não me lembro 😂',
+      correct:'informal', explain:'Tratamento coloquial ("Malta") e emoji — é um e-mail informal.' }
   ];
 
   /* ---------------- fase 3: elementos do e-mail ---------------- */
@@ -1172,6 +1204,7 @@
   var MODE_INFO = {
     detective: {
       label: '🕵️ Deteção de Phishing', icon: '🕵️', storageKey: 'vb_best_detective',
+      certTitle: 'CERTIFICADO DE DETETIVE DIGITAL',
       ranks: [
         {min:0.9, rank:'Detetive-Chefe VanBerto\'s 🏆', msg:'Olho de lince — não te escapa nenhuma armadilha.', mood:'happy'},
         {min:0.7, rank:'Detetive Sénior 🕵️', msg:'Muito boa investigação! Só alguns pormenores por afinar.', mood:'happy'},
@@ -1181,6 +1214,7 @@
     },
     tone: {
       label: '💬 Formal ou Informal', icon: '💬', storageKey: 'vb_best_tone',
+      certTitle: 'CERTIFICADO DE TOM CERTO',
       ranks: [
         {min:0.9, rank:'Mestre da Netiqueta VanBerto\'s 🏆', msg:'Distingues logo o tom certo em qualquer mensagem!', mood:'happy'},
         {min:0.7, rank:'Especialista em Tom 💬', msg:'Muito bom trabalho! Só alguns casos por afinar.', mood:'happy'},
@@ -1190,6 +1224,7 @@
     },
     elements: {
       label: '📧 Elementos do E-mail', icon: '📧', storageKey: 'vb_best_elements',
+      certTitle: 'CERTIFICADO DE CONHECIMENTOS DE E-MAIL',
       ranks: [
         {min:0.9, rank:'Mestre do E-mail VanBerto\'s 🏆', msg:'Conheces na perfeição todos os elementos de um e-mail!', mood:'happy'},
         {min:0.7, rank:'Especialista em E-mail 📧', msg:'Muito bom! Só alguns termos por afinar.', mood:'happy'},
@@ -1207,13 +1242,14 @@
       if(!el) return;
       try{
         var raw = localStorage.getItem(MODE_INFO[mode].storageKey);
-        var data = raw ? JSON.parse(raw) : null;
-        if(!currentName || !data || !data.name || String(data.name).trim().toLowerCase() !== currentName || !(data.score > 0)){
+        var map = raw ? JSON.parse(raw) : null;
+        var score = (map && typeof map === 'object') ? map[currentName] : null;
+        if(!currentName || !(score > 0)){
           el.style.display = 'none';
           return;
         }
         el.style.display = 'block';
-        el.textContent = '🏆 O teu melhor: ' + data.score + ' pts';
+        el.textContent = '🏆 O teu melhor: ' + score + ' pts';
       }catch(e){ el.style.display = 'none'; }
     });
   }
@@ -1242,6 +1278,7 @@
     state.totalClues = state.order.reduce(function(s,gi){ return s + ALL_ROUNDS[gi].trueClues.length; },0);
     showScreen('game');
     renderInbox();
+    setTimeout(focusPrimaryAnswer, 0);
   });
 
   document.getElementById('start-tone-btn').addEventListener('click', function(){
@@ -1388,6 +1425,62 @@
     }
   });
 
+  /* ---------------- navegação por teclado nas respostas (setas ←→/↑↓ + números 1-9) ---------------- */
+  function focusPrimaryAnswer(){
+    var activeScreen = document.querySelector('.screen.active');
+    if(!activeScreen) return;
+    var target = null;
+    if(document.getElementById('mail-modal').classList.contains('show')){
+      target = document.querySelector('#mail-modal .action-row button:not([disabled])');
+    } else if(activeScreen.id === 'screen-tone'){
+      target = activeScreen.querySelector('.action-row button:not([disabled])');
+    } else if(activeScreen.id === 'screen-elements'){
+      target = document.getElementById('elements-options').querySelector('button:not([disabled])');
+    } else if(activeScreen.id === 'screen-game'){
+      target = document.getElementById('inbox-list').querySelector('.inbox-item:not([disabled])');
+    }
+    if(!target) target = activeScreen.querySelector('button, [tabindex]');
+    if(target) target.focus();
+  }
+
+  function currentAnswerOptions(){
+    if(document.getElementById('overlay').classList.contains('show')) return null;
+    if(document.getElementById('confirm-overlay').classList.contains('show')) return null;
+    if(document.getElementById('mail-modal').classList.contains('show')){
+      return document.querySelectorAll('#mail-modal .action-row button:not([disabled])');
+    }
+    var activeScreen = document.querySelector('.screen.active');
+    if(!activeScreen) return null;
+    if(activeScreen.id === 'screen-tone'){
+      return activeScreen.querySelectorAll('.action-row button:not([disabled])');
+    }
+    if(activeScreen.id === 'screen-elements'){
+      return document.getElementById('elements-options').querySelectorAll('button:not([disabled])');
+    }
+    return null;
+  }
+
+  document.addEventListener('keydown', function(e){
+    var tag = document.activeElement ? document.activeElement.tagName : '';
+    if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return; /* não interferir a escrever nome, etc. */
+    var options = currentAnswerOptions();
+    if(!options || !options.length) return;
+    var list = Array.prototype.slice.call(options);
+
+    if(e.key === 'ArrowRight' || e.key === 'ArrowDown'){
+      e.preventDefault();
+      var idxN = list.indexOf(document.activeElement);
+      list[idxN === -1 ? 0 : (idxN + 1) % list.length].focus();
+    } else if(e.key === 'ArrowLeft' || e.key === 'ArrowUp'){
+      e.preventDefault();
+      var idxP = list.indexOf(document.activeElement);
+      list[idxP === -1 ? list.length - 1 : (idxP - 1 + list.length) % list.length].focus();
+    } else if(/^[1-9]$/.test(e.key)){
+      var n = parseInt(e.key, 10) - 1;
+      if(list[n]){ e.preventDefault(); list[n].focus(); list[n].click(); }
+    }
+  });
+
   function evaluate(action){
     var gi = state.order[state.round];
     var r = ALL_ROUNDS[gi];
@@ -1489,11 +1582,7 @@
         renderElements();
       }
     }
-    setTimeout(function(){
-      var activeScreen = document.querySelector('.screen.active');
-      var focusable = activeScreen && activeScreen.querySelector('button, [tabindex]');
-      if(focusable) focusable.focus();
-    }, 0);
+    setTimeout(focusPrimaryAnswer, 0);
   });
 
   /* ---------------- fase 2: formal ou informal ---------------- */
@@ -1507,6 +1596,7 @@
     state.toneOrder = shuffle(TONE_ROUNDS.map(function(_,i){ return i; })).slice(0, toneCount);
     showScreen('tone');
     renderTone();
+    setTimeout(focusPrimaryAnswer, 0);
   }
 
   function renderTone(){
@@ -1559,6 +1649,7 @@
     state.elementsOrder = pickBalancedElements(elementsCount);
     showScreen('elements');
     renderElements();
+    setTimeout(focusPrimaryAnswer, 0);
   }
 
   function pickBalancedElements(total){
@@ -1699,6 +1790,7 @@
     if(pct >= 0.7) sfxWin(); else sfxClick();
 
     paint('vb-cert', tier.mood, pct >= 0.9);
+    document.getElementById('cert-heading').textContent = info.certTitle;
     document.getElementById('cert-name').textContent = state.playerName;
     document.getElementById('cert-title').textContent = tier.rank;
     document.getElementById('cert-score').textContent = totalScore + ' de ' + totalMax + ' pontos (' + Math.round(pct*100) + '%)';
@@ -1713,11 +1805,13 @@
 
     try{
       var raw = localStorage.getItem(info.storageKey);
-      var prev = raw ? JSON.parse(raw) : null;
-      var sameOwner = prev && prev.name && String(prev.name).trim().toLowerCase() === state.playerName.trim().toLowerCase();
-      var best = sameOwner ? (prev.score||0) : 0;
+      var map = raw ? JSON.parse(raw) : {};
+      if(!map || typeof map !== 'object'){ map = {}; }
+      var key = state.playerName.trim().toLowerCase();
+      var best = map[key] || 0;
       if(totalScore > best){
-        localStorage.setItem(info.storageKey, JSON.stringify({ name: state.playerName, score: totalScore }));
+        map[key] = totalScore;
+        localStorage.setItem(info.storageKey, JSON.stringify(map));
       }
     }catch(e){}
     updateBestPills();
@@ -1858,7 +1952,108 @@
     document.body.classList.remove('print-cert-mode');
   });
 
+  /* ---------------- guardar certificado como imagem (PNG) ---------------- */
+  function buildCertificateCanvas(){
+    var W = 1600, H = 1131; /* proporção A4 paisagem */
+    var canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    var ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.strokeStyle = '#999999';
+    ctx.lineWidth = 5;
+    ctx.strokeRect(46, 46, W - 92, H - 92);
+    ctx.lineWidth = 2;
+    ctx.strokeRect(62, 62, W - 124, H - 124);
+
+    var midY = H / 2;
+    var leftX = 250;
+
+    var srcCanvas = document.getElementById('vb-cert');
+    if(srcCanvas){
+      var mSize = 260;
+      ctx.drawImage(srcCanvas, leftX - mSize / 2, midY - mSize / 2 - 40, mSize, mSize);
+    }
+    ctx.fillStyle = '#8a6400';
+    ctx.textAlign = 'center';
+    ctx.font = "bold 34px 'Baloo 2', sans-serif";
+    ctx.fillText("VanBerto's", leftX, midY + 170);
+
+    ctx.strokeStyle = '#bbbbbb';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([10, 8]);
+    ctx.beginPath();
+    ctx.moveTo(450, 140);
+    ctx.lineTo(450, H - 140);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    var textX = 520;
+    ctx.textAlign = 'left';
+
+    ctx.fillStyle = '#666666';
+    ctx.font = "600 26px 'Inter', sans-serif";
+    ctx.fillText(document.getElementById('cert-heading').textContent, textX, 210);
+
+    ctx.fillStyle = '#8a6400';
+    ctx.font = "bold 76px 'Baloo 2', sans-serif";
+    ctx.fillText(document.getElementById('cert-name').textContent, textX, 320);
+
+    ctx.fillStyle = '#2b2540';
+    ctx.font = "38px 'Baloo 2', sans-serif";
+    ctx.fillText(document.getElementById('cert-title').textContent, textX, 385);
+
+    ctx.fillStyle = '#1a7a4a';
+    ctx.font = "bold 30px 'Inter', sans-serif";
+    ctx.fillText(document.getElementById('cert-score').textContent, textX, 440);
+
+    ctx.fillStyle = '#666666';
+    ctx.font = "26px 'Inter', sans-serif";
+    ctx.fillText(document.getElementById('cert-sub').textContent, textX, 485);
+
+    ctx.fillStyle = '#888888';
+    ctx.font = "22px 'Inter', sans-serif";
+    ctx.fillText(document.getElementById('cert-date').textContent, textX, 540);
+
+    return canvas;
+  }
+
+  document.getElementById('btn-download-cert').addEventListener('click', function(){
+    function doDownload(){
+      try{
+        var canvas = buildCertificateCanvas();
+        var safeName = (state.playerName || 'detetive').toLowerCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'detetive';
+        var link = document.createElement('a');
+        link.download = 'certificado-vanbertos-' + safeName + '.png';
+        link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }catch(e){
+        alert('Não foi possível gerar a imagem neste browser. Usa "Imprimir / Guardar em PDF" em alternativa.');
+      }
+    }
+    if(document.fonts && document.fonts.ready){
+      document.fonts.ready.then(doDownload);
+    } else {
+      doDownload();
+    }
+  });
+
 })();
+</script>
+<script>
+  /* regista o service worker para o jogo continuar a abrir sem rede depois da 1ª visita
+     (não faz nada se o browser não suportar, ou se a página for aberta como ficheiro local) */
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(function(){ /* ambiente sem suporte — ignorar */ });
+    });
+  }
 </script>
 </body>
 </html>
