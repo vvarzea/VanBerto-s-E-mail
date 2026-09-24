@@ -376,18 +376,18 @@
       display:flex !important; align-items:center; justify-content:center;
       position:static; width:100%; height:100%; margin:0; padding:20mm; box-sizing:border-box;
       background:#ffffff !important; color:#111111 !important;
-      border:3px double #999 !important; border-radius:0; box-shadow:none !important;
+      border:6px double #8a6400 !important; border-radius:0; box-shadow:none !important;
     }
     body.print-cert-mode #certificate .cert-main{ gap:60px; }
     body.print-cert-mode #certificate .cert-brand{ padding-right:44px; border-color:#999 !important; }
     body.print-cert-mode #certificate canvas.vanberto{ width:140px !important; height:140px !important; }
     body.print-cert-mode #certificate .cbrand-name{ font-size:24px !important; color:#8a6400 !important; }
-    body.print-cert-mode #certificate h3{ font-size:22px !important; letter-spacing:1px; }
+    body.print-cert-mode #certificate h3{ font-size:22px !important; letter-spacing:1px; color:#666666 !important; }
     body.print-cert-mode #certificate .cname{ font-size:64px !important; margin:18px 0 !important; color:#8a6400 !important; }
-    body.print-cert-mode #certificate .ctitle{ font-size:30px !important; margin-bottom:14px !important; }
+    body.print-cert-mode #certificate .ctitle{ font-size:30px !important; margin-bottom:14px !important; color:#2b2540 !important; }
     body.print-cert-mode #certificate .cscore{ font-size:24px !important; margin-bottom:16px !important; color:#1a7a4a !important; }
-    body.print-cert-mode #certificate .csub{ font-size:21px !important; }
-    body.print-cert-mode #certificate .cdate{ font-size:16px !important; margin-top:20px !important; }
+    body.print-cert-mode #certificate .csub{ font-size:21px !important; color:#555555 !important; }
+    body.print-cert-mode #certificate .cdate{ font-size:16px !important; margin-top:20px !important; color:#888888 !important; }
     body.print-cert-mode #btn-print-cert,
     body.print-cert-mode #btn-download-cert,
     body.print-cert-mode .cert-hint{ display:none !important; }
@@ -1962,11 +1962,11 @@
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, W, H);
 
-    ctx.strokeStyle = '#999999';
-    ctx.lineWidth = 5;
+    ctx.strokeStyle = '#8a6400';
+    ctx.lineWidth = 10;
     ctx.strokeRect(46, 46, W - 92, H - 92);
-    ctx.lineWidth = 2;
-    ctx.strokeRect(62, 62, W - 124, H - 124);
+    ctx.lineWidth = 4;
+    ctx.strokeRect(66, 66, W - 132, H - 132);
 
     var midY = H / 2;
     var leftX = 250;
