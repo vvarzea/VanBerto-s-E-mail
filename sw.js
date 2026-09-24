@@ -4,7 +4,7 @@
    rede sempre que há ligação. Coloca este ficheiro na MESMA pasta do
    index.html para o registo funcionar. */
 
-const CACHE_NAME = 'vanbertos-detetive-email-v1';
+const CACHE_NAME = 'vanbertos-detetive-email-v3';
 const CORE_ASSETS = [
   './',
   './index.html'
