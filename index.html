@@ -356,20 +356,38 @@
 
   /* ---------- print certificate ---------- */
   @media print{
-    @page{ size: landscape; margin: 1.2cm; }
-    body.print-cert-mode *{ visibility:hidden !important; }
-    body.print-cert-mode #certificate,
-    body.print-cert-mode #certificate *{ visibility:visible !important; }
-    body.print-cert-mode #certificate{
-      position:absolute; left:0; top:0; width:100%; min-height:100vh;
-      display:flex; align-items:center; justify-content:center;
-      background:#ffffff !important; color:#111111 !important;
-      border-color:#999 !important; margin:0; box-shadow:none !important;
+    @page{ size: A4 landscape; margin: 0; }
+    html, body{ margin:0 !important; padding:0 !important; width:100%; height:100%; }
+    /* isola o certificado: apaga tudo o resto do layout (em vez de visibility:hidden,
+       que mantinha o espaço ocupado e empurrava/encolhia o certificado) e força a
+       cadeia de contentores até ao certificado a ocupar 100% da página. */
+    body.print-cert-mode{ display:block !important; background:#ffffff !important; }
+    body.print-cert-mode > *{ display:none !important; }
+    body.print-cert-mode .stage{ display:block !important; width:100%; max-width:none; height:100%; margin:0; }
+    body.print-cert-mode .stage > *{ display:none !important; }
+    body.print-cert-mode #screen-end{ display:block !important; height:100%; }
+    body.print-cert-mode #screen-end > .end-card{
+      display:flex !important; align-items:center; justify-content:center;
+      width:100%; height:100%; margin:0; padding:0;
+      border:none !important; background:transparent !important; border-radius:0;
     }
-    body.print-cert-mode #certificate .cname{ color:#8a6400 !important; }
-    body.print-cert-mode #certificate .cscore{ color:#1a7a4a !important; }
-    body.print-cert-mode #certificate .cbrand-name{ color:#8a6400 !important; }
-    body.print-cert-mode #certificate .cert-brand{ border-color:#999 !important; }
+    body.print-cert-mode #screen-end > .end-card > *{ display:none !important; }
+    body.print-cert-mode #certificate{
+      display:flex !important; align-items:center; justify-content:center;
+      position:static; width:100%; height:100%; margin:0; padding:20mm; box-sizing:border-box;
+      background:#ffffff !important; color:#111111 !important;
+      border:3px double #999 !important; border-radius:0; box-shadow:none !important;
+    }
+    body.print-cert-mode #certificate .cert-main{ gap:60px; }
+    body.print-cert-mode #certificate .cert-brand{ padding-right:44px; border-color:#999 !important; }
+    body.print-cert-mode #certificate canvas.vanberto{ width:140px !important; height:140px !important; }
+    body.print-cert-mode #certificate .cbrand-name{ font-size:24px !important; color:#8a6400 !important; }
+    body.print-cert-mode #certificate h3{ font-size:22px !important; letter-spacing:1px; }
+    body.print-cert-mode #certificate .cname{ font-size:64px !important; margin:18px 0 !important; color:#8a6400 !important; }
+    body.print-cert-mode #certificate .ctitle{ font-size:30px !important; margin-bottom:14px !important; }
+    body.print-cert-mode #certificate .cscore{ font-size:24px !important; margin-bottom:16px !important; color:#1a7a4a !important; }
+    body.print-cert-mode #certificate .csub{ font-size:21px !important; }
+    body.print-cert-mode #certificate .cdate{ font-size:16px !important; margin-top:20px !important; }
     body.print-cert-mode #btn-print-cert,
     body.print-cert-mode .cert-hint{ display:none !important; }
   }
@@ -429,8 +447,8 @@
           <h3>Formal ou Informal?</h3>
           <p>Lê cada mensagem e decide qual é o tom certo — formal ou informal.</p>
           <div class="mode-setup">
-            <label for="tone-count">💬 Mensagens:</label>
-            <select id="tone-count">
+            <label for="tone-count-select">💬 Mensagens:</label>
+            <select id="tone-count-select">
               <option value="5" selected>5</option>
               <option value="8">8</option>
               <option value="10">10</option>
@@ -1484,7 +1502,7 @@
     state.toneIndex = 0;
     state.toneScore = 0;
     state.toneResults = [];
-    var toneCountEl = document.getElementById('tone-count');
+    var toneCountEl = document.getElementById('tone-count-select');
     var toneCount = Math.min(toneCountEl ? parseInt(toneCountEl.value, 10) : 5, TONE_ROUNDS.length);
     state.toneOrder = shuffle(TONE_ROUNDS.map(function(_,i){ return i; })).slice(0, toneCount);
     showScreen('tone');
