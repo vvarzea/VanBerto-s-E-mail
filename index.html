@@ -138,7 +138,7 @@
   .mode-setup{ font-size:12.5px; color:var(--ink-dim); display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:center; }
   .mode-setup select{
     background: var(--panel-2); border:1px solid var(--line); color:var(--ink);
-    border-radius: 999px; padding:6px 12px; font-size:16px; font-family:var(--font-body);
+    border-radius: 999px; padding:6px 12px; font-size:16px; font-family:var(--font-body); min-height:44px;
   }
   .mode-best{ font-size:12px; color: var(--warn); font-weight:600; }
 
@@ -209,7 +209,7 @@
   .clue-chip{
     background: var(--panel); border:2px solid var(--line); color: var(--ink);
     padding:11px 16px; border-radius:999px; font-size:14px; font-weight:600;
-    display:flex; align-items:center; gap:7px; min-height:40px;
+    display:flex; align-items:center; gap:7px; min-height:44px;
   }
   .clue-chip.on{ border-color: var(--warn); background: #3a2f14; }
 
@@ -361,14 +361,19 @@
     position:fixed; top: calc(14px + env(safe-area-inset-top,0px)); right: calc(14px + env(safe-area-inset-right,0px));
     z-index:40; display:flex; gap:8px; /* abaixo dos modais (45/50): não tapam o texto do feedback em ecrãs pequenos */
   }
-  .top-controls .btn{ padding:9px 13px; font-size:15px; line-height:1; }
+  .top-controls .btn{ padding:9px 13px; font-size:15px; line-height:1; min-height:44px; min-width:44px; }
+  /* até tablet: os botões ficam no topo da página (reservam o seu espaço e saem com o scroll),
+     em vez de flutuarem por cima do texto; só em ecrãs largos ficam fixos no canto */
+  @media (max-width:1180px){
+    .top-controls{ position:static; width:100%; max-width:880px; justify-content:flex-end; margin:0 0 6px; }
+  }
 
   /* ---------- status bar (Início + nome do jogador), visível nas fases 1-3 ---------- */
   .status-bar{
     display:flex; align-items:center; justify-content:space-between;
     gap:10px; flex-wrap:wrap; margin-bottom:16px;
   }
-  .status-bar .btn{ padding:8px 15px; font-size:13px; flex-shrink:0; }
+  .status-bar .btn{ padding:8px 15px; font-size:13px; flex-shrink:0; min-height:44px; }
   .status-bar .pill{ font-size:12.5px; font-weight:700; max-width:100%; }
   .status-bar .pill span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:inline-block; max-width:180px; vertical-align:bottom; }
 
@@ -1671,6 +1676,7 @@
     var report = [];
     var cluePts = 0;
     var maxCluePts = r.trueClues.length;
+    var falseHintShown = false; /* a explicação das pistas marcadas por engano diz-se uma só vez */
     CLUE_DEFS.forEach(function(c){
       var picked = !!state.selected[c.key];
       var isTrue = r.trueClues.indexOf(c.key) !== -1;
@@ -1681,11 +1687,12 @@
         report.push({row:'Não assinalaste: ' + c.label, cls:'miss', mk:'○', hint:c.hint, pts:'0'});
       } else if(!isTrue && picked){
         cluePts -= 1;
-        report.push({row:'Marcaste, mas não era: ' + c.label, cls:'false', mk:'✖', hint:'Não era um sinal de alerta neste e-mail — não fazia parte da armadilha.', pts:'-1'});
+        report.push({row:'Marcaste, mas não era: ' + c.label, cls:'false', mk:'✖', hint: falseHintShown ? '' : 'Estas pistas não eram sinais de alerta neste e-mail.', pts:'-1'});
+        falseHintShown = true;
       }
     });
     if(cluePts < 0){
-      report.push({row:'Ajuste: nas pistas, cada ronda vale no mínimo 0 pontos', cls:'miss', mk:'○', hint:'', pts:'+' + (-cluePts)});
+      report.push({row:'Total das pistas nesta ronda', cls:'miss', mk:'○', hint:'Não há pontos negativos: o mínimo é 0.', pts:'0'});
     }
     cluePts = Math.max(0, cluePts);
     var actionRight = action === r.correctAction;
