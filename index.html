@@ -151,6 +151,38 @@
   }
   .missions-done strong{ display:block; font-family: var(--font-display); font-size:18px; color: var(--warn); }
 
+  /* aviso de que os recordes ficam guardados neste computador (localStorage) */
+  .device-note{
+    max-width:460px; margin: 0 auto 18px; font-size:12px; line-height:1.5;
+    color: var(--ink-dim); text-align:center;
+  }
+  .link-btn{
+    background:none; border:none; padding:0; margin-left:4px;
+    color: var(--ink-dim); font-size:12px; text-decoration: underline;
+    cursor:pointer; font-family: var(--font-body);
+  }
+  .link-btn:hover, .link-btn:focus{ color: var(--warn); }
+
+  /* sessão em curso encontrada ao abrir a página (guardada neste computador) */
+  .resume-banner{
+    max-width:460px; margin: 4px auto 18px; padding:14px 18px;
+    border:1px solid var(--line); border-radius: var(--radius);
+    background: var(--panel); text-align:center;
+  }
+  #resume-text{ font-size:14px; color: var(--ink); margin-bottom:10px; }
+  .resume-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+  .resume-actions .btn{ padding:9px 18px; font-size:14px; }
+
+  /* resumo do que ainda vale a pena rever, juntando os 3 modos (dados guardados neste computador) */
+  .review-summary{
+    max-width:560px; margin: 4px auto 22px; padding:16px 22px;
+    border:1px solid var(--line); border-radius: var(--radius);
+    background: var(--panel); text-align:left;
+  }
+  .review-summary h4{ font-size:15px; margin:0 0 8px; color: var(--warn); }
+  .review-summary ul{ margin:0; padding-left:18px; color:var(--ink-dim); font-size:13.5px; line-height:1.6; }
+  .review-summary li strong{ color: var(--ink); }
+
   .how-card{
     background: var(--panel); border:1px solid var(--line); border-radius: var(--radius);
     padding: 20px 22px; max-width:560px; margin: 30px auto 0; text-align:left;
@@ -512,11 +544,29 @@
       <p class="lede">Três missões à tua espera: apanhar armadilhas de phishing, acertar no tom certo e testar tudo sobre o e-mail — elementos, netiqueta e endereços. Escolhe uma para começar.</p>
       <div class="name-row" style="margin-bottom:8px;">
         <input id="player-name" type="text" placeholder="Como te chamas, detetive?" maxlength="24">
+        <input id="player-turma" type="text" placeholder="Turma / nº (opcional)" maxlength="12">
+      </div>
+      <div class="device-note" id="device-note">
+        🖥️ Os recordes ficam guardados neste computador, associados ao nome (e turma/nº, se preenchida).
+        <button type="button" class="link-btn" id="btn-clear-device">Limpar recordes deste computador</button>
+      </div>
+
+      <div class="resume-banner" id="resume-banner" style="display:none;" role="status">
+        <div id="resume-text">Tens uma sessão em curso.</div>
+        <div class="resume-actions">
+          <button type="button" class="btn ghost" id="btn-resume-discard">🗑️ Começar de novo</button>
+          <button type="button" class="btn" id="btn-resume-continue">▶️ Continuar</button>
+        </div>
       </div>
 
       <div class="missions-done" id="missions-done" style="display:none;" role="status">
         <strong>🏅 Detetive Completo!</strong>
         Já tens pelo menos <span class="mission-min">50</span>% nas três missões. Consegues bater os teus recordes?
+      </div>
+
+      <div class="review-summary" id="review-summary" style="display:none;">
+        <h4>📋 O que ainda vale a pena rever</h4>
+        <ul id="review-summary-list"></ul>
       </div>
 
       <div class="mode-grid">
@@ -1157,7 +1207,8 @@
     { sender:'suporte@paytal-seguro.info', subject:'', subjectEmpty:true,
       body:'URGENTE!!! A TUA CONTA FOI BLOQUEADA. Clica no link abaixo para a reativares imediatamente:',
       bodyCaps:true, link:'paytal-verifica-conta.info', icon:'🏦',
-      trueClues:['sender','brand','subjectEmpty','caps','link','urgency'], correctAction:'eliminar' },
+      trueClues:['sender','brand','subjectEmpty','caps','link','urgency'], correctAction:'eliminar',
+      note:'Repara no nome: "Paytal", não "PayPal" — trocam uma letra para pareceres estar a reconhecer a marca. Juntando o assunto vazio e o texto todo em maiúsculas, tudo foi pensado para te assustar e fazeres clicar sem pensar.' },
 
     { sender:'seguranca@instagrarn-ajuda.com', subject:'A TUA CONTA VAI SER ELIMINADA', subjectCaps:true,
       body:'Detetámos atividade suspeita na tua conta. Introduz a tua palavra-passe no link abaixo para confirmares a tua identidade:',
@@ -1174,17 +1225,20 @@
     { sender:'prendas@promo-exclusiva.co', subject:'🎁 Foste selecionado! Prémio de 100€',
       body:'Parabéns! Foste escolhido para receberes um cartão-presente. Clica no link e preenche os teus dados para o receberes agora:',
       link:'levantar-premio-agora.co', icon:'🎁',
-      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar' },
+      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar',
+      note:'Participaste nalgum sorteio desta empresa? Se não, o "prémio" não pode ser verdadeiro — ninguém ganha concursos em que nunca entrou. O remetente nem é de uma marca conhecida, é só um nome inventado ("prendas", "promo-exclusiva") para parecer uma oferta real.' },
 
     { sender:'notificacoes@ctt-entregas-pt.info', subject:'📦 Encomenda retida — paga a taxa aduaneira',
       body:'A tua encomenda está retida nos correios. Paga uma pequena taxa aduaneira nas proximas 2 horas ou a encomenda sera devolvida ao remetente.',
       link:'ctt-pagar-taxa.info', icon:'📦',
-      trueClues:['sender','brand','subjectAlarm','link','urgency','typo'], correctAction:'eliminar' },
+      trueClues:['sender','brand','subjectAlarm','link','urgency','typo'], correctAction:'eliminar',
+      note:'O site verdadeiro dos CTT é ctt.pt. Este e-mail vem de "ctt-entregas-pt.info" — acrescenta palavras a mais e troca o final para .info, um domínio que qualquer pessoa pode registar. Pedir dinheiro para "libertar" uma encomenda por e-mail é sempre motivo de desconfiança.' },
 
     { sender:'recrutamento@trabalha-facil24.com', subject:'Ganha 300€ por semana sem sair de casa!',
       body:'Selecionamos jovens para um trabalho online simples. Envia o teu nome completo, morada e número de contribuinte para começares já hoje!',
       link:'inscricao-trabalha-facil24.com', icon:'💼',
-      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar' },
+      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar',
+      note:'Nenhuma oferta de emprego séria pede o teu número de contribuinte e morada só para te "inscreveres" — ainda por cima sem entrevista nem processo, apenas a promessa de "dinheiro fácil". Isto é um pedido de dados pessoais disfarçado de oportunidade.' },
 
     { sender:'vanda.varzea@edu.azores.gov.pt', subject:'Correção do teste de sexta-feira',
       body:'Boa tarde. A correção dos testes será feita na próxima aula — tragam o vosso caderno. Cumprimentos, Profª Vanda.',
@@ -1219,22 +1273,26 @@
     { sender:'seguranca@roblox-conta-segura.net', subject:'A TUA CONTA ROBLOX VAI SER BANIDA', subjectCaps:true,
       body:'Detetámos uma tentativa de acesso não autorizada. Confirma a tua conta no link abaixo nas próximas 24 horas ou perdes todos os teus itens:',
       link:'roblox-verificar-conta.net', icon:'🎮',
-      trueClues:['sender','brand','subjectAlarm','caps','link','urgency'], correctAction:'eliminar' },
+      trueClues:['sender','brand','subjectAlarm','caps','link','urgency'], correctAction:'eliminar',
+      note:'O domínio verdadeiro é roblox.com. Este e-mail usa "roblox-conta-segura.net" — com palavras a mais e um final diferente — só para parecer oficial. Ameaçar perder os teus itens se não agires já é a pressa típica destas mensagens.' },
 
     { sender:'suporte@portal-aluno-acores.info', subject:'', subjectEmpty:true,
       body:'A tua palavra-passe expira hoje. Clica no link para não perderes o acesso às tuas notas e trabalhos:',
       link:'portal-aluno-acesso.info', icon:'🔑',
-      trueClues:['sender','brand','subjectEmpty','link','urgency'], correctAction:'eliminar' },
+      trueClues:['sender','brand','subjectEmpty','link','urgency'], correctAction:'eliminar',
+      note:'As mensagens da escola vêm sempre de @edu.azores.gov.pt, nunca de um domínio ".info". Junta a isso o assunto vazio e a pressa do "hoje" — sinais típicos para não teres tempo de pensar antes de clicar.' },
 
     { sender:'premios@sorteio-tech24.com', subject:'📱 Foste o vencedor do sorteio de hoje!',
       body:'Parabéns! O teu número foi selecionado para receberes um telemóvel novo grátis. Preenche o formulário com o teu nome e morada para o enviarmos ainda esta semana:',
       link:'confirmar-premio-tech24.com', icon:'🎉',
-      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar' },
+      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar',
+      note:'Ganhaste um sorteio em que nunca te inscreveste — já é o primeiro sinal de alerta. Pedir o teu nome e morada para "enviar" o prémio é a forma como estes golpes recolhem dados pessoais.' },
 
     { sender:'seloverificado@tiktok-selo.co', subject:'O TEU PEDIDO DE SELO AZUL FOI APROVADO', subjectCaps:true,
       body:'O teu perfil foi aprovado para receber o selo de verificado. Descarrega o certificado em anexo e segue as instruçoes nas proximas 24 horas para ativares o teu novo estatuto.',
       attach:'Certificado_Selo.zip', icon:'✅',
-      trueClues:['sender','brand','subjectAlarm','caps','attach','urgency','typo'], correctAction:'eliminar' },
+      trueClues:['sender','brand','subjectAlarm','caps','attach','urgency','typo'], correctAction:'eliminar',
+      note:'Pediste alguma vez um "selo azul"? Se não, já é suspeito receberes uma "aprovação" que nunca pediste. O domínio certo do TikTok é tiktok.com, não "tiktok-selo.co", e o anexo .zip é outro sinal de perigo — evita abrir compactados que não esperavas.' },
 
     { sender:'prof.pedro.melo@edu.azores.gov.pt', subject:'Aula de Educação Musical adiada',
       body:'Bom dia. A aula de Educação Musical de amanhã foi adiada para sexta-feira. Cumprimentos, Prof. Pedro Melo.',
@@ -1518,10 +1576,18 @@
 
   /* ---------------- state ---------------- */
   var lastFocusedEl = null;
-  var state = { hasName:false, practice:false, failed:[], round:0, score:0, selected:{}, playerName:'', results:[], order:[],
+  var state = { hasName:false, practice:false, failed:[], round:0, score:0, selected:{}, playerName:'', turma:'', results:[], order:[],
     maxScore:0, totalClues:0, phase:'detective',
     toneIndex:0, toneScore:0, toneOrder:[], toneResults:[],
     elementsIndex:0, elementsScore:0, elementsOrder:[], elementsResults:[] };
+
+  /* chave do jogador para os recordes: nome + turma/nº (se preenchida), para dois alunos com o
+     mesmo nome não partilharem o mesmo recorde. Guardado sempre em minúsculas. */
+  function makeKey(name, turma){
+    name = (name || '').trim().toLowerCase();
+    turma = (turma || '').trim().toLowerCase();
+    return turma ? (name + '|' + turma) : name;
+  }
 
   function shuffle(arr){
     var a = arr.slice();
@@ -1622,9 +1688,14 @@
     return n;
   }
 
-  function updateBestPills(){
+  function currentPlayerKey(){
     var nameEl = document.getElementById('player-name');
-    var currentName = (nameEl && nameEl.value || '').trim().toLowerCase();
+    var turmaEl = document.getElementById('player-turma');
+    return makeKey(nameEl && nameEl.value, turmaEl && turmaEl.value);
+  }
+
+  function updateBestPills(){
+    var currentName = currentPlayerKey();
     var missionsBadge = document.getElementById('missions-done');
     if(missionsBadge){
       missionsBadge.style.display = (currentName && countMissionsDone(currentName) === Object.keys(MODE_INFO).length) ? 'block' : 'none';
@@ -1641,20 +1712,159 @@
       el.textContent = '🏆 O teu melhor: ' + e.pct + '% (' + e.pts + '/' + e.max + ' pts)';
     });
   }
-  updateBestPills();
-  document.getElementById('player-name').addEventListener('input', updateBestPills);
+
+  /* junta, dos 3 modos já jogados por este jogador, os itens que ainda vale a pena rever
+     (guardado neste computador, a par do recorde de cada modo) */
+  function updateReviewSummary(){
+    var key = currentPlayerKey();
+    var box = document.getElementById('review-summary');
+    var list = document.getElementById('review-summary-list');
+    if(!box || !list) return;
+    if(!key){ box.style.display = 'none'; return; }
+    var items = [];
+    Object.keys(MODE_INFO).forEach(function(mode){
+      var e = readBest(mode, key);
+      if(e && e.review && e.review.length){
+        e.review.forEach(function(it){ items.push({ icon: MODE_INFO[mode].icon, label: it.label, tip: it.tip }); });
+      }
+    });
+    if(!items.length){ box.style.display = 'none'; return; }
+    list.innerHTML = '';
+    items.slice(0, 6).forEach(function(it){
+      var li = document.createElement('li');
+      li.innerHTML = '<strong></strong> — <span></span>';
+      li.querySelector('strong').textContent = it.icon + ' ' + it.label;
+      li.querySelector('span').textContent = it.tip;
+      list.appendChild(li);
+    });
+    box.style.display = 'block';
+  }
+
+  function refreshPlayerPanels(){
+    updateBestPills();
+    updateReviewSummary();
+  }
+  refreshPlayerPanels();
+  document.getElementById('player-name').addEventListener('input', refreshPlayerPanels);
+  document.getElementById('player-turma').addEventListener('input', refreshPlayerPanels);
+
+  document.getElementById('btn-clear-device').addEventListener('click', function(){
+    sfxClick();
+    if(!confirm('Isto apaga os recordes e o resumo de revisão guardados neste computador (de todos os alunos que já jogaram aqui). Continuar?')) return;
+    try{
+      Object.keys(MODE_INFO).forEach(function(mode){ localStorage.removeItem(MODE_INFO[mode].storageKey); });
+      localStorage.removeItem(SESSION_SAVE_KEY);
+    }catch(e){}
+    hideResumeBanner();
+    refreshPlayerPanels();
+  });
 
   function capturePlayerName(){
     var nameEl = document.getElementById('player-name');
+    var turmaEl = document.getElementById('player-turma');
     var typed = (nameEl.value||'').trim();
     state.hasName = !!typed; /* sem nome escrito, o resultado não entra nos recordes (evita juntar vários alunos num só "Detetive") */
     state.playerName = typed || 'Detetive';
+    state.turma = (turmaEl && turmaEl.value || '').trim();
     updateNameTags();
   }
 
   document.getElementById('player-name').addEventListener('keydown', function(e){
     if(e.key === 'Enter'){ document.getElementById('start-detective-btn').click(); }
   });
+  document.getElementById('player-turma').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ document.getElementById('start-detective-btn').click(); }
+  });
+
+  /* ---------------- sessão em curso: guardar e retomar (neste computador) ----------------
+     Se a aula for interrompida a meio de uma ronda, o progresso não se perde ao reabrir a página. */
+  var SESSION_SAVE_KEY = 'vb_session_save2';
+  var SESSION_MAX_AGE_MS = 8 * 60 * 60 * 1000; /* ignora sessões com mais de 8h (ex.: aluno de outro dia neste computador) */
+
+  function saveSession(){
+    try{
+      var snap = { phase: state.phase, playerName: state.playerName, hasName: state.hasName,
+        turma: state.turma, practice: state.practice, ts: Date.now() };
+      if(state.phase === 'detective'){
+        snap.order = state.order; snap.results = state.results; snap.score = state.score;
+        snap.maxScore = state.maxScore; snap.totalClues = state.totalClues;
+      } else if(state.phase === 'tone'){
+        snap.toneOrder = state.toneOrder; snap.toneIndex = state.toneIndex;
+        snap.toneScore = state.toneScore; snap.toneResults = state.toneResults;
+      } else if(state.phase === 'elements'){
+        snap.elementsOrder = state.elementsOrder; snap.elementsIndex = state.elementsIndex;
+        snap.elementsScore = state.elementsScore; snap.elementsResults = state.elementsResults;
+      } else { return; }
+      localStorage.setItem(SESSION_SAVE_KEY, JSON.stringify(snap));
+    }catch(e){}
+  }
+  function clearSessionSave(){ try{ localStorage.removeItem(SESSION_SAVE_KEY); }catch(e){} }
+  function hideResumeBanner(){ var b = document.getElementById('resume-banner'); if(b) b.style.display = 'none'; }
+
+  function describeSession(s){
+    var label = (MODE_INFO[s.phase] || {}).label || '';
+    var progress = '';
+    if(s.phase === 'detective'){
+      var solved = (s.results || []).filter(function(x){ return x; }).length;
+      progress = solved + ' de ' + (s.order || []).length + ' analisados';
+    } else if(s.phase === 'tone'){
+      progress = s.toneIndex + ' de ' + (s.toneOrder || []).length;
+    } else if(s.phase === 'elements'){
+      progress = s.elementsIndex + ' de ' + (s.elementsOrder || []).length;
+    }
+    var who = s.hasName ? s.playerName : 'Detetive';
+    return (s.practice ? '🔁 Treino — ' : '') + label + ' (' + who + ') — ' + progress;
+  }
+
+  function restoreSession(s){
+    state.playerName = s.playerName || 'Detetive';
+    state.hasName = !!s.hasName;
+    state.turma = s.turma || '';
+    state.practice = !!s.practice;
+    var nameEl = document.getElementById('player-name');
+    var turmaEl = document.getElementById('player-turma');
+    if(nameEl) nameEl.value = state.hasName ? state.playerName : '';
+    if(turmaEl) turmaEl.value = state.turma;
+    updateNameTags();
+    hideResumeBanner();
+    if(s.phase === 'detective'){
+      state.phase = 'detective';
+      state.order = s.order || []; state.results = s.results || [];
+      state.score = s.score || 0; state.maxScore = s.maxScore || 0; state.totalClues = s.totalClues || 0;
+      showScreen('game');
+      renderInbox();
+    } else if(s.phase === 'tone'){
+      state.phase = 'tone';
+      state.toneOrder = s.toneOrder || []; state.toneIndex = s.toneIndex || 0;
+      state.toneScore = s.toneScore || 0; state.toneResults = s.toneResults || [];
+      showScreen('tone');
+      renderTone();
+    } else if(s.phase === 'elements'){
+      state.phase = 'elements';
+      state.elementsOrder = s.elementsOrder || []; state.elementsIndex = s.elementsIndex || 0;
+      state.elementsScore = s.elementsScore || 0; state.elementsResults = s.elementsResults || [];
+      showScreen('elements');
+      renderElements();
+    }
+    setTimeout(focusPrimaryAnswer, 0);
+  }
+
+  function checkForResumableSession(){
+    var raw;
+    try{ raw = localStorage.getItem(SESSION_SAVE_KEY); }catch(e){ raw = null; }
+    if(!raw) return;
+    var s;
+    try{ s = JSON.parse(raw); }catch(e){ s = null; }
+    if(!s || !s.phase || !s.ts || (Date.now() - s.ts) > SESSION_MAX_AGE_MS){ clearSessionSave(); return; }
+    var banner = document.getElementById('resume-banner');
+    var textEl = document.getElementById('resume-text');
+    if(!banner || !textEl) return;
+    textEl.textContent = 'Tens uma sessão em curso: ' + describeSession(s);
+    banner.style.display = 'block';
+    document.getElementById('btn-resume-continue').onclick = function(){ sfxClick(); restoreSession(s); };
+    document.getElementById('btn-resume-discard').onclick = function(){ sfxClick(); clearSessionSave(); hideResumeBanner(); };
+  }
+  checkForResumableSession();
 
   document.getElementById('start-detective-btn').addEventListener('click', function(){
     capturePlayerName();
@@ -1669,18 +1879,22 @@
     state.totalClues = state.order.reduce(function(s,gi){ return s + ALL_ROUNDS[gi].trueClues.length; },0);
     showScreen('game');
     renderInbox();
+    hideResumeBanner();
+    saveSession();
     setTimeout(focusPrimaryAnswer, 0);
   });
 
   document.getElementById('start-tone-btn').addEventListener('click', function(){
     capturePlayerName();
     state.practice = false;
+    hideResumeBanner();
     startTonePhase();
   });
 
   document.getElementById('start-elements-btn').addEventListener('click', function(){
     capturePlayerName();
     state.practice = false;
+    hideResumeBanner();
     startElementsPhase();
   });
 
@@ -2027,6 +2241,7 @@
         finishGame();
       } else {
         renderInbox();
+        saveSession();
       }
     } else if(state.phase === 'tone'){
       state.toneIndex++;
@@ -2034,6 +2249,7 @@
         finishGame();
       } else {
         renderTone();
+        saveSession();
       }
     } else if(state.phase === 'elements'){
       state.elementsIndex++;
@@ -2041,6 +2257,7 @@
         finishGame();
       } else {
         renderElements();
+        saveSession();
       }
     }
     setTimeout(focusPrimaryAnswer, 0);
@@ -2057,6 +2274,7 @@
     state.toneOrder = shuffle(TONE_ROUNDS.map(function(_,i){ return i; })).slice(0, toneCount);
     showScreen('tone');
     renderTone();
+    saveSession();
     setTimeout(focusPrimaryAnswer, 0);
   }
 
@@ -2111,6 +2329,7 @@
     state.elementsOrder = pickBalancedElements(elementsCount);
     showScreen('elements');
     renderElements();
+    saveSession();
     setTimeout(focusPrimaryAnswer, 0);
   }
 
@@ -2266,6 +2485,7 @@
       showScreen('elements');
       renderElements();
     }
+    saveSession();
     setTimeout(focusPrimaryAnswer, 0);
   });
 
@@ -2317,7 +2537,45 @@
     box.style.display = 'block';
   }
 
+  /* itens ainda a rever neste modo, calculados a partir da última tentativa (não só a de melhor pontuação) —
+     guardados a par do recorde, para o resumo geral no menu inicial poder juntar os 3 modos */
+  function buildReviewItems(){
+    var failedList = state.failed || [];
+    if(state.phase === 'detective'){
+      var stats = {};
+      state.order.forEach(function(gi, pos){
+        var res = state.results[pos];
+        if(!res) return;
+        ALL_ROUNDS[gi].trueClues.forEach(function(k){
+          if(!stats[k]) stats[k] = { total:0, missed:0 };
+          stats[k].total++;
+          if(!(res.picked && res.picked[k])) stats[k].missed++;
+        });
+      });
+      return CLUE_DEFS.filter(function(c){ return stats[c.key] && stats[c.key].missed > 0; })
+        .sort(function(a,b){
+          var sa = stats[a.key], sb = stats[b.key];
+          return (sb.missed - sa.missed) || ((sb.missed/sb.total) - (sa.missed/sa.total));
+        })
+        .slice(0,3)
+        .map(function(c){ return { label: c.label, tip: c.tip }; });
+    }
+    if(state.phase === 'tone'){
+      return failedList.slice(0,3).map(function(ti){
+        var t = TONE_ROUNDS[ti];
+        return { label: 'Tom certo: ' + (t.to || 'mensagem'), tip: t.explain };
+      });
+    }
+    return failedList.slice(0,3).map(function(idx){
+      var item = KNOWLEDGE_ITEMS[idx];
+      if(item.type === 'netiqueta'){ var rule = NETIQUETA_RULES[item.ruleIdx]; return { label: rule.short, tip: rule.full }; }
+      if(item.type === 'address'){ return { label: item.address, tip: item.reason }; }
+      return { label: item.term, tip: item.def };
+    });
+  }
+
   function finishGame(){
+    clearSessionSave();
     showScreen('end');
     var info = MODE_INFO[state.phase];
     var totalScore, totalMax;
@@ -2348,7 +2606,7 @@
 
     paint('vb-cert', tier.mood, pct >= 0.9);
     document.getElementById('cert-heading').textContent = info.certTitle;
-    document.getElementById('cert-name').textContent = state.playerName;
+    document.getElementById('cert-name').textContent = state.turma ? (state.playerName + ' — ' + state.turma) : state.playerName;
     document.getElementById('cert-title').textContent = tier.rank;
     document.getElementById('cert-score').textContent = totalScore + ' de ' + totalMax + ' pontos (' + Math.round(pct*100) + '%)';
     document.getElementById('cert-sub').textContent = info.label;
@@ -2387,15 +2645,19 @@
         var raw = localStorage.getItem(info.storageKey);
         var map = raw ? JSON.parse(raw) : {};
         if(!map || typeof map !== 'object'){ map = {}; }
-        var key = state.playerName.trim().toLowerCase();
+        var key = makeKey(state.playerName, state.turma);
         var totalModes = Object.keys(MODE_INFO).length;
         var doneBefore = countMissionsDone(key);
         var pctRounded = Math.round(pct * 100);
         var best = readBest(state.phase, key);
+        var entry = (best && typeof best === 'object') ? best : {};
         if(!best || pctRounded > best.pct){
-          map[key] = { pct: pctRounded, pts: totalScore, max: totalMax };
-          localStorage.setItem(info.storageKey, JSON.stringify(map));
+          entry.pct = pctRounded; entry.pts = totalScore; entry.max = totalMax;
         }
+        /* o resumo do que ainda vale a pena rever reflete sempre a última tentativa, não só a de recorde */
+        entry.review = buildReviewItems();
+        map[key] = entry;
+        localStorage.setItem(info.storageKey, JSON.stringify(map));
         /* só celebra no jogo em que a 3.ª missão passa a estar cumprida */
         justCompleted = doneBefore < totalModes && countMissionsDone(key) === totalModes;
       }catch(e){}
@@ -2403,7 +2665,7 @@
     var endMissions = document.getElementById('end-missions');
     if(endMissions){ endMissions.style.display = justCompleted ? 'block' : 'none'; }
     if(justCompleted && pct < 0.7) sfxWin();
-    updateBestPills();
+    refreshPlayerPanels();
   }
 
   document.getElementById('btn-again').addEventListener('click', function(){
@@ -2425,6 +2687,7 @@
     document.getElementById('mail-modal').classList.remove('show');
     document.getElementById('overlay').classList.remove('show');
     sfxClick();
+    clearSessionSave();
     showScreen('intro');
   });
   document.getElementById('btn-cert').addEventListener('click', function(){
