@@ -1559,12 +1559,12 @@
 
   /* ---------------- fase 3 (extra): estrutura do endereço ---------------- */
   var ADDRESS_ROUNDS = [
-    { address:'joao.silva@escola.pt', valid:true, reason:'Segue a forma utilizador@domínio, sem espaços nem acentos.' },
+    { address:'joao.silva@escola.pt', valid:true, reason:'Tem a forma utilizador@domínio, sem espaços nem acentos — está tudo em ordem.' },
     { address:'joão.silva@escola.pt', valid:false, reason:'Tem um acento ("ã"), e um endereço de e-mail não pode ter acentos.' },
     { address:'joao silva@escola.pt', valid:false, reason:'Tem um espaço antes do "@", e um endereço de e-mail não pode ter espaços.' },
-    { address:'beatriz_costa9b@edu.azores.gov.pt', valid:true, reason:'Segue a forma utilizador@domínio, sem espaços nem acentos.' },
+    { address:'beatriz_costa9b@edu.azores.gov.pt', valid:true, reason:'O sublinhado e os números no nome de utilizador são permitidos; sem espaços nem acentos, o endereço está correto.' },
     { address:'mariasilva@', valid:false, reason:'Falta o domínio depois do "@" (a entidade que fornece o serviço).' },
-    { address:'ana-rodrigues@colegio.pt', valid:true, reason:'Segue a forma utilizador@domínio, sem espaços nem acentos.' },
+    { address:'ana-rodrigues@colegio.pt', valid:true, reason:'O hífen no nome de utilizador não é problema; a forma utilizador@domínio está respeitada.' },
     { address:'miguelferreira.pt', valid:false, reason:'Falta o símbolo "@" — sem ele, não é possível identificar o domínio.' },
     { address:'rui.costa@escola pt', valid:false, reason:'Tem um espaço no domínio, em vez de um ponto (deveria ser "escola.pt").' },
     { address:'joao.silva@@escola.pt', valid:false, reason:'Tem dois "@" seguidos — um endereço só pode ter um "@".' },
