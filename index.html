@@ -2496,6 +2496,29 @@
     }
   });
 
+  /* Acessibilidade: enquanto um modal (e-mail, feedback ou confirmação) está aberto, o resto da
+     página fica escondido de leitores de ecrã. O foco do teclado já ficava preso no modal (Tab não
+     saía), mas um leitor de ecrã navega também por um "modo de exploração" que ignora o Tab — sem
+     isto, continuava a conseguir ler o conteúdo por trás do modal ao mesmo tempo. */
+  (function(){
+    var bgEls = [document.querySelector('.top-controls'), document.querySelector('.stage')].filter(Boolean);
+    var modalEls = ['mail-modal', 'overlay', 'confirm-overlay'].map(function(id){ return document.getElementById(id); }).filter(Boolean);
+    function anyOpen(){
+      return modalEls.some(function(m){ return m.classList.contains('show'); });
+    }
+    function sync(){
+      var hide = anyOpen();
+      bgEls.forEach(function(el){
+        if(hide){ el.setAttribute('aria-hidden', 'true'); el.inert = true; }
+        else { el.removeAttribute('aria-hidden'); el.inert = false; }
+      });
+    }
+    modalEls.forEach(function(m){
+      new MutationObserver(sync).observe(m, { attributes:true, attributeFilter:['class'] });
+    });
+    sync();
+  })();
+
 })();
 </script>
 <script>
