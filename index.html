@@ -389,6 +389,20 @@
   }
   .rank{ font-family: var(--font-display); font-size:26px; color: var(--warn); margin: 6px 0 2px; }
   .score-big{ font-size: 52px; font-family: var(--font-display); margin: 8px 0; }
+  /* modo "certificado Detetive Completo": mostra só o certificado combinado, esconde tudo
+     o resto do ecrã final (pontuação de um único modo, rever respostas, etc.) */
+  .end-card.complete-cert > .rank,
+  .end-card.complete-cert > .score-big,
+  .end-card.complete-cert > #end-msg,
+  .end-card.complete-cert > #end-clues,
+  .end-card.complete-cert > #btn-open-cheat-end,
+  .end-card.complete-cert > #end-missions,
+  .end-card.complete-cert > #end-noname,
+  .end-card.complete-cert #btn-review,
+  .end-card.complete-cert #btn-practice,
+  .end-card.complete-cert #btn-copy,
+  .end-card.complete-cert #btn-cert{ display:none !important; }
+  .end-card.complete-cert #certificate{ display:block !important; }
   .score-big span{ font-size:22px; color: var(--ink-dim); font-family: var(--font-body);}
   .end-clues{ margin:20px auto 0; max-width:460px; text-align:left; background: var(--panel-2); border:1px solid var(--line); border-radius: var(--radius-sm); padding:14px 16px; }
   .end-clues h4{ margin:0 0 4px; font-size:15px; color: var(--warn); }
@@ -567,6 +581,9 @@
       <div class="missions-done" id="missions-done" style="display:none;" role="status">
         <strong>🏅 Detetive Completo!</strong>
         Já tens pelo menos <span class="mission-min">50</span>% nas três missões. Consegues bater os teus recordes?
+        <div style="margin-top:10px;">
+          <button type="button" class="btn ghost" id="btn-cert-complete-intro" style="padding:8px 14px; font-size:13px;">🎓 Ver certificado Detetive Completo</button>
+        </div>
       </div>
 
       <div class="review-summary" id="review-summary" style="display:none;">
@@ -721,6 +738,9 @@
       <div class="missions-done" id="end-missions" style="display:none; margin-top:16px;" role="status">
         <strong>🏅 Três missões cumpridas!</strong>
         Tens pelo menos <span class="mission-min">50</span>% nos três modos — és oficialmente Detetive Completo.
+        <div style="margin-top:10px;">
+          <button type="button" class="btn ghost" id="btn-cert-complete-end" style="padding:8px 14px; font-size:13px;">🎓 Ver certificado Detetive Completo</button>
+        </div>
       </div>
       <div class="end-noname" id="end-noname" style="display:none;" role="status">
         ✏️ Não escreveste o teu nome, por isso este resultado não ficou guardado nos recordes. Escreve-o no menu inicial para o guardares.
@@ -1217,238 +1237,238 @@
     { sender:'suporte@paytal-seguro.info', subject:'', subjectEmpty:true,
       body:'URGENTE!!! A TUA CONTA FOI BLOQUEADA. Clica no link abaixo para a reativares imediatamente:',
       bodyCaps:true, link:'paytal-verifica-conta.info', icon:'🏦',
-      trueClues:['sender','brand','subjectEmpty','caps','link','urgency'], correctAction:'eliminar',
+      trueClues:['sender','brand','subjectEmpty','caps','link','urgency'], correctAction:'eliminar', difficulty:'facil',
       note:'Repara no nome: "Paytal", não "PayPal" — trocam uma letra para pareceres estar a reconhecer a marca. Juntando o assunto vazio e o texto todo em maiúsculas, tudo foi pensado para te assustar e fazeres clicar sem pensar.' },
 
     { sender:'seguranca@instagrarn-ajuda.com', subject:'A TUA CONTA VAI SER ELIMINADA', subjectCaps:true,
       body:'Detetámos atividade suspeita na tua conta. Introduz a tua palavra-passe no link abaixo para confirmares a tua identidade:',
       link:'instagrarn-confirmar.net', icon:'📱',
-      trueClues:['sender','brand','subjectAlarm','caps','link','urgency'], correctAction:'eliminar',
+      trueClues:['sender','brand','subjectAlarm','caps','link','urgency'], correctAction:'eliminar', difficulty:'facil',
       note:'Repara em "instagrarn": tem "rn" no lugar do "m" — de relance parece "instagram". Nos endereços falsos, ler devagar e letra a letra é meio caminho para os apanhar.' },
 
     { sender:'cobranca@financas-aviso.net', subject:'FATURA EM ATRASO — AÇÃO NECESSÁRIA', subjectCaps:true,
       body:'Segue em anexo a fatura em atrazo. Efetua o pagamento nas próximas 24 horas para evitares uma penalização.',
       attach:'Fatura_2026.zip', icon:'💸',
-      trueClues:['sender','brand','subjectAlarm','caps','attach','urgency','typo'], correctAction:'eliminar',
+      trueClues:['sender','brand','subjectAlarm','caps','attach','urgency','typo'], correctAction:'eliminar', difficulty:'facil',
       note:'Olha para a extensão do anexo: uma fatura verdadeira raramente vem num .zip. Ficheiros como .zip, .exe ou .scr podem esconder programas maliciosos. Mesmo um .pdf só se abre se estavas à espera dele — na dúvida, confirma com quem o enviou.' },
 
     { sender:'prendas@promo-exclusiva.co', subject:'🎁 Foste selecionado! Prémio de 100€',
       body:'Parabéns! Foste escolhido para receberes um cartão-presente. Clica no link e preenche os teus dados para o receberes agora:',
       link:'levantar-premio-agora.co', icon:'🎁',
-      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar',
+      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar', difficulty:'media',
       note:'Participaste nalgum sorteio desta empresa? Se não, o "prémio" não pode ser verdadeiro — ninguém ganha concursos em que nunca entrou. O remetente nem é de uma marca conhecida, é só um nome inventado ("prendas", "promo-exclusiva") para parecer uma oferta real.' },
 
     { sender:'notificacoes@ctt-entregas-pt.info', subject:'📦 Encomenda retida — paga a taxa aduaneira',
       body:'A tua encomenda está retida nos correios. Paga uma pequena taxa aduaneira nas proximas 2 horas ou a encomenda sera devolvida ao remetente.',
       link:'ctt-pagar-taxa.info', icon:'📦',
-      trueClues:['sender','brand','subjectAlarm','link','urgency','typo'], correctAction:'eliminar',
+      trueClues:['sender','brand','subjectAlarm','link','urgency','typo'], correctAction:'eliminar', difficulty:'media',
       note:'O site verdadeiro dos CTT é ctt.pt. Este e-mail vem de "ctt-entregas-pt.info" — acrescenta palavras a mais e troca o final para .info, um domínio que qualquer pessoa pode registar. Pedir dinheiro para "libertar" uma encomenda por e-mail é sempre motivo de desconfiança.' },
 
     { sender:'recrutamento@trabalha-facil24.com', subject:'Ganha 300€ por semana sem sair de casa!',
       body:'Selecionamos jovens para um trabalho online simples. Envia o teu nome completo, morada e número de contribuinte para começares já hoje!',
       link:'inscricao-trabalha-facil24.com', icon:'💼',
-      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar',
+      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar', difficulty:'media',
       note:'Nenhuma oferta de emprego séria pede o teu número de contribuinte e morada só para te "inscreveres" — ainda por cima sem entrevista nem processo, apenas a promessa de "dinheiro fácil". Isto é um pedido de dados pessoais disfarçado de oportunidade.' },
 
     { sender:'vanda.varzea@edu.azores.gov.pt', subject:'Correção do teste de sexta-feira',
       body:'Boa tarde. A correção dos testes será feita na próxima aula — tragam o vosso caderno. Cumprimentos, Profª Vanda.',
       icon:'🏫',
-      trueClues:[], correctAction:'confiar' },
+      trueClues:[], correctAction:'confiar', difficulty:'facil' },
 
     { sender:'biblioteca.escolar@edu.azores.gov.pt', subject:'O teu livro reservado já está disponível',
       body:'Olá! O livro que reservaste já pode ser levantado na biblioteca. Cumprimentos, Biblioteca Escolar.',
       icon:'📚',
-      trueClues:[], correctAction:'confiar' },
+      trueClues:[], correctAction:'confiar', difficulty:'facil' },
 
     { sender:'joao.silva23@edu.azores.gov.pt', subject:'Trabalho de Ciências',
       body:'Olá! Já viste o trabalho de Ciências? Podemos juntar-nos amanhã para o acabar? Abraço, João.',
       icon:'🎒',
-      trueClues:[], correctAction:'confiar' },
+      trueClues:[], correctAction:'confiar', difficulty:'facil' },
 
     { sender:'vanda.varzea@edu.azores.gov.pt', subject:'Ficha de trabalho — Correio Eletrónico',
       body:'Boa tarde. Envio em anexo a ficha de trabalho para a próxima aula — tragam-na resolvida. Cumprimentos, Profª Vanda.',
       attach:'Ficha_Correio_Eletronico.pdf', icon:'📝',
-      trueClues:[], correctAction:'confiar' },
+      trueClues:[], correctAction:'confiar', difficulty:'facil' },
 
     { sender:'secretaria@edu.azores.gov.pt', subject:'Alteração de horário — quinta-feira',
       body:'Bom dia. Informamos que, na próxima quinta-feira, a aula de Educação Física passa para as 10h. Cumprimentos, Secretaria.',
       icon:'🗓️',
-      trueClues:[], correctAction:'confiar' },
+      trueClues:[], correctAction:'confiar', difficulty:'facil' },
 
     { sender:'clube.robotica@edu.azores.gov.pt', subject:'Inscrições abertas — Clube de Robótica',
       body:'Olá! As inscrições para o Clube de Robótica estão abertas até sexta-feira. Fala com o Prof. Marco se quiseres participar. Até já!',
       icon:'🤖',
-      trueClues:[], correctAction:'confiar' },
+      trueClues:[], correctAction:'confiar', difficulty:'facil' },
 
     { sender:'seguranca@roblox-conta-segura.net', subject:'A TUA CONTA ROBLOX VAI SER BANIDA', subjectCaps:true,
       body:'Detetámos uma tentativa de acesso não autorizada. Confirma a tua conta no link abaixo nas próximas 24 horas ou perdes todos os teus itens:',
       link:'roblox-verificar-conta.net', icon:'🎮',
-      trueClues:['sender','brand','subjectAlarm','caps','link','urgency'], correctAction:'eliminar',
+      trueClues:['sender','brand','subjectAlarm','caps','link','urgency'], correctAction:'eliminar', difficulty:'facil',
       note:'O domínio verdadeiro é roblox.com. Este e-mail usa "roblox-conta-segura.net" — com palavras a mais e um final diferente — só para parecer oficial. Ameaçar perder os teus itens se não agires já é a pressa típica destas mensagens.' },
 
     { sender:'suporte@portal-aluno-acores.info', subject:'', subjectEmpty:true,
       body:'A tua palavra-passe expira hoje. Clica no link para não perderes o acesso às tuas notas e trabalhos:',
       link:'portal-aluno-acesso.info', icon:'🔑',
-      trueClues:['sender','brand','subjectEmpty','link','urgency'], correctAction:'eliminar',
+      trueClues:['sender','brand','subjectEmpty','link','urgency'], correctAction:'eliminar', difficulty:'media',
       note:'As mensagens da escola vêm sempre de @edu.azores.gov.pt, nunca de um domínio ".info". Junta a isso o assunto vazio e a pressa do "hoje" — sinais típicos para não teres tempo de pensar antes de clicar.' },
 
     { sender:'premios@sorteio-tech24.com', subject:'📱 Foste o vencedor do sorteio de hoje!',
       body:'Parabéns! O teu número foi selecionado para receberes um telemóvel novo grátis. Preenche o formulário com o teu nome e morada para o enviarmos ainda esta semana:',
       link:'confirmar-premio-tech24.com', icon:'🎉',
-      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar',
+      trueClues:['sender','subjectAlarm','link','urgency'], correctAction:'eliminar', difficulty:'media',
       note:'Ganhaste um sorteio em que nunca te inscreveste — já é o primeiro sinal de alerta. Pedir o teu nome e morada para "enviar" o prémio é a forma como estes golpes recolhem dados pessoais.' },
 
     { sender:'seloverificado@tiktok-selo.co', subject:'O TEU PEDIDO DE SELO AZUL FOI APROVADO', subjectCaps:true,
       body:'O teu perfil foi aprovado para receber o selo de verificado. Descarrega o certificado em anexo e segue as instruçoes nas proximas 24 horas para ativares o teu novo estatuto.',
       attach:'Certificado_Selo.zip', icon:'✅',
-      trueClues:['sender','brand','subjectAlarm','caps','attach','urgency','typo'], correctAction:'eliminar',
+      trueClues:['sender','brand','subjectAlarm','caps','attach','urgency','typo'], correctAction:'eliminar', difficulty:'facil',
       note:'Pediste alguma vez um "selo azul"? Se não, já é suspeito receberes uma "aprovação" que nunca pediste. O domínio certo do TikTok é tiktok.com, não "tiktok-selo.co", e o anexo .zip é outro sinal de perigo — evita abrir compactados que não esperavas.' },
 
     { sender:'prof.pedro.melo@edu.azores.gov.pt', subject:'Aula de Educação Musical adiada',
       body:'Bom dia. A aula de Educação Musical de amanhã foi adiada para sexta-feira. Cumprimentos, Prof. Pedro Melo.',
       icon:'🎵',
-      trueClues:[], correctAction:'confiar' },
+      trueClues:[], correctAction:'confiar', difficulty:'facil' },
 
     { sender:'ines.pereira19@edu.azores.gov.pt', subject:'Apontamentos de Geografia',
       body:'Olá! Podes enviar-me os apontamentos da última aula de Geografia? Faltei por estar doente. Obrigada, Inês.',
       icon:'🗺️',
-      trueClues:[], correctAction:'confiar' },
+      trueClues:[], correctAction:'confiar', difficulty:'facil' },
 
     { sender:'cantina@edu.azores.gov.pt', subject:'Ementa da semana',
       body:'Bom dia a todos. Segue em anexo a ementa da cantina para esta semana. Cumprimentos, Serviço de Cantina.',
       attach:'Ementa_Semana.pdf', icon:'🍽️',
-      trueClues:[], correctAction:'confiar' },
+      trueClues:[], correctAction:'confiar', difficulty:'facil' },
 
     { sender:'clube.teatro@edu.azores.gov.pt', subject:'Ensaios da peça de Natal',
       body:'Olá! Os ensaios da peça de Natal começam na próxima terça-feira, às 15h30, no auditório. Até lá! Prof. Sara',
       icon:'🎭',
-      trueClues:[], correctAction:'confiar' },
+      trueClues:[], correctAction:'confiar', difficulty:'facil' },
 
     /* --- caso "cinzento": parece alarmante (prazo apertado) mas é legítimo --- */
     { sender:'associacao.pais@edu.azores.gov.pt', subject:'Autorização da visita de estudo — responde até amanhã',
       body:'Boa tarde. A visita de estudo ao Museu do Vulcanismo está confirmada para sexta-feira. Precisamos da autorização assinada até amanhã às 9h, ou o lugar fica disponível para outro aluno. Entrega-a na secretaria ou digitaliza e envia em resposta a este e-mail. Obrigada, Associação de Pais.',
       icon:'📋',
-      trueClues:[], correctAction:'confiar',
+      trueClues:[], correctAction:'confiar', difficulty:'dificil',
       note:'Este e-mail tem um prazo apertado — mas isso, sozinho, não o torna suspeito. Vem de um endereço @edu.azores.gov.pt, não pede palavras-passe, dinheiro nem dados pessoais, e o pedido faz sentido no contexto da escola. Nem toda a pressa é uma armadilha: o que importa é veres sempre quem envia e o que está realmente a pedir.' },
 
     /* --- cenário: conta de um amigo foi pirateada (hackeada) --- */
     { sender:'miguel.ramos21@edu.azores.gov.pt', subject:'PRECISO DA TUA AJUDA AGORA', subjectCaps:true,
       body:'Olá! Preciso mesmo da tua ajuda urgente. Fiquei sem acesso à minha conta e só resolvo comprando um cartão-presente de 20€. Compra um e manda-me o código aqui, depois devolvo-te o dinheiro já a seguir. Não contes a ninguém, é urgente!',
       icon:'🆘',
-      trueClues:['subjectAlarm','caps','urgency'], correctAction:'eliminar',
+      trueClues:['subjectAlarm','caps','urgency'], correctAction:'eliminar', difficulty:'dificil',
       note:'O endereço até pode ser mesmo de um colega — mas contas reais também podem ser pirateadas (hackeadas)! Um pedido de dinheiro urgente e em segredo ("não contes a ninguém") é um sinal clássico de phishing, mesmo vindo de alguém que conheces. Na dúvida, confirma sempre por outro meio — fala com essa pessoa ao vivo ou por telefone — antes de agires.' },
 
     /* --- seguros COM link: ter um link não torna o e-mail suspeito; o que conta é para onde leva --- */
     { sender:'secretaria@edu.azores.gov.pt', subject:'Ficha de revisão já disponível',
       body:'Bom dia. A ficha de revisão para o teste já está na plataforma da escola. Podes aceder pelo endereço abaixo, o mesmo que usas nas aulas. Cumprimentos, Secretaria.',
       link:'edu.azores.gov.pt', icon:'🖥️',
-      trueClues:[], correctAction:'confiar',
+      trueClues:[], correctAction:'confiar', difficulty:'dificil',
       note:'Este e-mail tem um link, mas o endereço é exatamente o da escola (edu.azores.gov.pt) e a mensagem não pede palavras-passe nem dados. Ter um link não torna um e-mail suspeito — o que conta é para onde ele leva. Lê sempre o endereço com atenção antes de clicar.' },
 
     /* --- seguro de fora da escola, com o domínio oficial certo --- */
     { sender:'notificacoes@ctt.pt', subject:'A tua encomenda foi entregue',
       body:'Olá! A tua encomenda foi entregue hoje. Não precisas de fazer nada — se quiseres, podes consultar o histórico da entrega na tua conta.',
       link:'ctt.pt', icon:'📬',
-      trueClues:[], correctAction:'confiar',
+      trueClues:[], correctAction:'confiar', difficulty:'dificil',
       note:'Este vem de fora da escola e tem um link, mas o domínio é exatamente ctt.pt — nos e-mails falsos dos CTT costuma haver algo a mais (por exemplo, ctt-entregas-pt.info). Não pede pagamentos nem dados e não cria pressa. Um remetente externo não é suspeito só por ser externo: conta o domínio exato e o que o e-mail pede.' },
 
     /* --- phishing a fingir a escola --- */
     { sender:'secretaria.escola.acores@gmail.com', subject:'A tua conta da escola vai ser suspensa hoje',
       body:'Bom dia. Por motivos de segurança, todos os alunos têm de confirmar a palavra-passe da conta da escola até ao fim do dia. Responde a este e-mail com a tua palavra-passe atual para não perderes o acesso.',
       icon:'🏫',
-      trueClues:['sender','brand','subjectAlarm','urgency'], correctAction:'eliminar',
+      trueClues:['sender','brand','subjectAlarm','urgency'], correctAction:'eliminar', difficulty:'dificil',
       note:'As mensagens da escola vêm de @edu.azores.gov.pt. Este vem de um endereço Gmail — qualquer pessoa cria uma conta assim, com o nome que quiser. E nenhuma escola pede a palavra-passe por e-mail.' },
 
     { sender:'secretaria@edu-azores-gov.pt', subject:'Notas do 1.º período — acede já à nova plataforma',
       body:'Bom dia. As notas do 1.º período já estão disponíveis na nova plataforma. Entra com o teu utilizador e palavra-passe nas próximas 24 horas ou perdes o acesso.',
       link:'edu-azores-gov.pt/notas', icon:'📊',
-      trueClues:['sender','brand','subjectAlarm','link','urgency'], correctAction:'eliminar',
+      trueClues:['sender','brand','subjectAlarm','link','urgency'], correctAction:'eliminar', difficulty:'dificil',
       note:'À primeira vista parece da escola, mas o domínio é edu-azores-gov.pt (com hífenes) em vez de edu.azores.gov.pt (com pontos). Lê o endereço letra a letra — pontos e hífenes fazem toda a diferença.' },
 
     /* --- seguros de domínios variados: o domínio certo é o da entidade, não o "final" do endereço --- */
     { sender:'no-reply@spotify.com', subject:'Bem-vindo ao Spotify!',
       body:'Olá! A tua conta Spotify foi criada com sucesso. Não precisas de fazer nada — já podes ouvir as tuas músicas favoritas.',
       link:'spotify.com', icon:'🎧',
-      trueClues:[], correctAction:'confiar',
+      trueClues:[], correctAction:'confiar', difficulty:'facil',
       note:'O domínio é exatamente spotify.com e o e-mail não pede palavras-passe nem pagamentos. Se foste tu a criar a conta, é normal recebê-lo. Se não tivesses criado nenhuma, a história mudava: e-mails que chegam sem os esperares merecem sempre cuidado.' },
 
     { sender:'noreply@khanacademy.org', subject:'Parabéns! Concluíste a unidade «Frações»',
       body:'Olá! Concluíste a unidade «Frações» de Matemática. Quando quiseres, podes continuar a aprender a partir do ponto onde ficaste.',
       link:'pt.khanacademy.org', icon:'🧮',
-      trueClues:[], correctAction:'confiar',
+      trueClues:[], correctAction:'confiar', difficulty:'facil',
       note:'Este e-mail vem de um endereço .org, não de .pt nem da escola, e mesmo assim é seguro: o domínio é o da própria entidade e a mensagem não pede nada de estranho. Ser diferente do que conheces não torna um e-mail suspeito — o que conta é o domínio exato e o que ele pede.' },
 
     { sender:'avo.lurdes57@gmail.com', subject:'Saudades tuas',
       body:'Olá, meu tesouro! Gostei tanto de te ver no domingo. Diz aos teus pais que o bolo ficou ótimo. Quando puderes, liga-me. Um beijinho da avó.',
       icon:'👵',
-      trueClues:[], correctAction:'confiar',
+      trueClues:[], correctAction:'confiar', difficulty:'facil',
       note:'Um endereço Gmail não é suspeito só por ser Gmail: muitas pessoas reais usam-no. Aqui é alguém que conheces, a escrever de forma normal, sem pedir dinheiro, dados nem cliques. O que faz uma mensagem ser suspeita é o que ela pede, não o serviço de e-mail.' },
 
     { sender:'no-reply@accounts.google.com', subject:'Alerta de segurança: novo início de sessão',
       body:'Olá! Detetámos um novo início de sessão na tua conta Google, num telemóvel Android, hoje às 15:42. Se foste tu, não precisas de fazer nada. Se não reconheces, altera a tua palavra-passe diretamente em myaccount.google.com.',
       icon:'🔔',
-      trueClues:[], correctAction:'confiar',
+      trueClues:[], correctAction:'confiar', difficulty:'media',
       note:'Os alertas de segurança verdadeiros existem. Este vem do domínio certo (accounts.google.com), não te obriga a agir já e não pede a palavra-passe no e-mail. Mesmo assim, se tiveres dúvidas, não cliques em nada: abre tu próprio o site, escrevendo o endereço no browser.' },
 
     /* --- falsos mais credíveis: .pt, sem erros, sem maiúsculas --- */
     { sender:'apoio@mbway-seguranca.pt', subject:'Pedido de pagamento MB WAY pendente',
       body:'Tens um pedido de pagamento de 4,99 € por aprovar. Se não o aprovares nas próximas 3 horas, será cobrada uma taxa adicional. Aprova no link abaixo:',
       link:'mbway-seguranca.pt/aprovar', icon:'💳',
-      trueClues:['sender','brand','link','urgency'], correctAction:'eliminar',
+      trueClues:['sender','brand','link','urgency'], correctAction:'eliminar', difficulty:'dificil',
       note:'Acabar em .pt não chega para ser de confiança. O endereço verdadeiro do MB WAY é mbway.pt — este acrescenta «-seguranca», um truque comum nas imitações. Repara também na ameaça de uma «taxa adicional»: querem que ajas com pressa.' },
 
     { sender:'organizacao@desenho-jovem.com', subject:'Ganhaste o 2.º lugar no concurso de desenho!',
       body:'Parabéns! O teu desenho ficou em 2.º lugar. Para te enviarmos o prémio, responde a este e-mail com o teu nome completo, a tua morada e o nome da tua escola.',
       icon:'🎨',
-      trueClues:['sender','subjectAlarm','urgency'], correctAction:'eliminar',
+      trueClues:['sender','subjectAlarm','urgency'], correctAction:'eliminar', difficulty:'dificil',
       note:'Participaste neste concurso? Se não te lembras de te inscreveres, desconfia: ninguém ganha prémios de concursos em que não entrou. Repara também no que pedem — nome completo, morada e escola — dados que nunca deves enviar a quem não conheces. Aqui não há erros nem maiúsculas: nem todos os e-mails falsos são desleixados.' },
 
     { sender:'duarte.ferreira.hist@outlook.com', subject:'Trabalho de História',
       body:'Olá! Aqui está o trabalho de História de que falámos. Abre o ficheiro em anexo e diz-me o que achas.',
       attach:'Trabalho_Historia.pdf.exe', icon:'📜',
-      trueClues:['sender','attach'], correctAction:'eliminar',
+      trueClues:['sender','attach'], correctAction:'eliminar', difficulty:'dificil',
       note:'Lê o nome do anexo até ao fim: Trabalho_Historia.pdf.exe. Parece um PDF, mas o que conta é a última extensão — .exe é um programa, que pode instalar vírus no teu computador. Os colegas costumam escrever da conta da escola (@edu.azores.gov.pt), e não de um endereço estranho. Se não estavas à espera do ficheiro, confirma com a pessoa por outro meio antes de o abrires.' },
 
     { sender:'encomendas@amazon-pt.com', subject:'Confirma a tua encomenda n.º 48291',
       body:'Recebemos o pedido n.º 48291 no valor de 89,90 €. Se não reconheces esta compra, cancela-a no link abaixo com o teu nome de utilizador e palavra-passe:',
       link:'amazon-pt.com/cancelar-pedido', icon:'📦',
-      trueClues:['sender','brand','link','urgency'], correctAction:'eliminar',
+      trueClues:['sender','brand','link','urgency'], correctAction:'eliminar', difficulty:'media',
       note:'Não fizeste nenhuma encomenda? Então o e-mail é falso — e usa um truque muito comum: assustar-te com uma compra que não fizeste, para clicares sem pensares. O endereço amazon-pt.com não é da Amazon, e nenhuma loja verdadeira te pede a palavra-passe num link de e-mail. Na dúvida, abre tu próprio o site da loja, escrevendo o endereço no browser.' },
 
     { sender:'no-reply@roblox.com', subject:'Boa! O teu amigo aceitou o pedido',
       body:'Olá! Boas notícias: o teu pedido de amizade foi aceite. Já podem jogar juntos nas experiências que seguem.',
       icon:'🎮',
-      trueClues:[], correctAction:'confiar',
+      trueClues:[], correctAction:'confiar', difficulty:'facil',
       note:'O domínio é exatamente roblox.com e a mensagem não pede palavra-passe nem dados. É o tipo de notificação normal de um jogo — o que interessa é sempre confirmar o domínio, não o nome do jogo.' },
 
     { sender:'noreply@discord.com', subject:'O teu código de verificação: 482913',
       body:'Usa este código para confirmares o teu e-mail no Discord: 482913. Este código expira em 10 minutos. Se não foste tu a pedir, ignora esta mensagem.',
       icon:'💬',
-      trueClues:[], correctAction:'confiar',
+      trueClues:[], correctAction:'confiar', difficulty:'media',
       note:'Um código de verificação enviado logo a seguir a criares ou entrares numa conta é normal — a diferença é que TU pediste. Este e-mail não pede que reenvies o código a ninguém nem que cliques num link. Se recebesses um código sem teres pedido nada, aí sim devias desconfiar.' },
 
     { sender:'no-reply@youtube.com', subject:'Novo vídeo do canal que segues',
       body:'O canal que segues publicou um novo vídeo. Já podes vê-lo na app ou no site do YouTube.',
       icon:'▶️',
-      trueClues:[], correctAction:'confiar',
+      trueClues:[], correctAction:'confiar', difficulty:'facil',
       note:'Domínio certo (youtube.com), sem pedidos de dados nem de cliques suspeitos — só um aviso de conteúdo novo, como quando ligas as notificações de um canal.' },
 
     { sender:'info@netflix.com', subject:'A tua subscrição foi renovada',
       body:'A subscrição familiar Netflix foi renovada com sucesso. Não precisas de fazer mais nada — continua a aproveitar o catálogo.',
       icon:'🍿',
-      trueClues:[], correctAction:'confiar',
+      trueClues:[], correctAction:'confiar', difficulty:'facil',
       note:'É um aviso de rotina, do domínio certo, e diz claramente que não precisas de fazer nada. Um e-mail que te pede para "confirmares os dados do cartão" ou "evitares o cancelamento" já seria motivo de desconfiança, mesmo vindo de um domínio parecido.' },
 
     { sender:'hello@duolingo.com', subject:'A tua sequência está em risco! 🔥',
       body:'Ainda não praticaste hoje e a tua sequência de 12 dias pode terminar à meia-noite. Abre a app para não a perderes.',
       icon:'🦉',
-      trueClues:[], correctAction:'confiar',
+      trueClues:[], correctAction:'confiar', difficulty:'media',
       note:'Parece urgente, mas repara na diferença: não pede dados nem palavras-passe, só te convida a abrir a app onde já tens conta. Um lembrete pode ser insistente e continuar a ser seguro — o que importa é sempre o que o e-mail pede, não o tom que usa.' },
 
     { sender:'no-reply@tiktok.com', subject:'Tens um novo seguidor',
       body:'Alguém começou a seguir-te no TikTok. Abre a app para veres o perfil.',
       icon:'🎵',
-      trueClues:[], correctAction:'confiar',
+      trueClues:[], correctAction:'confiar', difficulty:'facil',
       note:'Domínio certo, sem pedidos de dados — uma notificação social normal. Isto não significa que quem te segue seja alguém que conheces; para isso, o cuidado é dentro da app, não neste e-mail.' }
   ];
 
@@ -1608,6 +1628,22 @@
     return a;
   }
 
+  /* nível de cada ronda (facil/media/dificil), definido em cada item de ALL_ROUNDS;
+     usado para ordenar a sessão do mais fácil para o mais difícil (ver pickSession) */
+  var DIFFICULTY_RANK = { facil:0, media:1, dificil:2 };
+
+  /* ordena os índices escolhidos por dificuldade crescente; dentro do mesmo nível a ordem
+     fica aleatória (o sort é estável nos motores atuais, por isso baralhamos antes de ordenar) */
+  function orderByDifficulty(idxArr){
+    var arr = shuffle(idxArr);
+    arr.sort(function(a, b){
+      var ra = DIFFICULTY_RANK[ALL_ROUNDS[a].difficulty] || 0;
+      var rb = DIFFICULTY_RANK[ALL_ROUNDS[b].difficulty] || 0;
+      return ra - rb;
+    });
+    return arr;
+  }
+
   function pickSession(total){
     total = Math.max(4, total || 8);
     var phishIdx = [], safeIdx = [];
@@ -1618,7 +1654,8 @@
     nPhish = Math.max(2, Math.min(nPhish, total - 2, phishIdx.length));
     var nSafe = Math.min(total - nPhish, safeIdx.length);
     var chosen = shuffle(phishIdx).slice(0, nPhish).concat(shuffle(safeIdx).slice(0, nSafe));
-    return shuffle(chosen);
+    /* dificuldade crescente: quais são escolhidos continua aleatório, só a ordem de apresentação muda */
+    return orderByDifficulty(chosen);
   }
 
   /* ---------------- DOM refs ---------------- */
@@ -2587,6 +2624,7 @@
   function finishGame(){
     clearSessionSave();
     showScreen('end');
+    document.querySelector('.end-card').classList.remove('complete-cert');
     var info = MODE_INFO[state.phase];
     var totalScore, totalMax;
     if(state.phase === 'detective'){
@@ -2681,6 +2719,47 @@
   document.getElementById('btn-again').addEventListener('click', function(){
     showScreen('intro');
   });
+
+  /* ---------------- certificado "Detetive Completo" (junta as 3 missões) ---------------- */
+  /* Reaproveita os mesmos campos do certificado normal (cert-heading/cert-name/cert-title/
+     cert-score/cert-sub/cert-date) — por isso o PDF, a imagem e a impressão já existentes
+     funcionam sem alterações, sejam quais forem os dados aqui postos. */
+  function openCompleteCertificate(){
+    capturePlayerName();
+    var key = currentPlayerKey();
+    if(!key) return;
+
+    var modeKeys = Object.keys(MODE_INFO);
+    var pcts = [];
+    var scoreParts = modeKeys.map(function(mode){
+      var e = readBest(mode, key);
+      var pct = (e && e.pts > 0) ? e.pct : 0;
+      pcts.push(pct);
+      return MODE_INFO[mode].icon + ' ' + pct + '%';
+    });
+    var avgPct = Math.round(pcts.reduce(function(s, p){ return s + p; }, 0) / pcts.length);
+
+    var rank, mood, armsUp;
+    if(avgPct >= 90){ rank = 'Detetive Completo de Elite VanBerto\'s 🏆'; mood = 'happy'; armsUp = true; }
+    else if(avgPct >= 70){ rank = 'Detetive Completo VanBerto\'s 🕵️'; mood = 'happy'; armsUp = false; }
+    else { rank = 'Detetive Completo VanBerto\'s 🔍'; mood = 'neutral'; armsUp = false; }
+
+    showScreen('end');
+    document.querySelector('.end-card').classList.add('complete-cert');
+    paint('vb-cert', mood, armsUp);
+    document.getElementById('cert-heading').textContent = 'CERTIFICADO DE DETETIVE COMPLETO';
+    document.getElementById('cert-name').textContent = state.turma ? (state.playerName + ' — ' + state.turma) : state.playerName;
+    document.getElementById('cert-title').textContent = rank;
+    document.getElementById('cert-score').textContent = scoreParts.join('   ·   ');
+    document.getElementById('cert-sub').textContent = 'Três missões cumpridas — média de ' + avgPct + '%';
+    document.getElementById('cert-date').textContent = new Date().toLocaleDateString('pt-PT');
+    document.getElementById('certificate').style.display = 'block';
+    sfxClick();
+  }
+  Array.prototype.forEach.call(
+    [document.getElementById('btn-cert-complete-intro'), document.getElementById('btn-cert-complete-end')],
+    function(btn){ if(btn) btn.addEventListener('click', openCompleteCertificate); }
+  );
 
   Array.prototype.forEach.call(document.querySelectorAll('.restart-btn'), function(btn){
     btn.addEventListener('click', function(){
