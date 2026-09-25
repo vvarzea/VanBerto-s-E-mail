@@ -261,7 +261,23 @@
   }
   .mail-actions-wrap{ padding: 4px 22px 22px; }
 
+  /* ---------- chuleta: botão com aviso de "novo" ---------- */
+  #btn-cheatsheet{ position:relative; }
+  #btn-cheatsheet .cheat-dot{
+    position:absolute; top:4px; right:4px; width:9px; height:9px; border-radius:50%;
+    background: var(--danger); border:1.5px solid var(--bg); pointer-events:none;
+  }
+
   /* ---------- cábula (remetente) ---------- */
+  .cheat-tabs{ display:flex; gap:6px; padding: 14px 22px 0; flex-wrap:wrap; }
+  .cheat-tab{
+    font-family: var(--font-body); font-size:13px; font-weight:600; color: var(--ink-dim);
+    background: var(--panel-2); border:1px solid var(--line); border-radius: 999px;
+    padding:7px 14px; cursor:pointer; transition: color .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .cheat-tab.active{ color: var(--bg); background: var(--warn); border-color: var(--warn); }
+  .cheat-pane{ display:none; }
+  .cheat-pane.active{ display:block; }
   .cheat-body{ padding: 4px 22px 22px; }
   .cheat-body p{ font-size:14px; line-height:1.6; color: var(--ink-dim); margin: 0 0 12px; }
   .cheat-step{ display:flex; gap:12px; margin: 18px 0 10px; align-items:flex-start; }
@@ -480,7 +496,7 @@
 <body>
 
 <div class="top-controls">
-  <button class="btn ghost" id="btn-cheatsheet" title="Cábula: como olhar para o remetente" aria-label="Abrir cábula sobre remetentes de e-mail">🗒️</button>
+  <button class="btn ghost" id="btn-cheatsheet" title="Cábula: dicas rápidas" aria-label="Abrir cábula com dicas rápidas"><span aria-hidden="true">🗒️</span><span class="cheat-dot" id="cheat-dot"></span></button>
   <button class="btn ghost" id="btn-fullscreen" title="Ecrã inteiro" aria-label="Ver em ecrã inteiro">⛶</button>
   <button class="btn ghost" id="btn-mute" title="Ligar/desligar som" aria-label="Som desligado — clicar para ligar">🔇</button>
 </div>
@@ -646,6 +662,7 @@
         <h4>🔎 As pistas que mais te escaparam</h4>
         <div id="end-clues-list"></div>
       </div>
+      <button class="btn ghost" id="btn-open-cheat-end" style="margin-top:14px; padding:8px 14px; font-size:13px;">🗒️ Rever a cábula</button>
       <div class="missions-done" id="end-missions" style="display:none; margin-top:16px;" role="status">
         <strong>🏅 Três missões cumpridas!</strong>
         Tens pelo menos <span class="mission-min">50</span>% nos três modos — és oficialmente Detetive Completo.
@@ -691,58 +708,121 @@
 
 <!-- cábula modal -->
 <div class="mail-modal" id="cheat-modal">
-  <div class="mail-modal-card" role="dialog" aria-modal="true" aria-labelledby="cheat-title" style="max-width:600px;">
+  <div class="mail-modal-card" role="dialog" aria-modal="true" aria-labelledby="cheat-title" style="max-width:620px;">
     <div class="mail-modal-head">
-      <span class="pill" id="cheat-title">🗒️ Cábula: o remetente</span>
+      <span class="pill" id="cheat-title">🗒️ Cábula</span>
       <button class="btn ghost" id="btn-close-cheat" style="padding:8px 14px; font-size:13px;">✕ Fechar</button>
     </div>
+    <div class="cheat-tabs" role="tablist" aria-label="Escolher tema da cábula">
+      <button class="cheat-tab" id="cheat-tab-remetente" role="tab" aria-selected="false" aria-controls="cheat-pane-remetente" data-tab="remetente">🕵️ Remetente</button>
+      <button class="cheat-tab" id="cheat-tab-tom" role="tab" aria-selected="false" aria-controls="cheat-pane-tom" data-tab="tom">💬 Tom</button>
+      <button class="cheat-tab" id="cheat-tab-elementos" role="tab" aria-selected="false" aria-controls="cheat-pane-elementos" data-tab="elementos">📧 Elementos e endereços</button>
+    </div>
     <div class="cheat-body">
-      <p>Não há um truque só — há três coisas concretas para verificar, por ordem de importância.</p>
 
-      <div class="cheat-step">
-        <div class="num">1</div>
-        <h4>Lê o endereço completo, não só o nome apresentado</h4>
-      </div>
-      <p>O programa de e-mail mostra um nome bonito — "Escola", "MB WAY" — mas o que interessa está depois do @. O nome apresentado pode ser escolhido por qualquer pessoa; o domínio, não.</p>
-      <p>Exemplo: mostra-se como "MB WAY", mas o endereço é <span class="cheat-code bad">apoio@mbway-seguranca.pt</span> — não pertence ao MB WAY.</p>
-      <div class="cheat-box warn">
-        <div class="lbl">Como ver o endereço completo</div>
-        <p>No telemóvel: toca no nome do remetente. No computador: passa o rato por cima do nome, sem clicar.</p>
+      <!-- aba: remetente -->
+      <div class="cheat-pane" id="cheat-pane-remetente" role="tabpanel" aria-labelledby="cheat-tab-remetente">
+        <p>Não há um truque só — há coisas concretas para verificar, por ordem de importância.</p>
+
+        <div class="cheat-step">
+          <div class="num">1</div>
+          <h4>Lê o endereço completo, não só o nome apresentado</h4>
+        </div>
+        <p>O programa de e-mail mostra um nome bonito — "Escola", "MB WAY" — mas o que interessa está depois do @. O nome apresentado pode ser escolhido por qualquer pessoa; o domínio, não.</p>
+        <p>Exemplo: mostra-se como "MB WAY", mas o endereço é <span class="cheat-code bad">apoio@mbway-seguranca.pt</span> — não pertence ao MB WAY.</p>
+        <div class="cheat-box warn">
+          <div class="lbl">Como ver o endereço completo</div>
+          <p>No telemóvel: toca no nome do remetente. No computador: passa o rato por cima do nome, sem clicar.</p>
+        </div>
+
+        <div class="cheat-step">
+          <div class="num">2</div>
+          <h4>Compara com o domínio verdadeiro, letra a letra</h4>
+        </div>
+        <p>Os domínios falsos costumam ser parecidos, não iguais. Os truques mais comuns:</p>
+        <ul class="cheat-list">
+          <li>Acrescentar uma palavra: <span class="cheat-code bad">mbway-seguranca.pt</span> em vez de <span class="cheat-code ok">mbway.pt</span></li>
+          <li>Trocar um ponto por um hífen: <span class="cheat-code bad">edu-azores-gov.pt</span> em vez de <span class="cheat-code ok">edu.azores.gov.pt</span></li>
+          <li>Usar uma terminação diferente: <span class="cheat-code bad">amazon-pt.com</span> em vez do domínio oficial da Amazon</li>
+          <li>Trocar letras parecidas: <span class="cheat-code bad">instagrarn-ajuda.com</span> tem "rn" a fingir um "m" — parece "instagram" a olhar depressa</li>
+          <li>Esconder o domínio a seguir a "www": em <span class="cheat-code bad">amazon.com-pagamentos.info</span> o domínio real é <span class="cheat-code ok">pagamentos.info</span>, não a Amazon — o que conta é a parte mesmo antes da primeira barra "/"</li>
+        </ul>
+        <div class="cheat-box danger">
+          <div class="lbl">Regra prática</div>
+          <p>Se não reconheces a entidade toda a seguir ao @, desconfia. Mas acabar em ".pt" ou ".com" sozinho não prova nada — nem começar com o nome certo, se o domínio real vier mais à frente.</p>
+        </div>
+
+        <div class="cheat-step">
+          <div class="num">3</div>
+          <h4>Pergunta: fazia sentido receber este e-mail?</h4>
+        </div>
+        <p>Um aluno que não participou num concurso de desenho não devia receber um e-mail a dizer que ganhou. Às vezes o remetente até "é" verdadeiro — um amigo, um familiar — e o estranho é o pedido. Nesse caso, o cuidado desloca-se do endereço para o que está a ser pedido (dinheiro, palavras-passe, segredo, pressa).</p>
+
+        <table class="cheat-table">
+          <thead><tr><th>Mostra-se como</th><th>Endereço real</th><th>Devia ser</th><th>Veredito</th></tr></thead>
+          <tbody>
+            <tr><td>MB WAY</td><td><span class="cheat-code bad">mbway-seguranca.pt</span></td><td><span class="cheat-code ok">mbway.pt</span></td><td class="cheat-verdict bad">Falso</td></tr>
+            <tr><td>Secretaria (escola)</td><td><span class="cheat-code bad">edu-azores-gov.pt</span></td><td><span class="cheat-code ok">edu.azores.gov.pt</span></td><td class="cheat-verdict bad">Falso</td></tr>
+            <tr><td>Amazon</td><td><span class="cheat-code bad">amazon-pt.com</span></td><td><span class="cheat-code ok">amazon.pt / amazon.com</span></td><td class="cheat-verdict bad">Falso</td></tr>
+            <tr><td>Instagram</td><td><span class="cheat-code bad">instagrarn-ajuda.com</span></td><td><span class="cheat-code ok">instagram.com</span></td><td class="cheat-verdict bad">Falso</td></tr>
+            <tr><td>Secretaria (escola)</td><td><span class="cheat-code ok">edu.azores.gov.pt</span></td><td><span class="cheat-code ok">edu.azores.gov.pt</span></td><td class="cheat-verdict ok">Confiar</td></tr>
+            <tr><td>CTT</td><td><span class="cheat-code ok">ctt.pt</span></td><td><span class="cheat-code ok">ctt.pt</span></td><td class="cheat-verdict ok">Confiar</td></tr>
+          </tbody>
+        </table>
+
+        <p class="cheat-foot">Lembra-te: um endereço Gmail, um domínio .pt, ou um e-mail vindo de fora da escola não são, por si só, sinais de alarme. O que conta é o domínio exato e o que a mensagem pede.</p>
       </div>
 
-      <div class="cheat-step">
-        <div class="num">2</div>
-        <h4>Compara com o domínio verdadeiro, letra a letra</h4>
-      </div>
-      <p>Os domínios falsos costumam ser parecidos, não iguais. Os truques mais comuns:</p>
-      <ul class="cheat-list">
-        <li>Acrescentar uma palavra: <span class="cheat-code bad">mbway-seguranca.pt</span> em vez de <span class="cheat-code ok">mbway.pt</span></li>
-        <li>Trocar um ponto por um hífen: <span class="cheat-code bad">edu-azores-gov.pt</span> em vez de <span class="cheat-code ok">edu.azores.gov.pt</span></li>
-        <li>Usar uma terminação diferente: <span class="cheat-code bad">amazon-pt.com</span> em vez do domínio oficial da Amazon</li>
-      </ul>
-      <div class="cheat-box danger">
-        <div class="lbl">Regra prática</div>
-        <p>Se não reconheces a entidade toda a seguir ao @, desconfia. Mas acabar em ".pt" ou ".com" sozinho não prova nada — os três exemplos acima também acabam assim.</p>
+      <!-- aba: tom (formal / informal) -->
+      <div class="cheat-pane" id="cheat-pane-tom" role="tabpanel" aria-labelledby="cheat-tab-tom">
+        <p>Não é o assunto que decide o tom — é <strong>quem recebe</strong>. A um professor, a uma secretaria ou a uma entidade escreve-se sempre formal; a um amigo, colega ou familiar próximo, informal.</p>
+
+        <div class="cheat-step"><div class="num">📝</div><h4>Sinais de e-mail formal</h4></div>
+        <ul class="cheat-list">
+          <li>Saudação cuidada: "Bom dia", "Exmo. Senhor Diretor"</li>
+          <li>Pede algo com cortesia: "Venho por este meio solicitar…"</li>
+          <li>Despedida cuidada: "Com os melhores cumprimentos", "Atentamente"</li>
+          <li>Assinatura completa: nome, turma e número</li>
+        </ul>
+
+        <div class="cheat-step"><div class="num">💬</div><h4>Sinais de e-mail informal</h4></div>
+        <ul class="cheat-list">
+          <li>Tratamento próximo: "Oi", "Malta", pelo primeiro nome</li>
+          <li>Abreviaturas: "tb", "qd", "obg", "sff"</li>
+          <li>Emojis e pontuação exagerada: "😄", "??", letras repetidas ("Oii", "Boaaa")</li>
+        </ul>
+
+        <div class="cheat-box warn">
+          <div class="lbl">Cuidado</div>
+          <p>Um e-mail curto e sem emojis pode ainda ser informal (ex.: a um colega, pelo primeiro nome) — e um com "Boa noite" pode ser informal se o tom for afetuoso e for para um familiar. O que decide é sempre quem recebe, não só o comprimento ou a pontuação.</p>
+        </div>
       </div>
 
-      <div class="cheat-step">
-        <div class="num">3</div>
-        <h4>Pergunta: fazia sentido receber este e-mail?</h4>
+      <!-- aba: elementos e endereços -->
+      <div class="cheat-pane" id="cheat-pane-elementos" role="tabpanel" aria-labelledby="cheat-tab-elementos">
+        <div class="cheat-step"><div class="num">📧</div><h4>Elementos mais confundidos</h4></div>
+        <table class="cheat-table">
+          <tbody>
+            <tr><td style="white-space:nowrap;"><strong>Cc</strong></td><td>Cópia visível para todos os destinatários.</td></tr>
+            <tr><td style="white-space:nowrap;"><strong>Bcc</strong></td><td>Cópia escondida — os outros não veem esse endereço.</td></tr>
+            <tr><td style="white-space:nowrap;"><strong>Responder a Todos</strong></td><td>Vai para o remetente <em>e</em> todos os outros destinatários.</td></tr>
+            <tr><td style="white-space:nowrap;"><strong>Reencaminhar</strong></td><td>Envia a mensagem recebida, tal como está, a outra pessoa.</td></tr>
+            <tr><td style="white-space:nowrap;"><strong>Rascunho</strong></td><td>Guardada, mas ainda não enviada.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="cheat-step"><div class="num">✔️</div><h4>Um endereço válido tem sempre</h4></div>
+        <ul class="cheat-list">
+          <li>A forma <span class="cheat-code ok">utilizador@domínio</span>, com um só "@"</li>
+          <li>Sem espaços e sem acentos</li>
+          <li>Sem pontos seguidos ("..") nem "@" a mais</li>
+        </ul>
+        <div class="cheat-box danger">
+          <div class="lbl">Cuidado: válido não é o mesmo que de confiança</div>
+          <p><span class="cheat-code ok">suporte@instagrarn-ajuda.com</span> está escrito de forma perfeitamente válida — e mesmo assim é falso. A validade é só sobre a forma; a confiança depende do domínio ser mesmo o certo (vê a aba "Remetente").</p>
+        </div>
       </div>
-      <p>Um aluno que não participou num concurso de desenho não devia receber um e-mail a dizer que ganhou. Às vezes o remetente até "é" verdadeiro — um amigo, um familiar — e o estranho é o pedido. Nesse caso, o cuidado desloca-se do endereço para o que está a ser pedido (dinheiro, palavras-passe, segredo, pressa).</p>
 
-      <table class="cheat-table">
-        <thead><tr><th>Mostra-se como</th><th>Endereço real</th><th>Devia ser</th><th>Veredito</th></tr></thead>
-        <tbody>
-          <tr><td>MB WAY</td><td><span class="cheat-code bad">mbway-seguranca.pt</span></td><td><span class="cheat-code ok">mbway.pt</span></td><td class="cheat-verdict bad">Falso</td></tr>
-          <tr><td>Secretaria (escola)</td><td><span class="cheat-code bad">edu-azores-gov.pt</span></td><td><span class="cheat-code ok">edu.azores.gov.pt</span></td><td class="cheat-verdict bad">Falso</td></tr>
-          <tr><td>Amazon</td><td><span class="cheat-code bad">amazon-pt.com</span></td><td><span class="cheat-code ok">amazon.pt / amazon.com</span></td><td class="cheat-verdict bad">Falso</td></tr>
-          <tr><td>Secretaria (escola)</td><td><span class="cheat-code ok">edu.azores.gov.pt</span></td><td><span class="cheat-code ok">edu.azores.gov.pt</span></td><td class="cheat-verdict ok">Confiar</td></tr>
-          <tr><td>CTT</td><td><span class="cheat-code ok">ctt.pt</span></td><td><span class="cheat-code ok">ctt.pt</span></td><td class="cheat-verdict ok">Confiar</td></tr>
-        </tbody>
-      </table>
-
-      <p class="cheat-foot">Lembra-te: um endereço Gmail, um domínio .pt, ou um e-mail vindo de fora da escola não são, por si só, sinais de alarme. O que conta é o domínio exato e o que a mensagem pede.</p>
     </div>
   </div>
 </div>
@@ -1704,12 +1784,35 @@
     if(lastFocusedEl){ lastFocusedEl.focus(); lastFocusedEl = null; }
   });
 
-  /* cábula: abre a partir de qualquer ecrã (top-controls), fecha por botão, Escape ou clique fora */
-  document.getElementById('btn-cheatsheet').addEventListener('click', function(){
+  /* cábula: abre a partir de qualquer ecrã (top-controls), com aba adequada ao ecrã ativo;
+     fecha por botão, Escape ou clique fora. A bolinha vermelha desaparece após a 1ª abertura. */
+  var CHEAT_TABS = ['remetente', 'tom', 'elementos'];
+  function screenToCheatTab(){
+    var activeScreen = document.querySelector('.screen.active');
+    if(!activeScreen) return 'remetente';
+    if(activeScreen.id === 'screen-tone') return 'tom';
+    if(activeScreen.id === 'screen-elements') return 'elementos';
+    return 'remetente';
+  }
+  function openCheatModal(tab){
+    tab = tab || screenToCheatTab();
+    CHEAT_TABS.forEach(function(t){
+      var isOn = t === tab;
+      document.getElementById('cheat-tab-' + t).classList.toggle('active', isOn);
+      document.getElementById('cheat-tab-' + t).setAttribute('aria-selected', isOn ? 'true' : 'false');
+      document.getElementById('cheat-pane-' + t).classList.toggle('active', isOn);
+    });
     lastFocusedEl = document.activeElement;
     document.getElementById('cheat-modal').classList.add('show');
     document.getElementById('btn-close-cheat').focus();
+    try{ localStorage.setItem('vb_cheat_seen', '1'); }catch(e){}
+    var dot = document.getElementById('cheat-dot');
+    if(dot) dot.style.display = 'none';
     sfxClick();
+  }
+  document.getElementById('btn-cheatsheet').addEventListener('click', function(){ openCheatModal(); });
+  document.querySelectorAll('.cheat-tab').forEach(function(btn){
+    btn.addEventListener('click', function(){ openCheatModal(btn.getAttribute('data-tab')); });
   });
   document.getElementById('btn-close-cheat').addEventListener('click', function(){
     document.getElementById('cheat-modal').classList.remove('show');
@@ -1721,6 +1824,19 @@
       if(lastFocusedEl){ lastFocusedEl.focus(); lastFocusedEl = null; }
     }
   });
+  (function(){
+    var dot = document.getElementById('cheat-dot');
+    try{ if(dot && localStorage.getItem('vb_cheat_seen') === '1') dot.style.display = 'none'; }catch(e){}
+  })();
+
+  /* link "Ver cábula" no ecrã final, apontando para a aba certa consoante a missão */
+  var END_CHEAT_TAB = { detective:'remetente', tone:'tom', elements:'elementos' };
+  var btnEndCheat = document.getElementById('btn-open-cheat-end');
+  if(btnEndCheat){
+    btnEndCheat.addEventListener('click', function(){
+      openCheatModal(END_CHEAT_TAB[state.phase] || 'remetente');
+    });
+  }
 
   document.addEventListener('keydown', function(e){
     if(e.key !== 'Escape') return;
