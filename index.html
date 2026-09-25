@@ -1177,7 +1177,43 @@
       body:'Recebemos o pedido n.º 48291 no valor de 89,90 €. Se não reconheces esta compra, cancela-a no link abaixo com o teu nome de utilizador e palavra-passe:',
       link:'amazon-pt.com/cancelar-pedido', icon:'📦',
       trueClues:['sender','brand','link','urgency'], correctAction:'eliminar',
-      note:'Não fizeste nenhuma encomenda? Então o e-mail é falso — e usa um truque muito comum: assustar-te com uma compra que não fizeste, para clicares sem pensares. O endereço amazon-pt.com não é da Amazon, e nenhuma loja verdadeira te pede a palavra-passe num link de e-mail. Na dúvida, abre tu próprio o site da loja, escrevendo o endereço no browser.' }
+      note:'Não fizeste nenhuma encomenda? Então o e-mail é falso — e usa um truque muito comum: assustar-te com uma compra que não fizeste, para clicares sem pensares. O endereço amazon-pt.com não é da Amazon, e nenhuma loja verdadeira te pede a palavra-passe num link de e-mail. Na dúvida, abre tu próprio o site da loja, escrevendo o endereço no browser.' },
+
+    { sender:'no-reply@roblox.com', subject:'Boa! O teu amigo aceitou o pedido',
+      body:'Olá! Boas notícias: o teu pedido de amizade foi aceite. Já podem jogar juntos nas experiências que seguem.',
+      icon:'🎮',
+      trueClues:[], correctAction:'confiar',
+      note:'O domínio é exatamente roblox.com e a mensagem não pede palavra-passe nem dados. É o tipo de notificação normal de um jogo — o que interessa é sempre confirmar o domínio, não o nome do jogo.' },
+
+    { sender:'noreply@discord.com', subject:'O teu código de verificação: 482913',
+      body:'Usa este código para confirmares o teu e-mail no Discord: 482913. Este código expira em 10 minutos. Se não foste tu a pedir, ignora esta mensagem.',
+      icon:'💬',
+      trueClues:[], correctAction:'confiar',
+      note:'Um código de verificação enviado logo a seguir a criares ou entrares numa conta é normal — a diferença é que TU pediste. Este e-mail não pede que reenvies o código a ninguém nem que cliques num link. Se recebesses um código sem teres pedido nada, aí sim devias desconfiar.' },
+
+    { sender:'no-reply@youtube.com', subject:'Novo vídeo do canal que segues',
+      body:'O canal que segues publicou um novo vídeo. Já podes vê-lo na app ou no site do YouTube.',
+      icon:'▶️',
+      trueClues:[], correctAction:'confiar',
+      note:'Domínio certo (youtube.com), sem pedidos de dados nem de cliques suspeitos — só um aviso de conteúdo novo, como quando ligas as notificações de um canal.' },
+
+    { sender:'info@netflix.com', subject:'A tua subscrição foi renovada',
+      body:'A subscrição familiar Netflix foi renovada com sucesso. Não precisas de fazer mais nada — continua a aproveitar o catálogo.',
+      icon:'🍿',
+      trueClues:[], correctAction:'confiar',
+      note:'É um aviso de rotina, do domínio certo, e diz claramente que não precisas de fazer nada. Um e-mail que te pede para "confirmares os dados do cartão" ou "evitares o cancelamento" já seria motivo de desconfiança, mesmo vindo de um domínio parecido.' },
+
+    { sender:'hello@duolingo.com', subject:'A tua sequência está em risco! 🔥',
+      body:'Ainda não praticaste hoje e a tua sequência de 12 dias pode terminar à meia-noite. Abre a app para não a perderes.',
+      icon:'🦉',
+      trueClues:[], correctAction:'confiar',
+      note:'Parece urgente, mas repara na diferença: não pede dados nem palavras-passe, só te convida a abrir a app onde já tens conta. Um lembrete pode ser insistente e continuar a ser seguro — o que importa é sempre o que o e-mail pede, não o tom que usa.' },
+
+    { sender:'no-reply@tiktok.com', subject:'Tens um novo seguidor',
+      body:'Alguém começou a seguir-te no TikTok. Abre a app para veres o perfil.',
+      icon:'🎵',
+      trueClues:[], correctAction:'confiar',
+      note:'Domínio certo, sem pedidos de dados — uma notificação social normal. Isto não significa que quem te segue seja alguém que conheces; para isso, o cuidado é dentro da app, não neste e-mail.' }
   ];
 
   /* ---------------- fase 2: formal ou informal ---------------- */
