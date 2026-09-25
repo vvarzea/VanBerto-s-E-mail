@@ -261,6 +261,35 @@
   }
   .mail-actions-wrap{ padding: 4px 22px 22px; }
 
+  /* ---------- cábula (remetente) ---------- */
+  .cheat-body{ padding: 4px 22px 22px; }
+  .cheat-body p{ font-size:14px; line-height:1.6; color: var(--ink-dim); margin: 0 0 12px; }
+  .cheat-step{ display:flex; gap:12px; margin: 18px 0 10px; align-items:flex-start; }
+  .cheat-step .num{
+    flex-shrink:0; width:28px; height:28px; border-radius:50%; background: var(--panel-2);
+    border:1px solid var(--warn); color: var(--warn); font-family: var(--font-display);
+    display:flex; align-items:center; justify-content:center; font-size:14px;
+  }
+  .cheat-step h4{ font-size:16px; margin:2px 0 0; color: var(--ink); }
+  .cheat-box{ background: var(--panel-2); border:1px solid var(--line); border-radius: var(--radius-sm); padding:12px 14px; margin: 10px 0 16px; }
+  .cheat-box.warn{ border-color: var(--warn); }
+  .cheat-box.danger{ border-color: var(--danger); }
+  .cheat-box .lbl{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px; }
+  .cheat-box.warn .lbl{ color: var(--warn); }
+  .cheat-box.danger .lbl{ color: var(--danger); }
+  .cheat-box p{ margin:0; font-size:13.5px; }
+  .cheat-code{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:13px; padding:1px 4px; border-radius:4px; }
+  .cheat-code.bad{ color: var(--danger); background: var(--danger-dim); }
+  .cheat-code.ok{ color: var(--safe); background: var(--safe-dim); }
+  .cheat-list{ margin:0 0 14px; padding-left:0; list-style:none; font-size:13.5px; color: var(--ink-dim); line-height:1.9; }
+  .cheat-table{ width:100%; border-collapse:collapse; font-size:12.5px; margin: 4px 0 14px; }
+  .cheat-table th{ text-align:left; color: var(--ink-dim); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.03em; padding:0 8px 6px 0; border-bottom:1px solid var(--line); }
+  .cheat-table td{ padding:7px 8px 7px 0; border-bottom:1px solid var(--line); vertical-align:top; }
+  .cheat-table tr:last-child td{ border-bottom:0; }
+  .cheat-verdict.bad{ color: var(--danger); font-weight:700; }
+  .cheat-verdict.ok{ color: var(--safe); font-weight:700; }
+  .cheat-foot{ font-size:12.5px; font-style:italic; color: var(--ink-dim); border-top:1px dashed var(--line); padding-top:12px; margin-top:4px; }
+
   /* ---------- feedback overlay ---------- */
   .overlay{
     position:fixed; inset:0; background: rgba(6,4,16,.72);
@@ -451,6 +480,7 @@
 <body>
 
 <div class="top-controls">
+  <button class="btn ghost" id="btn-cheatsheet" title="Cábula: como olhar para o remetente" aria-label="Abrir cábula sobre remetentes de e-mail">🗒️</button>
   <button class="btn ghost" id="btn-fullscreen" title="Ecrã inteiro" aria-label="Ver em ecrã inteiro">⛶</button>
   <button class="btn ghost" id="btn-mute" title="Ligar/desligar som" aria-label="Som desligado — clicar para ligar">🔇</button>
 </div>
@@ -657,6 +687,64 @@
   </section>
 
   <footer>VanBerto's — © Prof.ª Vanda Várzea</footer>
+</div>
+
+<!-- cábula modal -->
+<div class="mail-modal" id="cheat-modal">
+  <div class="mail-modal-card" role="dialog" aria-modal="true" aria-labelledby="cheat-title" style="max-width:600px;">
+    <div class="mail-modal-head">
+      <span class="pill" id="cheat-title">🗒️ Cábula: o remetente</span>
+      <button class="btn ghost" id="btn-close-cheat" style="padding:8px 14px; font-size:13px;">✕ Fechar</button>
+    </div>
+    <div class="cheat-body">
+      <p>Não há um truque só — há três coisas concretas para verificar, por ordem de importância.</p>
+
+      <div class="cheat-step">
+        <div class="num">1</div>
+        <h4>Lê o endereço completo, não só o nome apresentado</h4>
+      </div>
+      <p>O programa de e-mail mostra um nome bonito — "Escola", "MB WAY" — mas o que interessa está depois do @. O nome apresentado pode ser escolhido por qualquer pessoa; o domínio, não.</p>
+      <p>Exemplo: mostra-se como "MB WAY", mas o endereço é <span class="cheat-code bad">apoio@mbway-seguranca.pt</span> — não pertence ao MB WAY.</p>
+      <div class="cheat-box warn">
+        <div class="lbl">Como ver o endereço completo</div>
+        <p>No telemóvel: toca no nome do remetente. No computador: passa o rato por cima do nome, sem clicar.</p>
+      </div>
+
+      <div class="cheat-step">
+        <div class="num">2</div>
+        <h4>Compara com o domínio verdadeiro, letra a letra</h4>
+      </div>
+      <p>Os domínios falsos costumam ser parecidos, não iguais. Os truques mais comuns:</p>
+      <ul class="cheat-list">
+        <li>Acrescentar uma palavra: <span class="cheat-code bad">mbway-seguranca.pt</span> em vez de <span class="cheat-code ok">mbway.pt</span></li>
+        <li>Trocar um ponto por um hífen: <span class="cheat-code bad">edu-azores-gov.pt</span> em vez de <span class="cheat-code ok">edu.azores.gov.pt</span></li>
+        <li>Usar uma terminação diferente: <span class="cheat-code bad">amazon-pt.com</span> em vez do domínio oficial da Amazon</li>
+      </ul>
+      <div class="cheat-box danger">
+        <div class="lbl">Regra prática</div>
+        <p>Se não reconheces a entidade toda a seguir ao @, desconfia. Mas acabar em ".pt" ou ".com" sozinho não prova nada — os três exemplos acima também acabam assim.</p>
+      </div>
+
+      <div class="cheat-step">
+        <div class="num">3</div>
+        <h4>Pergunta: fazia sentido receber este e-mail?</h4>
+      </div>
+      <p>Um aluno que não participou num concurso de desenho não devia receber um e-mail a dizer que ganhou. Às vezes o remetente até "é" verdadeiro — um amigo, um familiar — e o estranho é o pedido. Nesse caso, o cuidado desloca-se do endereço para o que está a ser pedido (dinheiro, palavras-passe, segredo, pressa).</p>
+
+      <table class="cheat-table">
+        <thead><tr><th>Mostra-se como</th><th>Endereço real</th><th>Devia ser</th><th>Veredito</th></tr></thead>
+        <tbody>
+          <tr><td>MB WAY</td><td><span class="cheat-code bad">mbway-seguranca.pt</span></td><td><span class="cheat-code ok">mbway.pt</span></td><td class="cheat-verdict bad">Falso</td></tr>
+          <tr><td>Secretaria (escola)</td><td><span class="cheat-code bad">edu-azores-gov.pt</span></td><td><span class="cheat-code ok">edu.azores.gov.pt</span></td><td class="cheat-verdict bad">Falso</td></tr>
+          <tr><td>Amazon</td><td><span class="cheat-code bad">amazon-pt.com</span></td><td><span class="cheat-code ok">amazon.pt / amazon.com</span></td><td class="cheat-verdict bad">Falso</td></tr>
+          <tr><td>Secretaria (escola)</td><td><span class="cheat-code ok">edu.azores.gov.pt</span></td><td><span class="cheat-code ok">edu.azores.gov.pt</span></td><td class="cheat-verdict ok">Confiar</td></tr>
+          <tr><td>CTT</td><td><span class="cheat-code ok">ctt.pt</span></td><td><span class="cheat-code ok">ctt.pt</span></td><td class="cheat-verdict ok">Confiar</td></tr>
+        </tbody>
+      </table>
+
+      <p class="cheat-foot">Lembra-te: um endereço Gmail, um domínio .pt, ou um e-mail vindo de fora da escola não são, por si só, sinais de alarme. O que conta é o domínio exato e o que a mensagem pede.</p>
+    </div>
+  </div>
 </div>
 
 <!-- mail detail modal -->
@@ -1616,10 +1704,34 @@
     if(lastFocusedEl){ lastFocusedEl.focus(); lastFocusedEl = null; }
   });
 
+  /* cábula: abre a partir de qualquer ecrã (top-controls), fecha por botão, Escape ou clique fora */
+  document.getElementById('btn-cheatsheet').addEventListener('click', function(){
+    lastFocusedEl = document.activeElement;
+    document.getElementById('cheat-modal').classList.add('show');
+    document.getElementById('btn-close-cheat').focus();
+    sfxClick();
+  });
+  document.getElementById('btn-close-cheat').addEventListener('click', function(){
+    document.getElementById('cheat-modal').classList.remove('show');
+    if(lastFocusedEl){ lastFocusedEl.focus(); lastFocusedEl = null; }
+  });
+  document.getElementById('cheat-modal').addEventListener('click', function(e){
+    if(e.target === this){
+      this.classList.remove('show');
+      if(lastFocusedEl){ lastFocusedEl.focus(); lastFocusedEl = null; }
+    }
+  });
+
   document.addEventListener('keydown', function(e){
     if(e.key !== 'Escape') return;
     var overlay = document.getElementById('overlay');
     var modal = document.getElementById('mail-modal');
+    var cheatModal = document.getElementById('cheat-modal');
+    if(cheatModal.classList.contains('show')){
+      cheatModal.classList.remove('show');
+      if(lastFocusedEl){ lastFocusedEl.focus(); lastFocusedEl = null; }
+      return;
+    }
     if(modal.classList.contains('show') && !overlay.classList.contains('show')){
       modal.classList.remove('show');
       if(lastFocusedEl){ lastFocusedEl.focus(); lastFocusedEl = null; }
@@ -1632,8 +1744,10 @@
     var overlayFeedback = document.getElementById('overlay');
     var confirmOverlay = document.getElementById('confirm-overlay');
     var mailModal = document.getElementById('mail-modal');
+    var cheatModal = document.getElementById('cheat-modal');
     var activeModal = overlayFeedback.classList.contains('show') ? overlayFeedback
       : confirmOverlay.classList.contains('show') ? confirmOverlay
+      : cheatModal.classList.contains('show') ? cheatModal
       : mailModal.classList.contains('show') ? mailModal
       : null;
     if(!activeModal) return;
@@ -1671,6 +1785,7 @@
   function currentAnswerOptions(){
     if(document.getElementById('overlay').classList.contains('show')) return null;
     if(document.getElementById('confirm-overlay').classList.contains('show')) return null;
+    if(document.getElementById('cheat-modal').classList.contains('show')) return null;
     if(document.getElementById('mail-modal').classList.contains('show')){
       return document.querySelectorAll('#mail-modal .action-row button:not([disabled])');
     }
