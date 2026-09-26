@@ -145,6 +145,7 @@
     background: var(--panel-2); border:1px solid var(--line); color:var(--ink);
     border-radius: 999px; padding:6px 12px; font-size:16px; font-family:var(--font-body); min-height:44px;
   }
+  .level-count{ font-size:11.5px; color: var(--ink-dim); opacity:0.85; }
   .mode-best{ font-size:12px; color: var(--warn); font-weight:600; }
 
   /* emblema quando o aluno já tem pontuação nas 3 missões */
@@ -616,6 +617,7 @@
               <option value="media">Só médio</option>
               <option value="dificil">Só difícil</option>
             </select>
+            <span class="level-count" id="phish-level-count"></span>
           </div>
           <button class="btn" id="start-detective-btn">Começar a investigação</button>
           <div class="mode-best" id="best-detective" style="display:none;"></div>
@@ -640,6 +642,7 @@
               <option value="facil">Só fácil</option>
               <option value="dificil">Só difícil</option>
             </select>
+            <span class="level-count" id="tone-level-count"></span>
           </div>
           <button class="btn" id="start-tone-btn">Formal ou Informal?</button>
           <div class="mode-best" id="best-tone" style="display:none;"></div>
@@ -665,6 +668,7 @@
               <option value="media">Só médio</option>
               <option value="dificil">Só difícil</option>
             </select>
+            <span class="level-count" id="elements-level-count"></span>
           </div>
           <button class="btn" id="start-elements-btn">Pôr o e-mail à prova</button>
           <div class="mode-best" id="best-elements" style="display:none;"></div>
@@ -1635,6 +1639,32 @@
     .concat(NETIQUETA_ROUNDS.map(function(r){ return { type:'netiqueta', text:r.text, ruleIdx:r.ruleIdx, distractors:r.distractors, difficulty:r.difficulty }; }))
     .concat(ADDRESS_ROUNDS.map(function(a){ return { type:'address', address:a.address, valid:a.valid, reason:a.reason, difficulty:a.difficulty }; }));
 
+  /* ---------------- quantos itens há disponíveis em cada nível (mostrado junto aos seletores) ---------------- */
+  function countByDifficulty(bank){
+    var counts = { facil:0, media:0, dificil:0 };
+    bank.forEach(function(item){ if(counts.hasOwnProperty(item.difficulty)) counts[item.difficulty]++; });
+    counts.misto = bank.length;
+    return counts;
+  }
+  var LEVEL_COUNTS = {
+    'phish-level': countByDifficulty(ALL_ROUNDS),
+    'tone-level': countByDifficulty(TONE_ROUNDS),
+    'elements-level': countByDifficulty(KNOWLEDGE_ITEMS)
+  };
+  function updateLevelCountLabel(selectId){
+    var sel = document.getElementById(selectId);
+    var lbl = document.getElementById(selectId + '-count');
+    if(!sel || !lbl) return;
+    var n = LEVEL_COUNTS[selectId][sel.value] || 0;
+    lbl.textContent = '(' + n + ' disponíve' + (n === 1 ? 'l' : 'is') + ')';
+  }
+  Object.keys(LEVEL_COUNTS).forEach(function(selectId){
+    var sel = document.getElementById(selectId);
+    if(!sel) return;
+    sel.addEventListener('change', function(){ updateLevelCountLabel(selectId); });
+    updateLevelCountLabel(selectId);
+  });
+
   /* ---------------- state ---------------- */
   var lastFocusedEl = null;
   var state = { hasName:false, practice:false, failed:[], round:0, score:0, selected:{}, playerName:'', turma:'', results:[], order:[],
@@ -1768,6 +1798,15 @@
   };
 
   /* melhor resultado guardado (em %) deste jogador neste modo — ou null */
+  /* nível efetivamente jogado nesta ronda, consoante o modo (usado para exigir "Misturado"
+     antes de contar para a missão / certificado combinado — ver finishGame) */
+  var MODE_LEVEL_SELECT_ID = { detective:'phish-level', tone:'tone-level', elements:'elements-level' };
+  function currentPlayedLevel(mode){
+    var id = MODE_LEVEL_SELECT_ID[mode];
+    var el = id ? document.getElementById(id) : null;
+    return el ? el.value : 'misto';
+  }
+
   function readBest(mode, playerKey){
     try{
       var raw = localStorage.getItem(MODE_INFO[mode].storageKey);
@@ -1777,12 +1816,14 @@
     }catch(err){ return null; }
   }
 
-  /* quantas das 3 missões já estão cumpridas (>= MISSION_MIN_PCT) para este jogador (nome em minúsculas) */
+  /* quantas das 3 missões já estão cumpridas (>= MISSION_MIN_PCT, jogadas em nível Misturado)
+     para este jogador (nome em minúsculas). Um recorde feito só em "Só fácil"/"Só difícil" não
+     conta — é preciso ter passado pela mistura completa de dificuldades pelo menos uma vez. */
   function countMissionsDone(playerKey){
     var n = 0;
     Object.keys(MODE_INFO).forEach(function(mode){
       var e = readBest(mode, playerKey);
-      if(e && e.pts > 0 && e.pct >= MISSION_MIN_PCT) n++;
+      if(e && typeof e.mistoPct === 'number' && e.mistoPct >= MISSION_MIN_PCT) n++;
     });
     return n;
   }
@@ -2782,6 +2823,11 @@
         if(!best || pctRounded > best.pct){
           entry.pct = pctRounded; entry.pts = totalScore; entry.max = totalMax;
         }
+        /* só conta para a missão/certificado combinado se esta tentativa foi em nível "Misturado" —
+           um recorde feito só em "Só fácil" não deve valer a faixa de Detetive Completo */
+        if(currentPlayedLevel(state.phase) === 'misto' && (!(entry.mistoPct >= 0) || pctRounded > entry.mistoPct)){
+          entry.mistoPct = pctRounded;
+        }
         /* o resumo do que ainda vale a pena rever reflete sempre a última tentativa, não só a de recorde */
         entry.review = buildReviewItems();
         map[key] = entry;
@@ -2813,7 +2859,7 @@
     var pcts = [];
     var scoreParts = modeKeys.map(function(mode){
       var e = readBest(mode, key);
-      var pct = (e && e.pts > 0) ? e.pct : 0;
+      var pct = (e && typeof e.mistoPct === 'number') ? e.mistoPct : 0;
       pcts.push(pct);
       return MODE_INFO[mode].icon + ' ' + pct + '%';
     });
