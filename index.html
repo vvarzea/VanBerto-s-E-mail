@@ -363,6 +363,10 @@
   .feedback-card .verdict.good{ color: var(--safe); }
   .feedback-card .verdict.bad{ color: var(--danger); }
   .feedback-card .points{ font-size:14px; color: var(--ink-dim); margin-bottom:16px; }
+  .fb-level{ display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:999px; margin:2px 0 6px; }
+  .fb-level.lvl-facil{ background:#dcfce7; color:#166534; }
+  .fb-level.lvl-media{ background:#fef3c7; color:#92400e; }
+  .fb-level.lvl-dificil{ background:#fee2e2; color:#991b1b; }
   .fb-actions{ position:sticky; bottom:0; z-index:1; margin: 0 -8px -6px; padding: 14px 8px 6px;
     background: linear-gradient(to bottom, rgba(31,26,63,0), var(--panel) 30%); }
   .clue-report{ text-align:left; background: var(--panel-2); border-radius: var(--radius-sm); padding:14px 16px; margin-bottom:18px; }
@@ -602,6 +606,15 @@
               <option value="6">6</option>
               <option value="8" selected>8</option>
               <option value="10">10</option>
+            </select>
+          </div>
+          <div class="mode-setup">
+            <label for="phish-level">🎚️ Nível:</label>
+            <select id="phish-level">
+              <option value="misto" selected>Misturado (fácil → difícil)</option>
+              <option value="facil">Só fácil</option>
+              <option value="media">Só médio</option>
+              <option value="dificil">Só difícil</option>
             </select>
           </div>
           <button class="btn" id="start-detective-btn">Começar a investigação</button>
@@ -949,6 +962,7 @@
   <div class="feedback-card" role="dialog" aria-modal="true" aria-live="assertive" aria-labelledby="fb-verdict">
     <canvas id="vb-feedback" class="vanberto" style="width:90px;height:90px;" aria-hidden="true"></canvas>
     <div class="verdict" id="fb-verdict">—</div>
+    <div class="fb-level" id="fb-level" style="display:none;"></div>
     <div class="points" id="fb-points">—</div>
     <div class="clue-report" id="fb-report"></div>
     <div class="fb-actions"><button class="btn" id="btn-next">Continuar →</button></div>
@@ -1646,15 +1660,21 @@
 
   function pickSession(total){
     total = Math.max(4, total || 8);
+    var levelEl = document.getElementById('phish-level');
+    var level = levelEl ? levelEl.value : 'misto';
     var phishIdx = [], safeIdx = [];
-    ALL_ROUNDS.forEach(function(r,i){ (r.correctAction==='eliminar' ? phishIdx : safeIdx).push(i); });
+    ALL_ROUNDS.forEach(function(r,i){
+      if(level !== 'misto' && r.difficulty !== level) return; /* fora do nível escolhido, fica de fora */
+      (r.correctAction==='eliminar' ? phishIdx : safeIdx).push(i);
+    });
     /* proporção variável: metade ±1 e-mail falso, sempre com pelo menos 2 de cada tipo,
        para os alunos não poderem contar com "metade são falsos" */
     var nPhish = Math.floor(total / 2) + Math.floor(Math.random() * 3) - 1;
     nPhish = Math.max(2, Math.min(nPhish, total - 2, phishIdx.length));
     var nSafe = Math.min(total - nPhish, safeIdx.length);
     var chosen = shuffle(phishIdx).slice(0, nPhish).concat(shuffle(safeIdx).slice(0, nSafe));
-    /* dificuldade crescente: quais são escolhidos continua aleatório, só a ordem de apresentação muda */
+    /* dificuldade crescente (quando "misturado"): quais são escolhidos continua aleatório,
+       só a ordem de apresentação muda; com um nível único, isto só reforça a aleatoriedade */
     return orderByDifficulty(chosen);
   }
 
@@ -2244,6 +2264,16 @@
     }
     document.getElementById('fb-points').textContent = roundPts + ' de ' + maxRoundPts + ' pontos possíveis nesta ronda';
 
+    var levelEl = document.getElementById('fb-level');
+    var levelInfo = { facil:{label:'🟢 Fácil', cls:'lvl-facil'}, media:{label:'🟡 Médio', cls:'lvl-media'}, dificil:{label:'🔴 Difícil', cls:'lvl-dificil'} }[r.difficulty];
+    if(levelInfo){
+      levelEl.textContent = levelInfo.label;
+      levelEl.className = 'fb-level ' + levelInfo.cls;
+      levelEl.style.display = '';
+    } else {
+      levelEl.style.display = 'none';
+    }
+
     state.results[state.round] = { action: action, correct: actionRight, picked: state.selected, roundPts: roundPts, maxRoundPts: maxRoundPts };
 
     var decisionLabel = action === 'eliminar' ? 'Eliminar / Reportar' : 'Confiar e responder';
@@ -2354,6 +2384,7 @@
       sfxBad();
     }
     document.getElementById('fb-points').textContent = '+' + pts + ' pontos nesta ronda';
+    document.getElementById('fb-level').style.display = 'none';
     document.getElementById('fb-report').innerHTML = '<div class="row ok"><span class="mk">💬</span><span>' + t.explain + '</span></div>';
 
     overlay.classList.add('show');
@@ -2482,6 +2513,7 @@
     paint('vb-feedback', right?'happy':'sad'); paint('vb-elements', right?'happy':'sad');
     if(right) sfxGood(); else sfxBad();
     document.getElementById('fb-points').textContent = '+' + pts + ' pontos nesta ronda';
+    document.getElementById('fb-level').style.display = 'none';
     document.getElementById('fb-report').innerHTML = reportHtml;
 
     overlay.classList.add('show');
