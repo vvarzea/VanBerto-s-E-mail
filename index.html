@@ -2588,8 +2588,11 @@
   }
 
   document.getElementById('btn-practice').addEventListener('click', function(){
-    var failed = shuffle(state.failed || []);
-    if(!failed.length) return;
+    var failedRaw = state.failed || [];
+    if(!failedRaw.length) return;
+    /* dificuldade crescente também na repescagem, com o banco certo para cada modo */
+    var source = state.phase === 'detective' ? ALL_ROUNDS : state.phase === 'tone' ? TONE_ROUNDS : KNOWLEDGE_ITEMS;
+    var failed = orderByDifficulty(failedRaw, source);
     sfxClick();
     state.practice = true;
     if(state.phase === 'detective'){
@@ -2864,6 +2867,13 @@
   /* ---------------- rever respostas ---------------- */
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+  /* pequeno selo de nível para usar dentro do painel de revisão (reaproveita as classes do feedback) */
+  function levelBadgeHtml(difficulty){
+    var info = LEVEL_INFO[difficulty];
+    if(!info) return '';
+    return ' <span class="fb-level ' + info.cls + '" style="margin-left:6px; vertical-align:middle;">' + info.label + '</span>';
+  }
+
   function buildReviewPanel(){
     var html = '';
 
@@ -2894,7 +2904,7 @@
         }
         html += '<div class="review-row ' + (ok?'ok':'bad') + '">' +
           '<span class="mk">' + (ok?'✔':'✖') + '</span>' +
-          '<div><div><strong>' + esc(subjLabel) + '</strong> — ' + esc(r.sender) + '</div>' +
+          '<div><div><strong>' + esc(subjLabel) + '</strong> — ' + esc(r.sender) + levelBadgeHtml(r.difficulty) + '</div>' +
           (!ok ? '<div class="answer-correct">' + yourAction + '. A resposta certa era: ' + (r.correctAction==='eliminar'?'Eliminar / Reportar':'Confiar') + '.</div>' : '') +
           clueLine +
           '</div></div>';
@@ -2909,7 +2919,7 @@
         if(snippet.length > 60){ snippet = snippet.slice(0, 60).trim(); }
         html += '<div class="review-row ' + (ok?'ok':'bad') + '">' +
           '<span class="mk">' + (ok?'✔':'✖') + '</span>' +
-          '<div><div>' + esc(snippet) + '…</div>' +
+          '<div><div>' + esc(snippet) + '…' + levelBadgeHtml(t.difficulty) + '</div>' +
           (!ok ? '<div class="answer-correct">Era um e-mail ' + (t.correct==='formal'?'formal':'informal') + '.</div>' : '') +
           '</div></div>';
       });
@@ -2933,7 +2943,7 @@
         }
         html += '<div class="review-row ' + (ok?'ok':'bad') + '">' +
           '<span class="mk">' + (ok?'✔':'✖') + '</span>' +
-          '<div><strong>' + esc(label) + '</strong>' + (!ok ? '<div class="answer-correct">' + esc(correctAnswer) + '</div>' : '') + '</div></div>';
+          '<div><strong>' + esc(label) + '</strong>' + levelBadgeHtml(item.difficulty) + (!ok ? '<div class="answer-correct">' + esc(correctAnswer) + '</div>' : '') + '</div></div>';
       });
     }
 
