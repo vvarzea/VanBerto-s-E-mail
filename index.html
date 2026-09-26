@@ -633,6 +633,14 @@
               <option value="10">10</option>
             </select>
           </div>
+          <div class="mode-setup">
+            <label for="tone-level">🎚️ Nível:</label>
+            <select id="tone-level">
+              <option value="misto" selected>Misturado (fácil → difícil)</option>
+              <option value="facil">Só fácil</option>
+              <option value="dificil">Só difícil</option>
+            </select>
+          </div>
           <button class="btn" id="start-tone-btn">Formal ou Informal?</button>
           <div class="mode-best" id="best-tone" style="display:none;"></div>
         </div>
@@ -647,6 +655,15 @@
               <option value="6" selected>6</option>
               <option value="8">8</option>
               <option value="10">10</option>
+            </select>
+          </div>
+          <div class="mode-setup">
+            <label for="elements-level">🎚️ Nível:</label>
+            <select id="elements-level">
+              <option value="misto" selected>Misturado (fácil → difícil)</option>
+              <option value="facil">Só fácil</option>
+              <option value="media">Só médio</option>
+              <option value="dificil">Só difícil</option>
             </select>
           </div>
           <button class="btn" id="start-elements-btn">Pôr o e-mail à prova</button>
@@ -1489,89 +1506,89 @@
   /* ---------------- fase 2: formal ou informal ---------------- */
   var TONE_ROUNDS = [
     { to:'Professora de Matemática', toEmail:'carlos.dinis5@hotmail.com', text:'Boa tarde, professora,\n\nEscrevo para confirmar se devemos entregar o trabalho de Matemática em suporte digital.\n\nCom os melhores cumprimentos,\nBeatriz, 9ºB, nº14',
-      correct:'formal', explain:'Saudação e despedida cuidadas, linguagem cuidada e assinatura com turma e número: tudo isto sela o registo formal.' },
+      correct:'formal', difficulty:'facil', explain:'Saudação e despedida cuidadas, linguagem cuidada e assinatura com turma e número: tudo isto sela o registo formal.' },
     { to:'Um amigo', toEmail:'hugo.esteves@live.com.pt', text:'Oláá!\n\nVais à festa de anos do Tiago sábado? Diz-me só para eu saber se levo bolo tb 😄\n\nAté já,\nCarolina',
-      correct:'informal', explain:'Linguagem descontraída, abreviaturas ("tb") e emoji — é um e-mail informal, entre amigos.' },
+      correct:'informal', difficulty:'facil', explain:'Linguagem descontraída, abreviaturas ("tb") e emoji — é um e-mail informal, entre amigos.' },
     { to:'Biblioteca Municipal', toEmail:'olga.baptista@hotmail.com', text:'Boa tarde,\n\nVenho por este meio solicitar informação sobre os horários da biblioteca municipal durante as férias.\n\nAtentamente,\nPedro Sousa',
-      correct:'formal', explain:'Dirigido a uma entidade pública, com linguagem cuidada e despedida formal ("Atentamente").' },
+      correct:'formal', difficulty:'facil', explain:'Dirigido a uma entidade pública, com linguagem cuidada e despedida formal ("Atentamente").' },
     { to:'Colega de turma', toEmail:'hugo.reis@live.com.pt', text:'Oi!\n\nCombinamos amanhã às 15h para o trabalho de grupo? Manda-me mensagem qd puderes.\n\nAbraço,\nMarta',
-      correct:'informal', explain:'O tom próximo entre colegas e a abreviatura ("qd") denunciam o registo informal.' },
+      correct:'informal', difficulty:'facil', explain:'O tom próximo entre colegas e a abreviatura ("qd") denunciam o registo informal.' },
     { to:'Diretor de Turma', toEmail:'gisela.brito85@hotmail.com', text:'Bom dia, Professor,\n\nVenho por este meio informar que faltarei à aula de amanhã por motivos de saúde, anexando a devida justificação.\n\nCom os melhores cumprimentos,\nRodrigo, 8ºC, nº7',
-      correct:'formal', explain:'Linguagem cuidada, justificação bem apresentada e assinatura completa com turma e número — um formal sem margem para dúvidas.' },
+      correct:'formal', difficulty:'facil', explain:'Linguagem cuidada, justificação bem apresentada e assinatura completa com turma e número — um formal sem margem para dúvidas.' },
     { to:'Um amigo', toEmail:'paulo.tavares@hotmail.com', text:'Boaaa!\n\nAinda vais emprestar-me o jogo?? Passo aí depois das aulas, ok? 🎮\n\nAté logo,\nRui',
-      correct:'informal', explain:'Pontuação exagerada, emoji e tom muito descontraído entre amigos: informal do princípio ao fim.' },
+      correct:'informal', difficulty:'facil', explain:'Pontuação exagerada, emoji e tom muito descontraído entre amigos: informal do princípio ao fim.' },
     { to:'Diretor da escola', toEmail:'emanuel.oliveira45@hotmail.com', text:'Exmo. Senhor Diretor,\n\nSolicito, respeitosamente, autorização para a realização de uma visita de estudo ao Museu do Baleal no próximo mês.\n\nCom os melhores cumprimentos,\nA Delegada de Turma',
-      correct:'formal', explain:'Forma de tratamento cerimoniosa ("Exmo. Senhor Diretor") e pedido formal — é claramente um e-mail formal.' },
+      correct:'formal', difficulty:'facil', explain:'Forma de tratamento cerimoniosa ("Exmo. Senhor Diretor") e pedido formal — é claramente um e-mail formal.' },
     { to:'Grupo de colegas', toEmail:'gisela.duarte@gmail.com', text:'Malta,\n\nAlguém tem os apontamentos de hoje? Faltei e preciso mesmo deles até logo à noite, obrigadaaa 🙏\n\nBjs,\nInês',
-      correct:'informal', explain:'O tratamento coloquial ("Malta"), as abreviaturas e o emoji resultam num registo bem informal.' },
+      correct:'informal', difficulty:'facil', explain:'O tratamento coloquial ("Malta"), as abreviaturas e o emoji resultam num registo bem informal.' },
     { to:'Secretaria da escola', toEmail:'nuno.dinis47@live.com.pt', text:'Bom dia,\n\nVenho por este meio solicitar uma declaração de matrícula para efeitos de candidatura a apoio da Ação Social Escolar.\n\nCom os melhores cumprimentos,\nCarla Nunes, 9ºA, nº9',
-      correct:'formal', explain:'Pedido dirigido a uma entidade escolar, com linguagem cuidada e assinatura completa: um formal exemplar.' },
+      correct:'formal', difficulty:'facil', explain:'Pedido dirigido a uma entidade escolar, com linguagem cuidada e assinatura completa: um formal exemplar.' },
     { to:'Coordenadora', toEmail:'ivo.ferro7@live.com.pt', text:'Exma. Senhora Coordenadora,\n\nVenho por este meio solicitar autorização para a alteração do horário de apoio ao estudo.\n\nCom os melhores cumprimentos,\nEncarregada de Educação de Rui Costa',
-      correct:'formal', explain:'Forma de tratamento cerimoniosa e pedido formal a uma coordenadora — é claramente um e-mail formal.' },
+      correct:'formal', difficulty:'facil', explain:'Forma de tratamento cerimoniosa e pedido formal a uma coordenadora — é claramente um e-mail formal.' },
     { to:'Professora', toEmail:'duarte.neves12@mail.pt', text:'Bom dia, Professora,\n\nInformo que entregarei o trabalho de grupo com um dia de atraso, devido a um problema técnico no computador.\n\nCom os melhores cumprimentos,\nDiogo Farias, 9ºC, nº11',
-      correct:'formal', explain:'A justificação, a linguagem cuidada e a assinatura completa deixam claro que é formal.' },
+      correct:'formal', difficulty:'facil', explain:'A justificação, a linguagem cuidada e a assinatura completa deixam claro que é formal.' },
     { to:'Um amigo', toEmail:'zélia.machado@mail.pt', text:'Ei!\n\nViste os resultados do jogo de ontem?? Foi incrível! Fala comigo mais logo 😅\n\nAbraço,\nMiguel',
-      correct:'informal', explain:'Tom descontraído entre amigos e o emoji entregam logo o registo informal.' },
+      correct:'informal', difficulty:'facil', explain:'Tom descontraído entre amigos e o emoji entregam logo o registo informal.' },
     { to:'Colega de turma', toEmail:'carla.baptista@outlook.pt', text:'Oii,\n\nEsqueci-me da mochila na sala. Podes verificar se ainda lá está? Obrigada desde já 🙏\n\nBjs,\nAna',
-      correct:'informal', explain:'O tratamento descontraído ("Oii") e o tom próximo colocam-no no registo informal.' },
+      correct:'informal', difficulty:'facil', explain:'O tratamento descontraído ("Oii") e o tom próximo colocam-no no registo informal.' },
     { to:'Colega de turma', toEmail:'carla.henriques14@outlook.pt', text:'Boa!\n\nBora combinar o trabalho de Português? Podemos falar no intervalo, ok? 😉\n\nAté logo,\nDavid',
-      correct:'informal', explain:'A linguagem coloquial ("Bora") e o emoji não enganam: é informal.' },
+      correct:'informal', difficulty:'facil', explain:'A linguagem coloquial ("Bora") e o emoji não enganam: é informal.' },
     { to:'Professora de Ciências', toEmail:'paulo.xavier@outlook.pt', text:'Bom dia,\n\nVenho por este meio pedir desculpa pelo atraso na entrega do trabalho de Ciências, devido a um problema de saúde.\n\nCom os melhores cumprimentos,\nInês Ramos, 7ºA, nº18',
-      correct:'formal', explain:'Pedido de desculpa em linguagem cuidada, com assinatura completa com turma e número — formal como manda a ocasião.' },
+      correct:'formal', difficulty:'facil', explain:'Pedido de desculpa em linguagem cuidada, com assinatura completa com turma e número — formal como manda a ocasião.' },
     { to:'Colega de turma', toEmail:'marta.gonçalves87@mail.pt', text:'Eii,\n\nJá viste o grupo da turma? Marcaram o trabalho para 6ª feira 😳 Vamos combinar?\n\nFala comigo,\nSara',
-      correct:'informal', explain:'O tratamento descontraído ("Eii") e o emoji entre colegas apontam para o informal.' },
+      correct:'informal', difficulty:'facil', explain:'O tratamento descontraído ("Eii") e o emoji entre colegas apontam para o informal.' },
     { to:'Presidente da Associação de Estudantes', toEmail:'leandro.amaral@live.com.pt', text:'Exmo. Senhor Presidente da Associação de Estudantes,\n\nSolicito autorização para afixar um cartaz sobre a angariação de fundos para a viagem de finalistas.\n\nCom os melhores cumprimentos,\nO Delegado de Turma',
-      correct:'formal', explain:'A forma de tratamento cerimoniosa e o pedido a um cargo da escola pedem sempre o registo formal.' },
+      correct:'formal', difficulty:'facil', explain:'A forma de tratamento cerimoniosa e o pedido a um cargo da escola pedem sempre o registo formal.' },
     { to:'Colega de turma', toEmail:'carlos.faria@hotmail.com', text:'Boa!\n\nPassas-me os apontamentos de Físico-Química? Prometo que devolvo já a seguir 🙏\n\nObrigado,\nTomás',
-      correct:'informal', explain:'Tom direto e próximo entre colegas, com emoji: um informal típico.' },
+      correct:'informal', difficulty:'facil', explain:'Tom direto e próximo entre colegas, com emoji: um informal típico.' },
     { to:'Professora de Inglês', toEmail:'paulo.neves@mail.pt', text:'Boa tarde, Professora,\n\nVenho por este meio solicitar o reagendamento do teste de Inglês, por coincidir com uma consulta médica.\n\nCom os melhores cumprimentos,\nMarco Andrade, 8ºB, nº21',
-      correct:'formal', explain:'Pedido justificado, linguagem cuidada e assinatura completa dão-lhe o carimbo do formal.' },
+      correct:'formal', difficulty:'facil', explain:'Pedido justificado, linguagem cuidada e assinatura completa dão-lhe o carimbo do formal.' },
     { to:'Irmã', toEmail:'luís.duarte@gmail.com', text:'Oi maninha,\n\nEsqueci-me da chave de casa, deixa a porta aberta pfff 😅\n\nBjs,\nCatarina',
-      correct:'informal', explain:'O tratamento familiar ("maninha") e a abreviatura ("pfff") são a marca do informal.' },
+      correct:'informal', difficulty:'facil', explain:'O tratamento familiar ("maninha") e a abreviatura ("pfff") são a marca do informal.' },
     { to:'Diretora da escola', toEmail:'helena.lopes53@gmail.com', text:'Exma. Senhora Diretora,\n\nVenho por este meio informar que a turma do 9ºC gostaria de propor uma visita de estudo ao Observatório Astronómico.\n\nCom os melhores cumprimentos,\nA Delegada de Turma',
-      correct:'formal', explain:'A forma de tratamento cerimoniosa e a proposta à direção da escola tornam este e-mail formal.' },
+      correct:'formal', difficulty:'facil', explain:'A forma de tratamento cerimoniosa e a proposta à direção da escola tornam este e-mail formal.' },
     { to:'Amigos', toEmail:'gisela.tavares@mail.pt', text:'Ehh, malta!\n\nVamos jogar à bola depois das aulas? Chama mais malta se quiseres 😄⚽\n\nAté já,\nAfonso',
-      correct:'informal', explain:'Tom descontraído e emoji entre amigos: mais informal não podia ser.' },
+      correct:'informal', difficulty:'facil', explain:'Tom descontraído e emoji entre amigos: mais informal não podia ser.' },
     { to:'Clube de Robótica', toEmail:'rita.neves84@hotmail.com', text:'Bom dia,\n\nSolicito, por favor, o envio da ficha de inscrição para o Clube de Robótica.\n\nCom os melhores cumprimentos,\nSofia Martins, 8ºA, nº9',
-      correct:'formal', explain:'Pedido cortês, linguagem cuidada e assinatura completa — o retrato do e-mail formal.' },
+      correct:'formal', difficulty:'facil', explain:'Pedido cortês, linguagem cuidada e assinatura completa — o retrato do e-mail formal.' },
     { to:'Colega de turma', toEmail:'ivo.esteves33@mail.pt', text:'Oii,\n\nFoste à aula de hoje? Passa-me lá o que a stora disse sff\n\nObrigada,\nLeonor',
-      correct:'informal', explain:'A linguagem coloquial ("stora", "sff") não deixa dúvidas quanto ao informal.' },
+      correct:'informal', difficulty:'facil', explain:'A linguagem coloquial ("stora", "sff") não deixa dúvidas quanto ao informal.' },
     { to:'Encarregado de Educação', toEmail:'vasco.oliveira76@outlook.pt', text:'Exmo. Senhor Encarregado de Educação,\n\nVenho por este meio informar que o seu educando faltou hoje à aula sem justificação.\n\nCom os melhores cumprimentos,\nA Diretora de Turma',
-      correct:'formal', explain:'A forma de tratamento cerimoniosa e o facto de vir da escola tornam esta comunicação formal.' },
+      correct:'formal', difficulty:'facil', explain:'A forma de tratamento cerimoniosa e o facto de vir da escola tornam esta comunicação formal.' },
     { to:'Colega de turma', toEmail:'hugo.esteves67@gmail.com', text:'Boaaas,\n\nAinda tens aquele livro que te emprestei? Preciso dele para o teste de amanhã 📚\n\nAté já,\nGonçalo',
-      correct:'informal', explain:'Tom próximo e descontraído entre colegas — outro caso claro de informal.' },
+      correct:'informal', difficulty:'facil', explain:'Tom próximo e descontraído entre colegas — outro caso claro de informal.' },
     { to:'Professor de Matemática', toEmail:'guilherme.baptista@mail.pt', text:'Bom dia, Professor,\n\nGostaria de saber se é possível marcar um momento para esclarecer algumas dúvidas sobre a matéria de Matemática.\n\nCom os melhores cumprimentos,\nRicardo Nunes, 9ºA, nº15',
-      correct:'formal', explain:'Pedido cuidado e assinatura completa com turma e número situam-no no registo formal.' },
+      correct:'formal', difficulty:'facil', explain:'Pedido cuidado e assinatura completa com turma e número situam-no no registo formal.' },
     { to:'Grupo da turma', toEmail:'filipe.ferro89@live.com.pt', text:'Malta,\n\nAlguém sabe a que horas é o jogo do inter-turmas? Já não me lembro 😂\n\nBjs,\nMariana',
-      correct:'informal', explain:'O tratamento coloquial ("Malta") e o emoji confirmam o registo informal.' },
+      correct:'informal', difficulty:'facil', explain:'O tratamento coloquial ("Malta") e o emoji confirmam o registo informal.' },
     { to:'Professora de Matemática', toEmail:'carla.neves50@live.com.pt', text:'Boa tarde, Professora!\n\nObrigado pela explicação de hoje, ajudou-me imenso a perceber as equações.\n\nBom fim de semana!\nFrancisco, 9ºB',
-      correct:'formal', explain:'Não tem fórmulas cerimoniosas, mas a saudação, o tratamento por \"Professora\" e a despedida cuidada mostram respeito — o destinatário é uma professora, por isso o tom é formal.' },
+      correct:'formal', difficulty:'dificil', explain:'Não tem fórmulas cerimoniosas, mas a saudação, o tratamento por \"Professora\" e a despedida cuidada mostram respeito — o destinatário é uma professora, por isso o tom é formal.' },
     { to:'Colega de turma', toEmail:'ivo.soares@mail.pt', text:'Olá Tiago,\n\nConsegues enviar-me o link do documento partilhado? Não o encontro.\n\nObrigada,\nMarta',
-      correct:'informal', explain:'Sem emoji nem abreviaturas, mas o tratamento pelo primeiro nome e o tom próximo entre colegas fazem dele um e-mail informal.' },
+      correct:'informal', difficulty:'dificil', explain:'Sem emoji nem abreviaturas, mas o tratamento pelo primeiro nome e o tom próximo entre colegas fazem dele um e-mail informal.' },
     { to:'Professor de História', toEmail:'kátia.soares36@gmail.com', text:'Bom dia, Professor,\n\nPodia dizer-me a que horas começa o teste de amanhã?\n\nObrigado,\nBruno, 8ºC',
-      correct:'formal', explain:'Mesmo curto e direto, o pedido é cortês e usa o tratamento certo para um professor — continua a ser formal.' },
+      correct:'formal', difficulty:'dificil', explain:'Mesmo curto e direto, o pedido é cortês e usa o tratamento certo para um professor — continua a ser formal.' },
     { to:'Mãe', toEmail:'joana.oliveira22@gmail.com', text:'Boa noite, mãe!\n\nVou chegar um bocadinho mais tarde, fico a estudar em casa da Rita.\n\nBeijinhos,\nSofia',
-      correct:'informal', explain:'Mesmo com \"Boa noite\", o tom é familiar e afetuoso (\"mãe\", \"Beijinhos\") — continua a ser informal. O que decide o tom é sempre quem recebe.' }
+      correct:'informal', difficulty:'dificil', explain:'Mesmo com \"Boa noite\", o tom é familiar e afetuoso (\"mãe\", \"Beijinhos\") — continua a ser informal. O que decide o tom é sempre quem recebe.' }
   ];
 
   
 
   /* ---------------- fase 3: elementos do e-mail ---------------- */
   var ELEMENT_DEFS = [
-    {term:'Para', def:'Endereço(s) de e-mail do(s) destinatário(s) principal(is).'},
-    {term:'Cc', def:'Envia uma cópia da mensagem a outras pessoas, que ficam visíveis para os destinatários.'},
-    {term:'Bcc', def:'Envia uma cópia sem revelar esse endereço aos restantes destinatários.'},
-    {term:'Assunto', def:'Indica de forma clara o tema da mensagem.'},
-    {term:'Anexo', def:'Ficheiro enviado juntamente com a mensagem.'},
-    {term:'Assinatura', def:'Identificação de quem escreve — nome, turma e número — nas últimas linhas da mensagem.'},
-    {term:'Corpo da mensagem', def:'O texto principal do e-mail, onde se desenvolve aquilo que se quer dizer.'},
-    {term:'Responder a Todos', def:'Envia a resposta ao remetente e a todos os outros destinatários da mensagem original.'},
-    {term:'Reencaminhar', def:'Envia a mensagem recebida, tal como está, para outra(s) pessoa(s).'},
-    {term:'Rascunho', def:'Mensagem guardada mas ainda não enviada, para continuar a escrever mais tarde.'},
-    {term:'Caixa de entrada', def:'Local onde ficam guardadas as mensagens recebidas.'},
-    {term:'Spam / Lixo eletrónico', def:'Mensagens não solicitadas, normalmente publicitárias ou fraudulentas.'},
-    {term:'Contactos', def:'Lista de endereços de e-mail guardados para facilitar o envio de mensagens.'},
-    {term:'Filtro de spam', def:'Sistema que identifica e separa automaticamente mensagens suspeitas ou indesejadas.'}
+    {term:'Para', def:'Endereço(s) de e-mail do(s) destinatário(s) principal(is).', difficulty:'facil'},
+    {term:'Cc', def:'Envia uma cópia da mensagem a outras pessoas, que ficam visíveis para os destinatários.', difficulty:'media'},
+    {term:'Bcc', def:'Envia uma cópia sem revelar esse endereço aos restantes destinatários.', difficulty:'dificil'},
+    {term:'Assunto', def:'Indica de forma clara o tema da mensagem.', difficulty:'facil'},
+    {term:'Anexo', def:'Ficheiro enviado juntamente com a mensagem.', difficulty:'facil'},
+    {term:'Assinatura', def:'Identificação de quem escreve — nome, turma e número — nas últimas linhas da mensagem.', difficulty:'facil'},
+    {term:'Corpo da mensagem', def:'O texto principal do e-mail, onde se desenvolve aquilo que se quer dizer.', difficulty:'facil'},
+    {term:'Responder a Todos', def:'Envia a resposta ao remetente e a todos os outros destinatários da mensagem original.', difficulty:'media'},
+    {term:'Reencaminhar', def:'Envia a mensagem recebida, tal como está, para outra(s) pessoa(s).', difficulty:'media'},
+    {term:'Rascunho', def:'Mensagem guardada mas ainda não enviada, para continuar a escrever mais tarde.', difficulty:'media'},
+    {term:'Caixa de entrada', def:'Local onde ficam guardadas as mensagens recebidas.', difficulty:'facil'},
+    {term:'Spam / Lixo eletrónico', def:'Mensagens não solicitadas, normalmente publicitárias ou fraudulentas.', difficulty:'media'},
+    {term:'Contactos', def:'Lista de endereços de e-mail guardados para facilitar o envio de mensagens.', difficulty:'media'},
+    {term:'Filtro de spam', def:'Sistema que identifica e separa automaticamente mensagens suspeitas ou indesejadas.', difficulty:'dificil'}
   ];
 
   /* ---------------- fase 3 (extra): netiqueta ---------------- */
@@ -1586,37 +1603,37 @@
     { short:'Não reencaminhar correntes', full:'Não reencaminhes correntes ou mensagens duvidosas — verifica a informação antes de a partilhares.' }
   ];
   var NETIQUETA_ROUNDS = [
-    { text:'ASSUNTO: PRECISO DE AJUDA JÁ!!!\nPROFESSORA, PODE RESPONDER-ME O MAIS DEPRESSA POSSÍVEL???', ruleIdx:0, distractors:[6,7] },
-    { text:'Boa tarde, professora. N consegui fzr o trabalho hj pq tive treino. Pod ser p amanha? Obg.', ruleIdx:1, distractors:[5,6] },
-    { text:'Ei Diretor, tudo fixe contigo? Preciso que me safes de uma cena, ok? Bora lá resolver isso.', ruleIdx:2, distractors:[6,7] },
-    { text:'Ora bem, hoje começou a chover e eu estava a pensar no fim de semana em que fui à praia e depois lembrei-me também de perguntar sobre o teste, já agora sabe se sai a matéria toda ou não, já não me lembro se era para entregar hoje ou amanhã...', ruleIdx:3, distractors:[0,6] },
-    { text:'Assunto: (em branco)\nBoa tarde, professora. Gostaria de saber se posso entregar o trabalho de Ciências na sexta-feira, por favor.', ruleIdx:4, distractors:[1,6] },
-    { text:'Já disse que o teu trabalho está uma porcaria, nem sei como é que ainda andas nesta escola.', ruleIdx:5, distractors:[1,6] },
-    { text:'Aproveita já! Desconto de 90% só hoje — clica aqui e ganha um prémio!!! (enviado a toda a turma sem ninguém ter pedido)', ruleIdx:6, distractors:[2,3] },
-    { text:'Reencaminha esta mensagem a 10 amigos até à meia-noite ou terás azar durante 7 anos!', ruleIdx:7, distractors:[1,2] }
+    { text:'ASSUNTO: PRECISO DE AJUDA JÁ!!!\nPROFESSORA, PODE RESPONDER-ME O MAIS DEPRESSA POSSÍVEL???', ruleIdx:0, distractors:[6,7], difficulty:'facil' },
+    { text:'Boa tarde, professora. N consegui fzr o trabalho hj pq tive treino. Pod ser p amanha? Obg.', ruleIdx:1, distractors:[5,6], difficulty:'facil' },
+    { text:'Ei Diretor, tudo fixe contigo? Preciso que me safes de uma cena, ok? Bora lá resolver isso.', ruleIdx:2, distractors:[6,7], difficulty:'media' },
+    { text:'Ora bem, hoje começou a chover e eu estava a pensar no fim de semana em que fui à praia e depois lembrei-me também de perguntar sobre o teste, já agora sabe se sai a matéria toda ou não, já não me lembro se era para entregar hoje ou amanhã...', ruleIdx:3, distractors:[0,6], difficulty:'dificil' },
+    { text:'Assunto: (em branco)\nBoa tarde, professora. Gostaria de saber se posso entregar o trabalho de Ciências na sexta-feira, por favor.', ruleIdx:4, distractors:[1,6], difficulty:'facil' },
+    { text:'Já disse que o teu trabalho está uma porcaria, nem sei como é que ainda andas nesta escola.', ruleIdx:5, distractors:[1,6], difficulty:'facil' },
+    { text:'Aproveita já! Desconto de 90% só hoje — clica aqui e ganha um prémio!!! (enviado a toda a turma sem ninguém ter pedido)', ruleIdx:6, distractors:[2,3], difficulty:'media' },
+    { text:'Reencaminha esta mensagem a 10 amigos até à meia-noite ou terás azar durante 7 anos!', ruleIdx:7, distractors:[1,2], difficulty:'facil' }
   ];
 
   /* ---------------- fase 3 (extra): estrutura do endereço ---------------- */
   var ADDRESS_ROUNDS = [
-    { address:'joao.silva@escola.pt', valid:true, reason:'Tem a forma utilizador@domínio, sem espaços nem acentos — está tudo em ordem.' },
-    { address:'joão.silva@escola.pt', valid:false, reason:'Tem um acento ("ã"), e um endereço de e-mail não pode ter acentos.' },
-    { address:'joao silva@escola.pt', valid:false, reason:'Tem um espaço antes do "@", e um endereço de e-mail não pode ter espaços.' },
-    { address:'beatriz_costa9b@edu.azores.gov.pt', valid:true, reason:'O sublinhado e os números no nome de utilizador são permitidos; sem espaços nem acentos, o endereço está correto.' },
-    { address:'mariasilva@', valid:false, reason:'Falta o domínio depois do "@" (a entidade que fornece o serviço).' },
-    { address:'ana-rodrigues@colegio.pt', valid:true, reason:'O hífen no nome de utilizador não é problema; a forma utilizador@domínio está respeitada.' },
-    { address:'miguelferreira.pt', valid:false, reason:'Falta o símbolo "@" — sem ele, não é possível identificar o domínio.' },
-    { address:'rui.costa@escola pt', valid:false, reason:'Tem um espaço no domínio, em vez de um ponto (deveria ser "escola.pt").' },
-    { address:'joao.silva@@escola.pt', valid:false, reason:'Tem dois "@" seguidos — um endereço só pode ter um "@".' },
-    { address:'@escola.pt', valid:false, reason:'Falta o nome de utilizador antes do "@".' },
-    { address:'joao..silva@escola.pt', valid:false, reason:'Tem dois pontos seguidos no nome de utilizador — não é permitido.' },
-    { address:'ines.pereira19@edu.azores.gov.pt', valid:true, reason:'Pontos e números são permitidos: segue a forma utilizador@domínio, sem espaços nem acentos.' },
-    { address:'suporte@instagrarn-ajuda.com', valid:true, reason:'Está escrito de forma válida (utilizador@domínio) — mas válido não quer dizer de confiança! Repara em "instagrarn": tem "rn" no lugar do "m".' }
+    { address:'joao.silva@escola.pt', valid:true, reason:'Tem a forma utilizador@domínio, sem espaços nem acentos — está tudo em ordem.', difficulty:'facil' },
+    { address:'joão.silva@escola.pt', valid:false, reason:'Tem um acento ("ã"), e um endereço de e-mail não pode ter acentos.', difficulty:'facil' },
+    { address:'joao silva@escola.pt', valid:false, reason:'Tem um espaço antes do "@", e um endereço de e-mail não pode ter espaços.', difficulty:'facil' },
+    { address:'beatriz_costa9b@edu.azores.gov.pt', valid:true, reason:'O sublinhado e os números no nome de utilizador são permitidos; sem espaços nem acentos, o endereço está correto.', difficulty:'facil' },
+    { address:'mariasilva@', valid:false, reason:'Falta o domínio depois do "@" (a entidade que fornece o serviço).', difficulty:'facil' },
+    { address:'ana-rodrigues@colegio.pt', valid:true, reason:'O hífen no nome de utilizador não é problema; a forma utilizador@domínio está respeitada.', difficulty:'facil' },
+    { address:'miguelferreira.pt', valid:false, reason:'Falta o símbolo "@" — sem ele, não é possível identificar o domínio.', difficulty:'facil' },
+    { address:'rui.costa@escola pt', valid:false, reason:'Tem um espaço no domínio, em vez de um ponto (deveria ser "escola.pt").', difficulty:'media' },
+    { address:'joao.silva@@escola.pt', valid:false, reason:'Tem dois "@" seguidos — um endereço só pode ter um "@".', difficulty:'media' },
+    { address:'@escola.pt', valid:false, reason:'Falta o nome de utilizador antes do "@".', difficulty:'facil' },
+    { address:'joao..silva@escola.pt', valid:false, reason:'Tem dois pontos seguidos no nome de utilizador — não é permitido.', difficulty:'dificil' },
+    { address:'ines.pereira19@edu.azores.gov.pt', valid:true, reason:'Pontos e números são permitidos: segue a forma utilizador@domínio, sem espaços nem acentos.', difficulty:'facil' },
+    { address:'suporte@instagrarn-ajuda.com', valid:true, reason:'Está escrito de forma válida (utilizador@domínio) — mas válido não quer dizer de confiança! Repara em "instagrarn": tem "rn" no lugar do "m".', difficulty:'dificil' }
   ];
 
   /* ---------------- fase 3: conjunto combinado de perguntas ---------------- */
-  var KNOWLEDGE_ITEMS = ELEMENT_DEFS.map(function(d){ return { type:'term', term:d.term, def:d.def }; })
-    .concat(NETIQUETA_ROUNDS.map(function(r){ return { type:'netiqueta', text:r.text, ruleIdx:r.ruleIdx, distractors:r.distractors }; }))
-    .concat(ADDRESS_ROUNDS.map(function(a){ return { type:'address', address:a.address, valid:a.valid, reason:a.reason }; }));
+  var KNOWLEDGE_ITEMS = ELEMENT_DEFS.map(function(d){ return { type:'term', term:d.term, def:d.def, difficulty:d.difficulty }; })
+    .concat(NETIQUETA_ROUNDS.map(function(r){ return { type:'netiqueta', text:r.text, ruleIdx:r.ruleIdx, distractors:r.distractors, difficulty:r.difficulty }; }))
+    .concat(ADDRESS_ROUNDS.map(function(a){ return { type:'address', address:a.address, valid:a.valid, reason:a.reason, difficulty:a.difficulty }; }));
 
   /* ---------------- state ---------------- */
   var lastFocusedEl = null;
@@ -1642,17 +1659,32 @@
     return a;
   }
 
-  /* nível de cada ronda (facil/media/dificil), definido em cada item de ALL_ROUNDS;
-     usado para ordenar a sessão do mais fácil para o mais difícil (ver pickSession) */
+  /* nível de cada ronda (facil/media/dificil), definido em cada item dos vários bancos de
+     perguntas; usado para ordenar a sessão do mais fácil para o mais difícil */
   var DIFFICULTY_RANK = { facil:0, media:1, dificil:2 };
+  var LEVEL_INFO = { facil:{label:'🟢 Fácil', cls:'lvl-facil'}, media:{label:'🟡 Médio', cls:'lvl-media'}, dificil:{label:'🔴 Difícil', cls:'lvl-dificil'} };
 
-  /* ordena os índices escolhidos por dificuldade crescente; dentro do mesmo nível a ordem
-     fica aleatória (o sort é estável nos motores atuais, por isso baralhamos antes de ordenar) */
-  function orderByDifficulty(idxArr){
+  /* mostra/esconde o selo de dificuldade no ecrã de feedback (só depois de responder) */
+  function showLevelBadge(difficulty){
+    var levelEl = document.getElementById('fb-level');
+    var info = LEVEL_INFO[difficulty];
+    if(info){
+      levelEl.textContent = info.label;
+      levelEl.className = 'fb-level ' + info.cls;
+      levelEl.style.display = '';
+    } else {
+      levelEl.style.display = 'none';
+    }
+  }
+
+  /* ordena os índices escolhidos por dificuldade crescente (usando o banco "source" indicado);
+     dentro do mesmo nível a ordem fica aleatória (o sort é estável nos motores atuais, por isso
+     baralhamos antes de ordenar) */
+  function orderByDifficulty(idxArr, source){
     var arr = shuffle(idxArr);
     arr.sort(function(a, b){
-      var ra = DIFFICULTY_RANK[ALL_ROUNDS[a].difficulty] || 0;
-      var rb = DIFFICULTY_RANK[ALL_ROUNDS[b].difficulty] || 0;
+      var ra = DIFFICULTY_RANK[source[a].difficulty] || 0;
+      var rb = DIFFICULTY_RANK[source[b].difficulty] || 0;
       return ra - rb;
     });
     return arr;
@@ -1675,7 +1707,7 @@
     var chosen = shuffle(phishIdx).slice(0, nPhish).concat(shuffle(safeIdx).slice(0, nSafe));
     /* dificuldade crescente (quando "misturado"): quais são escolhidos continua aleatório,
        só a ordem de apresentação muda; com um nível único, isto só reforça a aleatoriedade */
-    return orderByDifficulty(chosen);
+    return orderByDifficulty(chosen, ALL_ROUNDS);
   }
 
   /* ---------------- DOM refs ---------------- */
@@ -2263,16 +2295,7 @@
       sfxBad();
     }
     document.getElementById('fb-points').textContent = roundPts + ' de ' + maxRoundPts + ' pontos possíveis nesta ronda';
-
-    var levelEl = document.getElementById('fb-level');
-    var levelInfo = { facil:{label:'🟢 Fácil', cls:'lvl-facil'}, media:{label:'🟡 Médio', cls:'lvl-media'}, dificil:{label:'🔴 Difícil', cls:'lvl-dificil'} }[r.difficulty];
-    if(levelInfo){
-      levelEl.textContent = levelInfo.label;
-      levelEl.className = 'fb-level ' + levelInfo.cls;
-      levelEl.style.display = '';
-    } else {
-      levelEl.style.display = 'none';
-    }
+    showLevelBadge(r.difficulty);
 
     state.results[state.round] = { action: action, correct: actionRight, picked: state.selected, roundPts: roundPts, maxRoundPts: maxRoundPts };
 
@@ -2341,6 +2364,21 @@
   });
 
   /* ---------------- fase 2: formal ou informal ---------------- */
+  function pickToneSession(total){
+    total = Math.max(2, total || 5);
+    var levelEl = document.getElementById('tone-level');
+    var level = levelEl ? levelEl.value : 'misto';
+    var pool = [];
+    TONE_ROUNDS.forEach(function(r, i){
+      if(level !== 'misto' && r.difficulty !== level) return; /* fora do nível escolhido, fica de fora */
+      pool.push(i);
+    });
+    var chosen = shuffle(pool).slice(0, Math.min(total, pool.length));
+    /* dificuldade crescente (quando "misturado"): quais entram continua aleatório,
+       só a ordem de apresentação muda */
+    return orderByDifficulty(chosen, TONE_ROUNDS);
+  }
+
   function startTonePhase(){
     state.phase = 'tone';
     state.toneIndex = 0;
@@ -2348,7 +2386,7 @@
     state.toneResults = [];
     var toneCountEl = document.getElementById('tone-count-select');
     var toneCount = Math.min(toneCountEl ? parseInt(toneCountEl.value, 10) : 5, TONE_ROUNDS.length);
-    state.toneOrder = shuffle(TONE_ROUNDS.map(function(_,i){ return i; })).slice(0, toneCount);
+    state.toneOrder = pickToneSession(toneCount);
     showScreen('tone');
     renderTone();
     saveSession();
@@ -2384,7 +2422,7 @@
       sfxBad();
     }
     document.getElementById('fb-points').textContent = '+' + pts + ' pontos nesta ronda';
-    document.getElementById('fb-level').style.display = 'none';
+    showLevelBadge(t.difficulty);
     document.getElementById('fb-report').innerHTML = '<div class="row ok"><span class="mk">💬</span><span>' + t.explain + '</span></div>';
 
     overlay.classList.add('show');
@@ -2412,10 +2450,15 @@
   }
 
   function pickBalancedElements(total){
+    var levelEl = document.getElementById('elements-level');
+    var level = levelEl ? levelEl.value : 'misto';
     var types = ['term','netiqueta','address'];
     var byType = {};
     types.forEach(function(t){ byType[t] = []; });
-    KNOWLEDGE_ITEMS.forEach(function(item, i){ byType[item.type].push(i); });
+    KNOWLEDGE_ITEMS.forEach(function(item, i){
+      if(level !== 'misto' && item.difficulty !== level) return; /* fora do nível escolhido, fica de fora */
+      byType[item.type].push(i);
+    });
 
     var perType = Math.floor(total / types.length);
     var chosen = [];
@@ -2432,7 +2475,9 @@
     var need = Math.max(0, Math.min(total - chosen.length, remainingPool.length));
     chosen = chosen.concat(remainingPool.slice(0, need));
 
-    return shuffle(chosen);
+    /* dificuldade crescente (quando "misturado"): quais entram continua aleatório,
+       só a ordem de apresentação muda */
+    return orderByDifficulty(chosen, KNOWLEDGE_ITEMS);
   }
 
   function renderElements(){
@@ -2513,7 +2558,7 @@
     paint('vb-feedback', right?'happy':'sad'); paint('vb-elements', right?'happy':'sad');
     if(right) sfxGood(); else sfxBad();
     document.getElementById('fb-points').textContent = '+' + pts + ' pontos nesta ronda';
-    document.getElementById('fb-level').style.display = 'none';
+    showLevelBadge(item.difficulty);
     document.getElementById('fb-report').innerHTML = reportHtml;
 
     overlay.classList.add('show');
