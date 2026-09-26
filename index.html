@@ -157,6 +157,15 @@
   }
   .missions-done strong{ display:block; font-family: var(--font-display); font-size:18px; color: var(--warn); }
 
+  /* indicador discreto e sempre visível do progresso rumo às 3 missões em nível Misturado
+     (a faixa .missions-done acima só aparece quando as 3 já estão cumpridas) */
+  .mission-progress{
+    max-width:420px; margin: 4px auto 18px; padding:8px 16px;
+    border:1px solid var(--line); border-radius: var(--radius);
+    background: var(--panel-2);
+    font-size:12.5px; line-height:1.45; color: var(--ink-dim); text-align:center;
+  }
+
   /* aviso de que os recordes ficam guardados neste computador (localStorage) */
   .device-note{
     max-width:460px; margin: 0 auto 18px; font-size:12px; line-height:1.5;
@@ -572,6 +581,7 @@
       </div>
       <div class="device-note" id="device-note">
         🖥️ Os recordes ficam guardados neste computador, associados ao nome (e turma/nº, se preenchida).
+        <button type="button" class="link-btn" id="btn-clear-own">Apagar só o meu registo</button>
         <button type="button" class="link-btn" id="btn-clear-device">Limpar recordes deste computador</button>
       </div>
 
@@ -590,6 +600,8 @@
           <button type="button" class="btn ghost" id="btn-cert-complete-intro" style="padding:8px 14px; font-size:13px;">🎓 Ver certificado Detetive Completo</button>
         </div>
       </div>
+
+      <div class="mission-progress" id="mission-progress" style="display:none;" role="status"></div>
 
       <div class="review-summary" id="review-summary" style="display:none;">
         <h4>📋 O que ainda vale a pena rever</h4>
@@ -1834,11 +1846,33 @@
     return makeKey(nameEl && nameEl.value, turmaEl && turmaEl.value);
   }
 
+  var LEVEL_LABELS = { misto:'Misturado', facil:'Só fácil', media:'Só médio', dificil:'Só difícil' };
+
   function updateBestPills(){
     var currentName = currentPlayerKey();
     var missionsBadge = document.getElementById('missions-done');
+    var progressBox = document.getElementById('mission-progress');
+    var modeKeys = Object.keys(MODE_INFO);
+    var doneCount = currentName ? countMissionsDone(currentName) : 0;
+    var everStarted = currentName && modeKeys.some(function(mode){
+      var e = readBest(mode, currentName);
+      return e && e.pts > 0;
+    });
     if(missionsBadge){
-      missionsBadge.style.display = (currentName && countMissionsDone(currentName) === Object.keys(MODE_INFO).length) ? 'block' : 'none';
+      missionsBadge.style.display = (currentName && doneCount === modeKeys.length) ? 'block' : 'none';
+    }
+    if(progressBox){
+      if(currentName && everStarted && doneCount < modeKeys.length){
+        var missing = modeKeys.filter(function(mode){
+          var e = readBest(mode, currentName);
+          return !(e && typeof e.mistoPct === 'number' && e.mistoPct >= MISSION_MIN_PCT);
+        }).map(function(mode){ return MODE_INFO[mode].label; });
+        progressBox.innerHTML = '🏅 <strong>' + doneCount + ' de ' + modeKeys.length + '</strong> missões em nível Misturado' +
+          (missing.length ? ' — falta: ' + missing.join(', ') : '');
+        progressBox.style.display = 'block';
+      } else {
+        progressBox.style.display = 'none';
+      }
     }
     Object.keys(MODE_INFO).forEach(function(mode){
       var el = document.getElementById('best-' + mode);
@@ -1849,7 +1883,8 @@
         return;
       }
       el.style.display = 'block';
-      el.textContent = '🏆 O teu melhor: ' + e.pct + '% (' + e.pts + '/' + e.max + ' pts)';
+      var levelTag = LEVEL_LABELS[e.bestLevel] ? ' — ' + LEVEL_LABELS[e.bestLevel] : '';
+      el.textContent = '🏆 O teu melhor: ' + e.pct + '% (' + e.pts + '/' + e.max + ' pts)' + levelTag;
     });
   }
 
@@ -1887,6 +1922,30 @@
   refreshPlayerPanels();
   document.getElementById('player-name').addEventListener('input', refreshPlayerPanels);
   document.getElementById('player-turma').addEventListener('input', refreshPlayerPanels);
+
+  document.getElementById('btn-clear-own').addEventListener('click', function(){
+    sfxClick();
+    var key = currentPlayerKey();
+    if(!key){
+      alert('Escreve primeiro o teu nome (e turma/nº, se usaste), para eu saber qual registo apagar.');
+      return;
+    }
+    var nameEl = document.getElementById('player-name');
+    var turmaEl = document.getElementById('player-turma');
+    var who = (nameEl.value||'').trim() + (turmaEl.value ? ' — ' + turmaEl.value.trim() : '');
+    if(!confirm('Isto apaga só o registo de "' + who + '" (as tuas pontuações e recordes nos 3 modos) neste computador. Continuar?')) return;
+    try{
+      Object.keys(MODE_INFO).forEach(function(mode){
+        var raw = localStorage.getItem(MODE_INFO[mode].storageKey);
+        var map = raw ? JSON.parse(raw) : null;
+        if(map && typeof map === 'object' && key in map){
+          delete map[key];
+          localStorage.setItem(MODE_INFO[mode].storageKey, JSON.stringify(map));
+        }
+      });
+    }catch(e){}
+    refreshPlayerPanels();
+  });
 
   document.getElementById('btn-clear-device').addEventListener('click', function(){
     sfxClick();
@@ -2822,6 +2881,7 @@
         var entry = (best && typeof best === 'object') ? best : {};
         if(!best || pctRounded > best.pct){
           entry.pct = pctRounded; entry.pts = totalScore; entry.max = totalMax;
+          entry.bestLevel = currentPlayedLevel(state.phase); /* em que nível foi conseguido este recorde */
         }
         /* só conta para a missão/certificado combinado se esta tentativa foi em nível "Misturado" —
            um recorde feito só em "Só fácil" não deve valer a faixa de Detetive Completo */
