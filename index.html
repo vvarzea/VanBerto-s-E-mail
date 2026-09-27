@@ -685,13 +685,30 @@
           <button class="btn" id="start-elements-btn">Pôr o e-mail à prova</button>
           <div class="mode-best" id="best-elements" style="display:none;"></div>
         </div>
+
+        <div class="mode-card">
+          <div class="mode-icon">🏁</div>
+          <h3>Desafio Final</h3>
+          <p>12 rondas que saltam entre os 3 tipos de pergunta, sem avisar qual vem a seguir.</p>
+          <div class="mode-setup">
+            <label for="mixed-level">🎚️ Nível:</label>
+            <select id="mixed-level">
+              <option value="misto" selected>Misturado (fácil → difícil)</option>
+              <option value="facil">Só fácil</option>
+              <option value="dificil">Só difícil</option>
+            </select>
+          </div>
+          <button class="btn" id="start-mixed-btn">Aceitar o desafio</button>
+          <div class="mode-best" id="best-mixed" style="display:none;"></div>
+        </div>
       </div>
 
       <div class="how-card">
         <h3>🕵️ Como se joga</h3>
         <ul>
-          <li>Escolhe um dos três modos acima — podes jogar só um ou repetir todos.</li>
+          <li>Escolhe um dos quatro modos acima — podes jogar só um ou repetir todos.</li>
           <li>Cada modo tem a sua própria pontuação, ranking e certificado.</li>
+          <li>O Desafio Final mistura perguntas dos outros três modos numa só sessão, saltando de tipo em tipo.</li>
           <li>No fim de cada modo, podes rever as respostas, treinar só as que falhaste ou voltar ao menu para escolher outro.</li>
         </ul>
       </div>
@@ -1752,6 +1769,132 @@
     return orderByDifficulty(chosen, ALL_ROUNDS);
   }
 
+  /* ---------------- seleção para o Desafio Final (modo 4: mistura os 3 tipos) ----------------
+     Tem o seu próprio seletor de nível (#mixed-level); só "Misturado" e "Só fácil" / "Só difícil"
+     — sem "Só médio", porque o banco de "Formal ou Informal" não tem itens de nível médio */
+  var MIXED_PER_TYPE = 4; /* 4 de cada tipo = 12 rondas no total */
+
+  function pickMixedDetectivePicks(total, level){
+    var phishIdx = [], safeIdx = [];
+    ALL_ROUNDS.forEach(function(r,i){
+      if(level !== 'misto' && r.difficulty !== level) return;
+      (r.correctAction==='eliminar' ? phishIdx : safeIdx).push(i);
+    });
+    var nPhish = Math.floor(total / 2) + Math.floor(Math.random() * 3) - 1;
+    nPhish = Math.max(2, Math.min(nPhish, total - 2, phishIdx.length));
+    var nSafe = Math.min(total - nPhish, safeIdx.length);
+    var chosen = shuffle(phishIdx).slice(0, nPhish).concat(shuffle(safeIdx).slice(0, nSafe));
+    return orderByDifficulty(chosen, ALL_ROUNDS);
+  }
+
+  function pickMixedTonePicks(total, level){
+    var pool = [];
+    TONE_ROUNDS.forEach(function(r, i){
+      if(level !== 'misto' && r.difficulty !== level) return;
+      pool.push(i);
+    });
+    var chosen = shuffle(pool).slice(0, Math.min(total, pool.length));
+    return orderByDifficulty(chosen, TONE_ROUNDS);
+  }
+
+  function pickMixedElementsPicks(total, level){
+    var types = ['term','netiqueta','address'];
+    var byType = {};
+    types.forEach(function(t){ byType[t] = []; });
+    KNOWLEDGE_ITEMS.forEach(function(item, i){
+      if(level !== 'misto' && item.difficulty !== level) return;
+      byType[item.type].push(i);
+    });
+    var perType = Math.floor(total / types.length);
+    var chosen = [];
+    types.forEach(function(t){
+      var pool = shuffle(byType[t]);
+      chosen = chosen.concat(pool.slice(0, Math.min(perType, pool.length)));
+    });
+    var remainingPool = [];
+    types.forEach(function(t){
+      remainingPool = remainingPool.concat(byType[t].filter(function(i){ return chosen.indexOf(i) === -1; }));
+    });
+    remainingPool = shuffle(remainingPool);
+    var need = Math.max(0, Math.min(total - chosen.length, remainingPool.length));
+    chosen = chosen.concat(remainingPool.slice(0, need));
+    return orderByDifficulty(chosen, KNOWLEDGE_ITEMS);
+  }
+
+  /* difficulty de um item do Desafio Final, seja qual for o seu tipo (usado para reordenar a repescagem) */
+  function mixedItemDifficulty(it){
+    if(it.type === 'detective') return ALL_ROUNDS[it.gi].difficulty;
+    if(it.type === 'tone') return TONE_ROUNDS[it.ti].difficulty;
+    return KNOWLEDGE_ITEMS[it.idx].difficulty;
+  }
+
+  function mixedMaxPts(it){
+    return it.type === 'detective' ? (ALL_ROUNDS[it.gi].trueClues.length + 3) : 2;
+  }
+
+  function startMixedPhase(){
+    state.phase = 'mixed';
+    var levelEl = document.getElementById('mixed-level');
+    var level = levelEl ? levelEl.value : 'misto';
+    var d = pickMixedDetectivePicks(MIXED_PER_TYPE, level);
+    var t = pickMixedTonePicks(MIXED_PER_TYPE, level);
+    var e = pickMixedElementsPicks(MIXED_PER_TYPE, level);
+    var seq = [];
+    for(var i = 0; i < MIXED_PER_TYPE; i++){
+      seq.push({ type:'detective', gi:d[i] });
+      seq.push({ type:'tone', ti:t[i] });
+      seq.push({ type:'elements', idx:e[i] });
+    }
+    var maxScore = 0;
+    seq.forEach(function(it){ maxScore += mixedMaxPts(it); });
+    state.mixed = { seq:seq, index:0, score:0, maxScore:maxScore, results:seq.map(function(){ return null; }) };
+    showScreen('game'); /* renderMixedRound troca já para o ecrã certo consoante a 1ª ronda */
+    renderMixedRound();
+    saveSession();
+  }
+
+  /* mostra a ronda atual do Desafio Final, delegando no ecrã/render/evaluate já existentes de
+     cada tipo — cada ronda usa uma "janela" de um único item nas variáveis desse tipo */
+  function renderMixedRound(){
+    var m = state.mixed;
+    var item = m.seq[m.index];
+    if(item.type === 'detective'){
+      state.order = [item.gi]; state.results = [null]; state.round = 0; state.score = 0;
+      state.totalClues = ALL_ROUNDS[item.gi].trueClues.length;
+      showScreen('game');
+      renderInbox();
+      openMail(0);
+    } else if(item.type === 'tone'){
+      state.toneOrder = [item.ti]; state.toneIndex = 0; state.toneScore = 0; state.toneResults = [];
+      showScreen('tone');
+      renderTone();
+    } else {
+      state.elementsOrder = [item.idx]; state.elementsIndex = 0; state.elementsScore = 0; state.elementsResults = [];
+      showScreen('elements');
+      renderElements();
+    }
+    setTimeout(focusPrimaryAnswer, 0);
+  }
+
+  /* regista a pontuação da ronda que acabou de ser respondida e avança para a próxima (ou termina) */
+  function handleMixedNext(){
+    var m = state.mixed;
+    var item = m.seq[m.index];
+    var pts, detail;
+    if(item.type === 'detective'){ detail = state.results[0]; pts = state.score; }
+    else if(item.type === 'tone'){ detail = state.toneResults[0]; pts = state.toneScore; }
+    else { detail = state.elementsResults[0]; pts = state.elementsScore; }
+    m.results[m.index] = { type:item.type, pts:pts, maxPts:mixedMaxPts(item), res:detail };
+    m.score += pts;
+    m.index++;
+    if(m.index >= m.seq.length){
+      finishGame();
+    } else {
+      renderMixedRound();
+      saveSession();
+    }
+  }
+
   /* ---------------- DOM refs ---------------- */
   var screens = {
     intro: document.getElementById('screen-intro'),
@@ -1806,13 +1949,27 @@
         {min:0.5, rank:'Aprendiz de E-mail 🔍', msg:'Bom começo — revê os elementos do e-mail e tenta outra vez.', mood:'neutral'},
         {min:0,   rank:'Recruta em treino 📋', msg:'Ainda a aprender os elementos do e-mail. Revê a ficha e tenta de novo!', mood:'sad'}
       ]
+    },
+    mixed: {
+      label: '🏁 Desafio Final', icon: '🏁', storageKey: 'vb_best2_mixed',
+      certTitle: 'CERTIFICADO DO DESAFIO FINAL',
+      ranks: [
+        {min:0.9, rank:'Detetive Lendário VanBerto\'s 🏆', msg:'Dominas os três tipos de pergunta, sem hesitar!', mood:'happy'},
+        {min:0.7, rank:'Detetive Versátil 🏁', msg:'Muito bom em todas as frentes! Só alguns pormenores por afinar.', mood:'happy'},
+        {min:0.5, rank:'Detetive em Formação 🔍', msg:'Bom começo — revê os três temas da ficha e tenta outra vez.', mood:'neutral'},
+        {min:0,   rank:'Recruta em treino 📋', msg:'Ainda a aprender a saltar entre temas. Revê a ficha e tenta de novo!', mood:'sad'}
+      ]
     }
   };
+
+  /* modos "principais" que contam para o emblema/certificado "Detetive Completo" — o Desafio Final
+     (que já mistura os três) fica de fora desta contagem para não exigir um 4º modo para o emblema */
+  var CORE_MODE_KEYS = ['detective', 'tone', 'elements'];
 
   /* melhor resultado guardado (em %) deste jogador neste modo — ou null */
   /* nível efetivamente jogado nesta ronda, consoante o modo (usado para exigir "Misturado"
      antes de contar para a missão / certificado combinado — ver finishGame) */
-  var MODE_LEVEL_SELECT_ID = { detective:'phish-level', tone:'tone-level', elements:'elements-level' };
+  var MODE_LEVEL_SELECT_ID = { detective:'phish-level', tone:'tone-level', elements:'elements-level', mixed:'mixed-level' };
   function currentPlayedLevel(mode){
     var id = MODE_LEVEL_SELECT_ID[mode];
     var el = id ? document.getElementById(id) : null;
@@ -1833,7 +1990,7 @@
      conta — é preciso ter passado pela mistura completa de dificuldades pelo menos uma vez. */
   function countMissionsDone(playerKey){
     var n = 0;
-    Object.keys(MODE_INFO).forEach(function(mode){
+    CORE_MODE_KEYS.forEach(function(mode){
       var e = readBest(mode, playerKey);
       if(e && typeof e.mistoPct === 'number' && e.mistoPct >= MISSION_MIN_PCT) n++;
     });
@@ -1852,22 +2009,21 @@
     var currentName = currentPlayerKey();
     var missionsBadge = document.getElementById('missions-done');
     var progressBox = document.getElementById('mission-progress');
-    var modeKeys = Object.keys(MODE_INFO);
     var doneCount = currentName ? countMissionsDone(currentName) : 0;
-    var everStarted = currentName && modeKeys.some(function(mode){
+    var everStarted = currentName && CORE_MODE_KEYS.some(function(mode){
       var e = readBest(mode, currentName);
       return e && e.pts > 0;
     });
     if(missionsBadge){
-      missionsBadge.style.display = (currentName && doneCount === modeKeys.length) ? 'block' : 'none';
+      missionsBadge.style.display = (currentName && doneCount === CORE_MODE_KEYS.length) ? 'block' : 'none';
     }
     if(progressBox){
-      if(currentName && everStarted && doneCount < modeKeys.length){
-        var missing = modeKeys.filter(function(mode){
+      if(currentName && everStarted && doneCount < CORE_MODE_KEYS.length){
+        var missing = CORE_MODE_KEYS.filter(function(mode){
           var e = readBest(mode, currentName);
           return !(e && typeof e.mistoPct === 'number' && e.mistoPct >= MISSION_MIN_PCT);
         }).map(function(mode){ return MODE_INFO[mode].label; });
-        progressBox.innerHTML = '🏅 <strong>' + doneCount + ' de ' + modeKeys.length + '</strong> missões em nível Misturado' +
+        progressBox.innerHTML = '🏅 <strong>' + doneCount + ' de ' + CORE_MODE_KEYS.length + '</strong> missões em nível Misturado' +
           (missing.length ? ' — falta: ' + missing.join(', ') : '');
         progressBox.style.display = 'block';
       } else {
@@ -1934,7 +2090,7 @@
     var nameEl = document.getElementById('player-name');
     var turmaEl = document.getElementById('player-turma');
     var who = (nameEl.value||'').trim() + (turmaEl.value ? ' — ' + turmaEl.value.trim() : '');
-    if(!confirm('Isto apaga só o registo de "' + who + '" (as tuas pontuações e recordes nos 3 modos) neste computador. Continuar?')) return;
+    if(!confirm('Isto apaga só o registo de "' + who + '" (as tuas pontuações e recordes em todos os modos) neste computador. Continuar?')) return;
     try{
       Object.keys(MODE_INFO).forEach(function(mode){
         var raw = localStorage.getItem(MODE_INFO[mode].storageKey);
@@ -1994,6 +2150,8 @@
       } else if(state.phase === 'elements'){
         snap.elementsOrder = state.elementsOrder; snap.elementsIndex = state.elementsIndex;
         snap.elementsScore = state.elementsScore; snap.elementsResults = state.elementsResults;
+      } else if(state.phase === 'mixed'){
+        snap.mixed = state.mixed;
       } else { return; }
       localStorage.setItem(SESSION_SAVE_KEY, JSON.stringify(snap));
     }catch(e){}
@@ -2011,6 +2169,8 @@
       progress = s.toneIndex + ' de ' + (s.toneOrder || []).length;
     } else if(s.phase === 'elements'){
       progress = s.elementsIndex + ' de ' + (s.elementsOrder || []).length;
+    } else if(s.phase === 'mixed'){
+      progress = 'Ronda ' + (((s.mixed || {}).index || 0) + 1) + ' de ' + ((s.mixed || {}).seq || []).length;
     }
     var who = s.hasName ? s.playerName : 'Detetive';
     return (s.practice ? '🔁 Treino — ' : '') + label + ' (' + who + ') — ' + progress;
@@ -2045,6 +2205,11 @@
       state.elementsScore = s.elementsScore || 0; state.elementsResults = s.elementsResults || [];
       showScreen('elements');
       renderElements();
+    } else if(s.phase === 'mixed'){
+      state.phase = 'mixed';
+      state.mixed = s.mixed || { seq:[], index:0, score:0, maxScore:0, results:[] };
+      if(!state.mixed.seq.length){ showScreen('intro'); return; } /* sessão antiga inválida — não há para onde voltar */
+      renderMixedRound();
     }
     setTimeout(focusPrimaryAnswer, 0);
   }
@@ -2098,6 +2263,13 @@
     startElementsPhase();
   });
 
+  document.getElementById('start-mixed-btn').addEventListener('click', function(){
+    capturePlayerName();
+    state.practice = false;
+    hideResumeBanner();
+    startMixedPhase();
+  });
+
   function solvedCount(){
     return state.results.filter(function(x){ return x; }).length;
   }
@@ -2143,6 +2315,12 @@
       }
       list.appendChild(item);
     });
+
+    if(state.phase === 'mixed'){
+      document.getElementById('round-label').textContent = '🏁 Ronda ' + (state.mixed.index + 1) + ' de ' + state.mixed.seq.length;
+      document.getElementById('score-label').textContent = state.mixed.score + ' pontos';
+      document.getElementById('progress-fill').style.width = Math.round((state.mixed.index / state.mixed.seq.length) * 100) + '%';
+    }
   }
 
   function openMail(pos){
@@ -2460,6 +2638,8 @@
         renderElements();
         saveSession();
       }
+    } else if(state.phase === 'mixed'){
+      handleMixedNext();
     }
     setTimeout(focusPrimaryAnswer, 0);
   });
@@ -2497,7 +2677,9 @@
   function renderTone(){
     paint('vb-tone','neutral');
     var t = TONE_ROUNDS[state.toneOrder[state.toneIndex]];
-    document.getElementById('tone-count').textContent = (state.toneIndex+1) + ' de ' + state.toneOrder.length;
+    document.getElementById('tone-count').textContent = state.phase === 'mixed'
+      ? ('🏁 Ronda ' + (state.mixed.index + 1) + ' de ' + state.mixed.seq.length)
+      : ((state.toneIndex+1) + ' de ' + state.toneOrder.length);
     document.getElementById('tone-to').textContent = t.toEmail || t.to || '';
     document.getElementById('tone-text').textContent = t.text;
   }
@@ -2585,7 +2767,9 @@
     paint('vb-elements','neutral');
     var idx = state.elementsOrder[state.elementsIndex];
     var item = KNOWLEDGE_ITEMS[idx];
-    document.getElementById('elements-count').textContent = (state.elementsIndex+1) + ' de ' + state.elementsOrder.length;
+    document.getElementById('elements-count').textContent = state.phase === 'mixed'
+      ? ('🏁 Ronda ' + (state.mixed.index + 1) + ' de ' + state.mixed.seq.length)
+      : ((state.elementsIndex+1) + ' de ' + state.elementsOrder.length);
 
     var qEl = document.getElementById('elements-question');
     var termEl = document.getElementById('elements-term');
@@ -2682,6 +2866,12 @@
         return !(res && res.correct);
       });
     }
+    if(state.phase === 'mixed'){
+      return state.mixed.seq.filter(function(it, pos){
+        var res = state.mixed.results[pos];
+        return !(res && res.pts >= res.maxPts);
+      });
+    }
     return state.elementsOrder.filter(function(idx, pos){
       var res = state.elementsResults[pos];
       return !(res && res.correct);
@@ -2691,11 +2881,24 @@
   document.getElementById('btn-practice').addEventListener('click', function(){
     var failedRaw = state.failed || [];
     if(!failedRaw.length) return;
+    sfxClick();
+    state.practice = true;
+    if(state.phase === 'mixed'){
+      /* dificuldade crescente também na repescagem, misturando os tipos tal como no jogo original */
+      var failedMixed = shuffle(failedRaw);
+      failedMixed.sort(function(a, b){
+        return (DIFFICULTY_RANK[mixedItemDifficulty(a)] || 0) - (DIFFICULTY_RANK[mixedItemDifficulty(b)] || 0);
+      });
+      var maxScore = 0;
+      failedMixed.forEach(function(it){ maxScore += mixedMaxPts(it); });
+      state.mixed = { seq:failedMixed, index:0, score:0, maxScore:maxScore, results:failedMixed.map(function(){ return null; }) };
+      renderMixedRound();
+      saveSession();
+      return;
+    }
     /* dificuldade crescente também na repescagem, com o banco certo para cada modo */
     var source = state.phase === 'detective' ? ALL_ROUNDS : state.phase === 'tone' ? TONE_ROUNDS : KNOWLEDGE_ITEMS;
     var failed = orderByDifficulty(failedRaw, source);
-    sfxClick();
-    state.practice = true;
     if(state.phase === 'detective'){
       state.score = 0;
       state.order = failed;
@@ -2769,6 +2972,22 @@
      guardados a par do recorde, para o resumo geral no menu inicial poder juntar os 3 modos */
   function buildReviewItems(){
     var failedList = state.failed || [];
+    if(state.phase === 'mixed'){
+      return failedList.slice(0,3).map(function(it){
+        if(it.type === 'detective'){
+          var r = ALL_ROUNDS[it.gi];
+          return { label: '🕵️ ' + r.sender, tip: 'Revê as pistas deste e-mail na ficha.', difficulty: r.difficulty };
+        }
+        if(it.type === 'tone'){
+          var t = TONE_ROUNDS[it.ti];
+          return { label: '💬 Tom certo: ' + (t.to || 'mensagem'), tip: t.explain, difficulty: t.difficulty };
+        }
+        var item = KNOWLEDGE_ITEMS[it.idx];
+        if(item.type === 'netiqueta'){ var rule = NETIQUETA_RULES[item.ruleIdx]; return { label: '📧 ' + rule.short, tip: rule.full, difficulty: item.difficulty }; }
+        if(item.type === 'address'){ return { label: '📧 ' + item.address, tip: item.reason, difficulty: item.difficulty }; }
+        return { label: '📧 ' + item.term, tip: item.def, difficulty: item.difficulty };
+      });
+    }
     if(state.phase === 'detective'){
       var stats = {};
       state.order.forEach(function(gi, pos){
@@ -2815,9 +3034,12 @@
     } else if(state.phase === 'tone'){
       totalScore = state.toneScore;
       totalMax = state.toneOrder.length * 2;
-    } else {
+    } else if(state.phase === 'elements'){
       totalScore = state.elementsScore;
       totalMax = state.elementsOrder.length * 2;
+    } else {
+      totalScore = state.mixed.score;
+      totalMax = state.mixed.maxScore;
     }
     var pct = totalMax > 0 ? totalScore / totalMax : 0;
     var tier = info.ranks[info.ranks.length - 1];
@@ -2875,7 +3097,7 @@
         var map = raw ? JSON.parse(raw) : {};
         if(!map || typeof map !== 'object'){ map = {}; }
         var key = makeKey(state.playerName, state.turma);
-        var totalModes = Object.keys(MODE_INFO).length;
+        var totalModes = CORE_MODE_KEYS.length;
         var doneBefore = countMissionsDone(key);
         var pctRounded = Math.round(pct * 100);
         var best = readBest(state.phase, key);
@@ -2916,7 +3138,7 @@
     var key = currentPlayerKey();
     if(!key) return;
 
-    var modeKeys = Object.keys(MODE_INFO);
+    var modeKeys = CORE_MODE_KEYS;
     var pcts = [];
     var scoreParts = modeKeys.map(function(mode){
       var e = readBest(mode, key);
@@ -3052,6 +3274,49 @@
           '<span class="mk">' + (ok?'✔':'✖') + '</span>' +
           '<div><strong>' + esc(label) + '</strong>' + levelBadgeHtml(item.difficulty) + (!ok ? '<div class="answer-correct">' + esc(correctAnswer) + '</div>' : '') + '</div></div>';
       });
+    } else if(state.phase === 'mixed'){
+      html += '<h4>🏁 Desafio Final</h4>';
+      state.mixed.seq.forEach(function(it, pos){
+        var res = state.mixed.results[pos];
+        var ok = !!(res && res.pts >= res.maxPts);
+        if(it.type === 'detective'){
+          var r = ALL_ROUNDS[it.gi];
+          var dres = res && res.res;
+          var yourAction = dres ? (dres.action === 'eliminar' ? 'Eliminaste' : 'Confiaste') : '—';
+          var subjLabel = r.subjectEmpty ? '(sem assunto)' : r.subject;
+          html += '<div class="review-row ' + (ok?'ok':'bad') + '">' +
+            '<span class="mk">' + (ok?'✔':'✖') + '</span>' +
+            '<div><div>🕵️ <strong>' + esc(subjLabel) + '</strong> — ' + esc(r.sender) + levelBadgeHtml(r.difficulty) + '</div>' +
+            (!ok ? '<div class="answer-correct">' + yourAction + '. A resposta certa era: ' + (r.correctAction==='eliminar'?'Eliminar / Reportar':'Confiar') + '.</div>' : '') +
+            '</div></div>';
+        } else if(it.type === 'tone'){
+          var t = TONE_ROUNDS[it.ti];
+          var snippet = t.text.replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim();
+          if(snippet.length > 60){ snippet = snippet.slice(0, 60).trim(); }
+          html += '<div class="review-row ' + (ok?'ok':'bad') + '">' +
+            '<span class="mk">' + (ok?'✔':'✖') + '</span>' +
+            '<div><div>💬 ' + esc(snippet) + '…' + levelBadgeHtml(t.difficulty) + '</div>' +
+            (!ok ? '<div class="answer-correct">Era um e-mail ' + (t.correct==='formal'?'formal':'informal') + '.</div>' : '') +
+            '</div></div>';
+        } else {
+          var item2 = KNOWLEDGE_ITEMS[it.idx];
+          var label2, correctAnswer2;
+          if(item2.type === 'netiqueta'){
+            var rule2 = NETIQUETA_RULES[item2.ruleIdx];
+            label2 = item2.text.split('\n')[0];
+            correctAnswer2 = rule2.short + ' — ' + rule2.full;
+          } else if(item2.type === 'address'){
+            label2 = item2.address;
+            correctAnswer2 = (item2.valid ? 'É válido' : 'Não é válido') + ' — ' + item2.reason;
+          } else {
+            label2 = item2.term;
+            correctAnswer2 = item2.def;
+          }
+          html += '<div class="review-row ' + (ok?'ok':'bad') + '">' +
+            '<span class="mk">' + (ok?'✔':'✖') + '</span>' +
+            '<div>📧 <strong>' + esc(label2) + '</strong>' + levelBadgeHtml(item2.difficulty) + (!ok ? '<div class="answer-correct">' + esc(correctAnswer2) + '</div>' : '') + '</div></div>';
+        }
+      });
     }
 
     document.getElementById('review-panel').innerHTML = html;
@@ -3076,7 +3341,8 @@
     var totalScore, totalMax;
     if(state.phase === 'detective'){ totalScore = state.score; totalMax = state.maxScore; }
     else if(state.phase === 'tone'){ totalScore = state.toneScore; totalMax = state.toneOrder.length*2; }
-    else { totalScore = state.elementsScore; totalMax = state.elementsOrder.length*2; }
+    else if(state.phase === 'elements'){ totalScore = state.elementsScore; totalMax = state.elementsOrder.length*2; }
+    else { totalScore = state.mixed.score; totalMax = state.mixed.maxScore; }
     var rank = document.getElementById('end-rank').textContent;
     var modeLabel = MODE_INFO[state.phase].label;
     var summary = state.playerName + ' — ' + modeLabel + ' — ' + rank + ' — ' + totalScore + '/' + totalMax + ' pontos (' + new Date().toLocaleDateString('pt-PT') + ')';
