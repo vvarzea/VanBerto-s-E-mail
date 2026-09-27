@@ -1900,16 +1900,17 @@
     Object.keys(MODE_INFO).forEach(function(mode){
       var e = readBest(mode, key);
       if(e && e.review && e.review.length){
-        e.review.forEach(function(it){ items.push({ icon: MODE_INFO[mode].icon, label: it.label, tip: it.tip }); });
+        e.review.forEach(function(it){ items.push({ icon: MODE_INFO[mode].icon, label: it.label, tip: it.tip, difficulty: it.difficulty }); });
       }
     });
     if(!items.length){ box.style.display = 'none'; return; }
     list.innerHTML = '';
     items.slice(0, 6).forEach(function(it){
       var li = document.createElement('li');
-      li.innerHTML = '<strong></strong> — <span></span>';
+      li.innerHTML = '<strong></strong> — <span class="tip"></span>';
       li.querySelector('strong').textContent = it.icon + ' ' + it.label;
-      li.querySelector('span').textContent = it.tip;
+      li.querySelector('strong').insertAdjacentHTML('beforeend', levelBadgeHtml(it.difficulty));
+      li.querySelector('span.tip').textContent = it.tip;
       list.appendChild(li);
     });
     box.style.display = 'block';
@@ -2790,14 +2791,14 @@
     if(state.phase === 'tone'){
       return failedList.slice(0,3).map(function(ti){
         var t = TONE_ROUNDS[ti];
-        return { label: 'Tom certo: ' + (t.to || 'mensagem'), tip: t.explain };
+        return { label: 'Tom certo: ' + (t.to || 'mensagem'), tip: t.explain, difficulty: t.difficulty };
       });
     }
     return failedList.slice(0,3).map(function(idx){
       var item = KNOWLEDGE_ITEMS[idx];
-      if(item.type === 'netiqueta'){ var rule = NETIQUETA_RULES[item.ruleIdx]; return { label: rule.short, tip: rule.full }; }
-      if(item.type === 'address'){ return { label: item.address, tip: item.reason }; }
-      return { label: item.term, tip: item.def };
+      if(item.type === 'netiqueta'){ var rule = NETIQUETA_RULES[item.ruleIdx]; return { label: rule.short, tip: rule.full, difficulty: item.difficulty }; }
+      if(item.type === 'address'){ return { label: item.address, tip: item.reason, difficulty: item.difficulty }; }
+      return { label: item.term, tip: item.def, difficulty: item.difficulty };
     });
   }
 
@@ -2837,7 +2838,7 @@
     document.getElementById('cert-name').textContent = state.turma ? (state.playerName + ' — ' + state.turma) : state.playerName;
     document.getElementById('cert-title').textContent = tier.rank;
     document.getElementById('cert-score').textContent = totalScore + ' de ' + totalMax + ' pontos (' + Math.round(pct*100) + '%)';
-    document.getElementById('cert-sub').textContent = info.label;
+    document.getElementById('cert-sub').textContent = info.label + (state.practice ? '' : ' — Nível: ' + (LEVEL_LABELS[currentPlayedLevel(state.phase)] || 'Misturado'));
     document.getElementById('cert-date').textContent = new Date().toLocaleDateString('pt-PT');
     document.getElementById('certificate').style.display = 'none';
     document.getElementById('review-panel').style.display = 'none';
@@ -2937,7 +2938,7 @@
     document.getElementById('cert-name').textContent = state.turma ? (state.playerName + ' — ' + state.turma) : state.playerName;
     document.getElementById('cert-title').textContent = rank;
     document.getElementById('cert-score').textContent = scoreParts.join('   ·   ');
-    document.getElementById('cert-sub').textContent = 'Três missões cumpridas — média de ' + avgPct + '%';
+    document.getElementById('cert-sub').textContent = 'Três missões cumpridas em nível Misturado — média de ' + avgPct + '%';
     document.getElementById('cert-date').textContent = new Date().toLocaleDateString('pt-PT');
     document.getElementById('certificate').style.display = 'block';
     sfxClick();
