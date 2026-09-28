@@ -1340,7 +1340,7 @@
   var CLUE_DEFS = [
     {key:'sender',       label:'Remetente estranho',      hint:'Sinal de phishing — remetente desconhecido ou estranho', tip:'Confere o endereço completo do remetente, não só o nome que aparece. Se não conheces a pessoa ou o domínio, desconfia.'},
     {key:'subjectEmpty', label:'Assunto vazio',           hint:'Sinal de phishing — mensagem enviada sem assunto', tip:'Um e-mail sem assunto é pouco habitual em contactos sérios. Se não estavas à espera dele, desconfia.'},
-    {key:'subjectAlarm', label:'Assunto alarmante',       hint:'Sinal de phishing — assunto feito para alarmar, pressionar ou atrair com uma oferta boa demais para ser verdade', tip:'Assuntos que assustam, apressam ou prometem prémios querem que ajas sem pensar. Pára e respira antes de abrir.'},
+    {key:'subjectAlarm', label:'Assunto alarmante',       hint:'Sinal de phishing — assunto feito para alarmar, pressionar ou atrair com uma oferta boa demais para ser verdade', tip:'Assuntos que assustam, apressam ou prometem prémios querem que ajas sem pensar. Faz uma pausa e respira antes de abrir.'},
     {key:'caps',         label:'Texto em maiúsculas',     hint:'Regra de netiqueta — evita escrever tudo em maiúsculas', tip:'Escrever tudo em maiúsculas é uma forma de criar pressão. Entidades sérias não escrevem assim.'},
     {key:'brand',        label:'Imita uma marca ou entidade', hint:'Sinal de phishing — domínio ou remetente construído para imitar uma marca ou entidade conhecida (a escola, um banco, uma rede social…)', tip:'Vê se o endereço é mesmo da entidade (escola, banco, rede social). Nomes quase iguais, com letras trocadas, são imitações.'},
     {key:'link',         label:'Link suspeito',           hint:'Sinal de phishing — link inesperado ou estranho', tip:'Não cliques logo: passa o rato por cima (ou mantém o dedo premido) para ver o endereço verdadeiro. Se for estranho, não abras.'},
@@ -1650,7 +1650,7 @@
       link:'duolingo.com', icon:'🦉',
       trueClues:[], correctAction:'confiar', difficulty:'dificil',
       note:'Vem de fora da escola e tem um link, mas o domínio é exatamente duolingo.com, não pede dados nem cria ameaças. Um lembrete simpático de uma aplicação que usas não é phishing.' },
-    { sender:'no-reply@accounts.google.com', subject:'Alerta de segurança: novo início de sessão',
+    { sender:'no-reply@accounts.google.com', subject:'Sessão iniciada num novo dispositivo',
       body:'Foi iniciada sessão na tua conta num novo dispositivo. Se foste tu, não precisas de fazer nada. Se não reconheces, abre a aplicação Google no telemóvel e vai a Segurança, sem usares links de e-mails.',
       icon:'🔐',
       trueClues:[], correctAction:'confiar', difficulty:'dificil',
