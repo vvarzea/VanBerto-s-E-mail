@@ -136,6 +136,11 @@
     padding:22px 18px; flex:1 1 210px; max-width:230px;
     display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;
   }
+  /* ecrãs largos: os 4 modos lado a lado, numa só linha (em ecrãs mais estreitos mantém-se a grelha que quebra linha) */
+  @media (min-width: 1080px){
+    .mode-grid{ width:1000px; max-width:none; flex-wrap:nowrap; margin-left:50%; transform:translateX(-50%); }
+    .mode-card{ flex:1 1 0; max-width:none; min-width:0; }
+  }
   .mode-icon{ font-size:34px; line-height:1; }
   .mode-card h3{ font-size:16px; margin:2px 0 0; }
   .mode-card p{ font-size:13px; color:var(--ink-dim); line-height:1.5; margin:0; flex:1; }
