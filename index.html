@@ -680,6 +680,7 @@
             <select id="tone-level">
               <option value="misto" selected>Misturado (fácil → difícil)</option>
               <option value="facil">Só fácil</option>
+              <option value="media">Só médio</option>
               <option value="dificil">Só difícil</option>
             </select>
             <span class="level-count" id="tone-level-count"></span>
@@ -731,6 +732,7 @@
             <select id="mixed-level">
               <option value="misto" selected>Misturado (fácil → difícil)</option>
               <option value="facil">Só fácil</option>
+              <option value="media">Só médio</option>
               <option value="dificil">Só difícil</option>
             </select>
           </div>
@@ -1674,7 +1676,7 @@
       correct:'formal', difficulty:'facil', explain:'Forma de tratamento cerimoniosa e pedido formal a uma coordenadora — é claramente um e-mail formal.' },
     { to:'Professora', toEmail:'duarte.neves12@mail.pt', text:'Bom dia, Professora,\n\nInformo que entregarei o trabalho de grupo com um dia de atraso, devido a um problema técnico no computador.\n\nCom os melhores cumprimentos,\nDiogo Farias, 9ºC, nº11',
       correct:'formal', difficulty:'facil', explain:'A justificação, a linguagem cuidada e a assinatura completa deixam claro que é formal.' },
-    { to:'Um amigo', toEmail:'zélia.machado@mail.pt', text:'Ei!\n\nViste os resultados do jogo de ontem?? Foi incrível! Fala comigo mais logo 😅\n\nAbraço,\nMiguel',
+    { to:'Um amigo', toEmail:'zelia.machado@mail.pt', text:'Ei!\n\nViste os resultados do jogo de ontem?? Foi incrível! Fala comigo mais logo 😅\n\nAbraço,\nMiguel',
       correct:'informal', difficulty:'facil', explain:'Tom descontraído entre amigos e o emoji entregam logo o registo informal.' },
     { to:'Colega de turma', toEmail:'carla.baptista@outlook.pt', text:'Oii,\n\nEsqueci-me da mochila na sala. Podes verificar se ainda lá está? Obrigada desde já 🙏\n\nBjs,\nAna',
       correct:'informal', difficulty:'facil', explain:'O tratamento descontraído ("Oii") e o tom próximo colocam-no no registo informal.' },
@@ -1682,7 +1684,7 @@
       correct:'informal', difficulty:'facil', explain:'A linguagem coloquial ("Bora") e o emoji não enganam: é informal.' },
     { to:'Professora de Ciências', toEmail:'paulo.xavier@outlook.pt', text:'Bom dia,\n\nVenho por este meio pedir desculpa pelo atraso na entrega do trabalho de Ciências, devido a um problema de saúde.\n\nCom os melhores cumprimentos,\nInês Ramos, 7ºA, nº18',
       correct:'formal', difficulty:'facil', explain:'Pedido de desculpa em linguagem cuidada, com assinatura completa com turma e número — formal como manda a ocasião.' },
-    { to:'Colega de turma', toEmail:'marta.gonçalves87@mail.pt', text:'Eii,\n\nJá viste o grupo da turma? Marcaram o trabalho para 6ª feira 😳 Vamos combinar?\n\nFala comigo,\nSara',
+    { to:'Colega de turma', toEmail:'marta.goncalves87@mail.pt', text:'Eii,\n\nJá viste o grupo da turma? Marcaram o trabalho para 6ª feira 😳 Vamos combinar?\n\nFala comigo,\nSara',
       correct:'informal', difficulty:'facil', explain:'O tratamento descontraído ("Eii") e o emoji entre colegas apontam para o informal.' },
     { to:'Presidente da Associação de Estudantes', toEmail:'leandro.amaral@live.com.pt', text:'Exmo. Senhor Presidente da Associação de Estudantes,\n\nSolicito autorização para afixar um cartaz sobre a angariação de fundos para a viagem de finalistas.\n\nCom os melhores cumprimentos,\nO Delegado de Turma',
       correct:'formal', difficulty:'facil', explain:'A forma de tratamento cerimoniosa e o pedido a um cargo da escola pedem sempre o registo formal.' },
@@ -1690,7 +1692,7 @@
       correct:'informal', difficulty:'facil', explain:'Tom direto e próximo entre colegas, com emoji: um informal típico.' },
     { to:'Professora de Inglês', toEmail:'paulo.neves@mail.pt', text:'Boa tarde, Professora,\n\nVenho por este meio solicitar o reagendamento do teste de Inglês, por coincidir com uma consulta médica.\n\nCom os melhores cumprimentos,\nMarco Andrade, 8ºB, nº21',
       correct:'formal', difficulty:'facil', explain:'Pedido justificado, linguagem cuidada e assinatura completa dão-lhe o carimbo do formal.' },
-    { to:'Irmã', toEmail:'luís.duarte@gmail.com', text:'Oi maninha,\n\nEsqueci-me da chave de casa, deixa a porta aberta pfff 😅\n\nBjs,\nCatarina',
+    { to:'Irmã', toEmail:'luis.duarte@gmail.com', text:'Oi maninha,\n\nEsqueci-me da chave de casa, deixa a porta aberta pfff 😅\n\nBjs,\nCatarina',
       correct:'informal', difficulty:'facil', explain:'O tratamento familiar ("maninha") e a abreviatura ("pfff") são a marca do informal.' },
     { to:'Diretora da escola', toEmail:'helena.lopes53@gmail.com', text:'Exma. Senhora Diretora,\n\nVenho por este meio informar que a turma do 9ºC gostaria de propor uma visita de estudo ao Observatório Astronómico.\n\nCom os melhores cumprimentos,\nA Delegada de Turma',
       correct:'formal', difficulty:'facil', explain:'A forma de tratamento cerimoniosa e a proposta à direção da escola tornam este e-mail formal.' },
@@ -1712,7 +1714,7 @@
       correct:'formal', difficulty:'dificil', explain:'Não tem fórmulas cerimoniosas, mas a saudação, o tratamento por \"Professora\" e a despedida cuidada mostram respeito — o destinatário é uma professora, por isso o tom é formal.' },
     { to:'Colega de turma', toEmail:'ivo.soares@mail.pt', text:'Olá Tiago,\n\nConsegues enviar-me o link do documento partilhado? Não o encontro.\n\nObrigada,\nMarta',
       correct:'informal', difficulty:'dificil', explain:'Sem emoji nem abreviaturas, mas o tratamento pelo primeiro nome e o tom próximo entre colegas fazem dele um e-mail informal.' },
-    { to:'Professor de História', toEmail:'kátia.soares36@gmail.com', text:'Bom dia, Professor,\n\nPodia dizer-me a que horas começa o teste de amanhã?\n\nObrigado,\nBruno, 8ºC',
+    { to:'Professor de História', toEmail:'katia.soares36@gmail.com', text:'Bom dia, Professor,\n\nPodia dizer-me a que horas começa o teste de amanhã?\n\nObrigado,\nBruno, 8ºC',
       correct:'formal', difficulty:'dificil', explain:'Mesmo curto e direto, o pedido é cortês e usa o tratamento certo para um professor — continua a ser formal.' },
     { to:'Mãe', toEmail:'joana.oliveira22@gmail.com', text:'Boa noite, mãe!\n\nVou chegar um bocadinho mais tarde, fico a estudar em casa da Rita.\n\nBeijinhos,\nSofia',
       correct:'informal', difficulty:'dificil', explain:'Mesmo com \"Boa noite\", o tom é familiar e afetuoso (\"mãe\", \"Beijinhos\") — continua a ser informal. O que decide o tom é sempre quem recebe.' },
@@ -1741,7 +1743,27 @@
     { to:'Colegas do grupo de Ciências', toEmail:'grupo.ciencias@mail.pt', text:'Olá a todos,\n\nDividi as partes do trabalho de Ciências. Vejam se está tudo bem e digam-me até quinta-feira.\n\nObrigado,\nRúben',
       correct:'informal', difficulty:'dificil', explain:'Organiza trabalho, mas os destinatários são colegas: o tratamento por "vocês" e o tom descontraído são informais.' },
     { to:'Equipa de futebol', toEmail:'equipa.sub15@mail.pt', text:'Boa noite a todos,\n\nO treino de amanhã foi adiado para as 18h por causa da chuva. Confirmem que conseguem vir.\n\nObrigado,\nGonçalo',
-      correct:'informal', difficulty:'dificil', explain:'É um aviso claro e bem escrito, mas dirigido a colegas de equipa, com tratamento por "vocês" — informal.' }
+      correct:'informal', difficulty:'dificil', explain:'É um aviso claro e bem escrito, mas dirigido a colegas de equipa, com tratamento por "vocês" — informal.' },
+    { to:'Professor de Geografia', toEmail:'pedro.leal@mail.pt', text:'Boa tarde, Professor,\n\nPodia esclarecer-me uma dúvida sobre o trabalho de Geografia? Não percebi bem quantos mapas devemos incluir.\n\nMuito obrigado,\nJoão, 8ºA',
+      correct:'formal', difficulty:'media', explain:'Não tem «Venho por este meio», mas o tratamento por «Professor», o pedido educado e a assinatura com turma pedem o tom formal.' },
+    { to:'Colega de turma', toEmail:'marta.silva31@gmail.com', text:'Olá, Marta!\n\nEsqueci-me de trazer a calculadora. Emprestas-me a tua na aula de amanhã? Devolvo-ta logo a seguir.\n\nObrigada,\nBeatriz',
+      correct:'informal', difficulty:'media', explain:'É escrito com cuidado, mas o tratamento por «tu» ("Emprestas-me") e o nome próprio mostram que é entre colegas: informal.' },
+    { to:'Biblioteca da escola', toEmail:'biblioteca@escola-exemplo.pt', text:'Bom dia,\n\nGostava de saber se o livro «Os Lusíadas» já está disponível para requisição. Se estiver, posso ir buscá-lo amanhã.\n\nObrigada,\nCláudia, 9ºB',
+      correct:'formal', difficulty:'media', explain:'Pedido a um serviço da escola, com saudação, agradecimento e assinatura com turma — formal, apesar de simples.' },
+    { to:'Tia', toEmail:'paula.mendes@sapo.pt', text:'Olá, tia Paula!\n\nObrigado pelo convite para o almoço de domingo. Vou com certeza! Posso levar a sobremesa?\n\nBeijinhos,\nPedro',
+      correct:'informal', difficulty:'media', explain:'Escreve-se a uma tia, com «Beijinhos» e tom caloroso. Mesmo sem gíria nem emojis, é informal.' },
+    { to:'Encarregada de Educação', toEmail:'ana.rocha58@gmail.com', text:'Boa tarde,\n\nGostava de agendar uma reunião para falarmos sobre o percurso escolar do seu educando. Terá disponibilidade esta semana?\n\nCumprimentos,\nO Diretor de Turma',
+      correct:'formal', difficulty:'media', explain:'Vem da escola e trata a encarregada de educação por «seu educando» e «Terá»: formal, mesmo sendo uma mensagem curta.' },
+    { to:'Grupo de amigos', toEmail:'grupo.cinema@mail.pt', text:'Boa tarde, pessoal!\n\nO cinema fica marcado para sexta às 21h. Quem já comprou bilhete? Digam-me para eu reservar lugares juntos.\n\nAbraço,\nRui',
+      correct:'informal', difficulty:'media', explain:'«Pessoal», o tratamento por «vocês» e «Abraço» dão o tom de amigos, apesar do «Boa tarde» — informal.' },
+    { to:'Clube de Fotografia', toEmail:'clube.fotografia@mail.pt', text:'Olá,\n\nGostava de me inscrever no Clube de Fotografia. Podem dizer-me quando é a primeira sessão?\n\nObrigado,\nLuís Carvalho, 7ºC',
+      correct:'formal', difficulty:'media', explain:'O «Olá» é simpático, mas o pedido é dirigido a um clube da escola, com nome completo e turma — formal.' },
+    { to:'Colega de grupo', toEmail:'sofia.reis22@outlook.pt', text:'Oi, Sofia,\n\nJá acabei a minha parte da apresentação. Vê se falta alguma coisa e diz-me até logo.\n\nAté já,\nDiogo',
+      correct:'informal', difficulty:'media', explain:'Tratamento por «tu», «Oi» e despedida curta entre colegas de grupo: informal.' },
+    { to:'Professora de Português', toEmail:'isabel.cunha@mail.pt', text:'Olá, Professora!\n\nQueria agradecer a sua ajuda com o resumo do livro. Ajudou-me a perceber melhor a história.\n\nMuito obrigada,\nCatarina, 8ºC',
+      correct:'formal', difficulty:'media', explain:'Mesmo com o «Olá», o tratamento por «Professora» e por «a sua ajuda» mostra respeito: quem recebe é uma professora — formal.' },
+    { to:'Irmão', toEmail:'miguel.pinto14@gmail.com', text:'Boa noite, Miguel,\n\nJá jantaste? Deixei-te um prato no micro-ondas, é só aquecer.\n\nBeijinhos,\nSara',
+      correct:'informal', difficulty:'media', explain:'Tem «Boa noite», mas a pergunta direta e o «Beijinhos» a um irmão são de família: informal.' }
   ];
 
   
@@ -1910,8 +1932,7 @@
   }
 
   /* ---------------- seleção para o Desafio Final (modo 4: mistura os 3 tipos) ----------------
-     Tem o seu próprio seletor de nível (#mixed-level); só "Misturado" e "Só fácil" / "Só difícil"
-     — sem "Só médio", porque o banco de "Formal ou Informal" não tem itens de nível médio */
+     Tem o seu próprio seletor de nível (#mixed-level); todos os níveis, incluindo "Só médio" (o banco de "Formal ou Informal" já tem mensagens de nível médio) */
   /* memória (por dispositivo) das perguntas já sorteadas no Desafio Final, para sessões seguidas
      darem prioridade às que ainda não saíram; cada lista guarda só as mais recentes (60% do banco) */
   var MIXED_SEEN_KEY = 'vb_mixed_seen_v1';
