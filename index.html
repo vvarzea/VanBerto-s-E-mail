@@ -396,6 +396,32 @@
   .clue-report .row.note .mk{ color: var(--warn); font-weight:400; }
   .clue-report .row.note .lbl-wrap{ font-size:13px; line-height:1.55; color: var(--ink-dim); }
 
+  /* ---------- transição entre tipos de pergunta (Desafio Final) ---------- */
+  .mixed-transition{
+    position:fixed; inset:0; background: rgba(6,4,16,.86);
+    display:none; align-items:center; justify-content:center; padding:18px;
+    z-index: 60; opacity:0; transition: opacity .18s ease;
+  }
+  .mixed-transition.show{ opacity:1; }
+  .mixed-transition-inner{
+    background: var(--panel); border:1px solid var(--line); border-radius: var(--radius);
+    padding: 28px 34px; text-align:center; box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  }
+  .mixed-transition-icon{ font-size:44px; line-height:1; margin-bottom:10px; }
+  .mixed-transition-label{ font-family: var(--font-display); font-size:20px; color: var(--ink); }
+
+  /* ---------- resumo por categoria no fim do Desafio Final ---------- */
+  .mixed-breakdown{
+    display:none; gap:10px; justify-content:center; flex-wrap:wrap; margin: 14px 0 0;
+  }
+  .mixed-breakdown-item{
+    display:flex; align-items:center; gap:7px; background: var(--panel-2); border:1px solid var(--line);
+    border-radius: 999px; padding:7px 14px; font-size:13.5px;
+  }
+  .mixed-breakdown-item .mb-icon{ font-size:16px; }
+  .mixed-breakdown-item .mb-label{ color: var(--ink-dim); }
+  .mixed-breakdown-item .mb-score{ font-weight:800; color: var(--ink); }
+
   /* ---------- end screen ---------- */
   .end-card{
     background: var(--panel); border:1px solid var(--line); border-radius: var(--radius);
@@ -689,7 +715,15 @@
         <div class="mode-card">
           <div class="mode-icon">🏁</div>
           <h3>Desafio Final</h3>
-          <p>12 rondas que saltam entre os 3 tipos de pergunta, sem avisar qual vem a seguir.</p>
+          <p>Rondas que saltam entre os 3 tipos de pergunta, sem avisar qual vem a seguir.</p>
+          <div class="mode-setup">
+            <label for="mixed-count-select">🏁 Rondas:</label>
+            <select id="mixed-count-select">
+              <option value="3">9 (3 de cada tipo)</option>
+              <option value="4" selected>12 (4 de cada tipo)</option>
+              <option value="5">15 (5 de cada tipo)</option>
+            </select>
+          </div>
           <div class="mode-setup">
             <label for="mixed-level">🎚️ Nível:</label>
             <select id="mixed-level">
@@ -793,6 +827,11 @@
       <div class="rank" id="end-rank">Detetive</div>
       <div class="score-big"><span id="end-score">0</span><span id="end-max">/38</span></div>
       <p id="end-msg" style="color:var(--ink-dim); max-width:420px; margin:0 auto;"></p>
+      <div class="mixed-breakdown" id="mixed-breakdown" style="display:none;">
+        <div class="mixed-breakdown-item"><span class="mb-icon">🕵️</span><span class="mb-label">Phishing</span><span class="mb-score" id="mb-detective">0/0</span></div>
+        <div class="mixed-breakdown-item"><span class="mb-icon">💬</span><span class="mb-label">Tom</span><span class="mb-score" id="mb-tone">0/0</span></div>
+        <div class="mixed-breakdown-item"><span class="mb-icon">📧</span><span class="mb-label">Elementos</span><span class="mb-score" id="mb-elements">0/0</span></div>
+      </div>
       <div class="end-clues" id="end-clues" style="display:none;">
         <h4>🔎 As pistas que mais te escaparam</h4>
         <div id="end-clues-list"></div>
@@ -1016,6 +1055,14 @@
     <div class="points" id="fb-points">—</div>
     <div class="clue-report" id="fb-report"></div>
     <div class="fb-actions"><button class="btn" id="btn-next">Continuar →</button></div>
+  </div>
+</div>
+
+<!-- transição entre tipos de pergunta (só usada no Desafio Final) -->
+<div class="mixed-transition" id="mixed-transition" aria-hidden="true">
+  <div class="mixed-transition-inner">
+    <div class="mixed-transition-icon" id="mixed-transition-icon">🏁</div>
+    <div class="mixed-transition-label" id="mixed-transition-label">A seguir</div>
   </div>
 </div>
 
@@ -1772,7 +1819,7 @@
   /* ---------------- seleção para o Desafio Final (modo 4: mistura os 3 tipos) ----------------
      Tem o seu próprio seletor de nível (#mixed-level); só "Misturado" e "Só fácil" / "Só difícil"
      — sem "Só médio", porque o banco de "Formal ou Informal" não tem itens de nível médio */
-  var MIXED_PER_TYPE = 4; /* 4 de cada tipo = 12 rondas no total */
+  var MIXED_PER_TYPE = 4; /* valor por omissão: 4 de cada tipo = 12 rondas (o aluno escolhe 3, 4 ou 5 em #mixed-count-select) */
 
   function pickMixedDetectivePicks(total, level){
     var phishIdx = [], safeIdx = [];
@@ -1836,14 +1883,19 @@
     state.phase = 'mixed';
     var levelEl = document.getElementById('mixed-level');
     var level = levelEl ? levelEl.value : 'misto';
-    var d = pickMixedDetectivePicks(MIXED_PER_TYPE, level);
-    var t = pickMixedTonePicks(MIXED_PER_TYPE, level);
-    var e = pickMixedElementsPicks(MIXED_PER_TYPE, level);
+    var countEl = document.getElementById('mixed-count-select');
+    var perType = countEl ? parseInt(countEl.value, 10) : MIXED_PER_TYPE;
+    if(!(perType >= 3 && perType <= 5)) perType = MIXED_PER_TYPE;
+    var d = pickMixedDetectivePicks(perType, level);
+    var t = pickMixedTonePicks(perType, level);
+    var e = pickMixedElementsPicks(perType, level);
     var seq = [];
-    for(var i = 0; i < MIXED_PER_TYPE; i++){
-      seq.push({ type:'detective', gi:d[i] });
-      seq.push({ type:'tone', ti:t[i] });
-      seq.push({ type:'elements', idx:e[i] });
+    /* em "Só difícil" alguns bancos têm menos itens do que o pedido (ex.: só há 4 mensagens difíceis
+       de tom), por isso só entra o que existir — a sessão pode ficar com menos rondas do que o escolhido */
+    for(var i = 0; i < perType; i++){
+      if(d[i] !== undefined) seq.push({ type:'detective', gi:d[i] });
+      if(t[i] !== undefined) seq.push({ type:'tone', ti:t[i] });
+      if(e[i] !== undefined) seq.push({ type:'elements', idx:e[i] });
     }
     var maxScore = 0;
     seq.forEach(function(it){ maxScore += mixedMaxPts(it); });
@@ -1855,25 +1907,51 @@
 
   /* mostra a ronda atual do Desafio Final, delegando no ecrã/render/evaluate já existentes de
      cada tipo — cada ronda usa uma "janela" de um único item nas variáveis desse tipo */
+  var MIXED_TYPE_INFO = {
+    detective: { icon:'🕵️', label:'E-mail suspeito' },
+    tone: { icon:'💬', label:'Tom da Mensagem' },
+    elements: { icon:'📧', label:'Elementos do E-mail' }
+  };
+  var MIXED_TRANSITION_MS = 900;
+
+  /* mostra por instantes "A seguir: ..." antes de trocar de ecrã, para o aluno perceber que o
+     tipo de pergunta vai mudar; cb() só corre depois da transição (chamar sempre antes de renderizar) */
+  function showMixedTransition(type, cb){
+    var box = document.getElementById('mixed-transition');
+    if(!box){ cb(); return; }
+    var info = MIXED_TYPE_INFO[type];
+    document.getElementById('mixed-transition-icon').textContent = info.icon;
+    document.getElementById('mixed-transition-label').textContent = 'A seguir: ' + info.label;
+    box.style.display = 'flex';
+    box.classList.add('show');
+    setTimeout(function(){
+      box.classList.remove('show');
+      setTimeout(function(){ box.style.display = 'none'; }, 180);
+      cb();
+    }, MIXED_TRANSITION_MS);
+  }
+
   function renderMixedRound(){
     var m = state.mixed;
     var item = m.seq[m.index];
-    if(item.type === 'detective'){
-      state.order = [item.gi]; state.results = [null]; state.round = 0; state.score = 0;
-      state.totalClues = ALL_ROUNDS[item.gi].trueClues.length;
-      showScreen('game');
-      renderInbox();
-      openMail(0);
-    } else if(item.type === 'tone'){
-      state.toneOrder = [item.ti]; state.toneIndex = 0; state.toneScore = 0; state.toneResults = [];
-      showScreen('tone');
-      renderTone();
-    } else {
-      state.elementsOrder = [item.idx]; state.elementsIndex = 0; state.elementsScore = 0; state.elementsResults = [];
-      showScreen('elements');
-      renderElements();
-    }
-    setTimeout(focusPrimaryAnswer, 0);
+    showMixedTransition(item.type, function(){
+      if(item.type === 'detective'){
+        state.order = [item.gi]; state.results = [null]; state.round = 0; state.score = 0;
+        state.totalClues = ALL_ROUNDS[item.gi].trueClues.length;
+        showScreen('game');
+        renderInbox();
+        openMail(0);
+      } else if(item.type === 'tone'){
+        state.toneOrder = [item.ti]; state.toneIndex = 0; state.toneScore = 0; state.toneResults = [];
+        showScreen('tone');
+        renderTone();
+      } else {
+        state.elementsOrder = [item.idx]; state.elementsIndex = 0; state.elementsScore = 0; state.elementsResults = [];
+        showScreen('elements');
+        renderElements();
+      }
+      setTimeout(focusPrimaryAnswer, 0);
+    });
   }
 
   /* regista a pontuação da ronda que acabou de ser respondida e avança para a próxima (ou termina) */
@@ -3040,6 +3118,26 @@
     } else {
       totalScore = state.mixed.score;
       totalMax = state.mixed.maxScore;
+    }
+
+    var breakdownBox = document.getElementById('mixed-breakdown');
+    if(state.phase === 'mixed' && breakdownBox){
+      var byType = {
+        detective: { pts:0, max:0 },
+        tone: { pts:0, max:0 },
+        elements: { pts:0, max:0 }
+      };
+      state.mixed.results.forEach(function(res){
+        if(!res) return;
+        byType[res.type].pts += res.pts;
+        byType[res.type].max += res.maxPts;
+      });
+      document.getElementById('mb-detective').textContent = byType.detective.pts + '/' + byType.detective.max;
+      document.getElementById('mb-tone').textContent = byType.tone.pts + '/' + byType.tone.max;
+      document.getElementById('mb-elements').textContent = byType.elements.pts + '/' + byType.elements.max;
+      breakdownBox.style.display = 'flex';
+    } else if(breakdownBox){
+      breakdownBox.style.display = 'none';
     }
     var pct = totalMax > 0 ? totalScore / totalMax : 0;
     var tier = info.ranks[info.ranks.length - 1];
