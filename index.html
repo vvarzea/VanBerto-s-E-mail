@@ -1283,6 +1283,7 @@
   function sfxClick(){ tone(520,.08,'square',.04); }
   function sfxGood(){ tone(660,.12,'triangle',.06); setTimeout(function(){tone(880,.16,'triangle',.06);},110); }
   function sfxBad(){ tone(180,.22,'sawtooth',.05); }
+  function sfxNext(){ tone(440,.07,'triangle',.05); setTimeout(function(){tone(587,.1,'triangle',.05);},80); }
   function sfxWin(){ [523,659,784,1046].forEach(function(f,i){ setTimeout(function(){tone(f,.18,'triangle',.06);}, i*120); }); }
 
   updateMuteBtn();
@@ -1648,7 +1649,33 @@
     { to:'Professor de História', toEmail:'kátia.soares36@gmail.com', text:'Bom dia, Professor,\n\nPodia dizer-me a que horas começa o teste de amanhã?\n\nObrigado,\nBruno, 8ºC',
       correct:'formal', difficulty:'dificil', explain:'Mesmo curto e direto, o pedido é cortês e usa o tratamento certo para um professor — continua a ser formal.' },
     { to:'Mãe', toEmail:'joana.oliveira22@gmail.com', text:'Boa noite, mãe!\n\nVou chegar um bocadinho mais tarde, fico a estudar em casa da Rita.\n\nBeijinhos,\nSofia',
-      correct:'informal', difficulty:'dificil', explain:'Mesmo com \"Boa noite\", o tom é familiar e afetuoso (\"mãe\", \"Beijinhos\") — continua a ser informal. O que decide o tom é sempre quem recebe.' }
+      correct:'informal', difficulty:'dificil', explain:'Mesmo com \"Boa noite\", o tom é familiar e afetuoso (\"mãe\", \"Beijinhos\") — continua a ser informal. O que decide o tom é sempre quem recebe.' },
+    { to:'Secretaria da escola', toEmail:'secretaria.escola@mail.pt', text:'Bom dia,\n\nPreciso de uma declaração de matrícula. Posso ir buscá-la amanhã?\n\nObrigada,\nInês, 7ºA, nº21',
+      correct:'formal', difficulty:'dificil', explain:'É curto e direto, mas dirige-se a um serviço da escola, com saudação, agradecimento e assinatura com turma e número — formal.' },
+    { to:'Professor de Educação Física', toEmail:'jorge.matos71@gmail.com', text:'Olá, Professor!\n\nHoje não posso fazer a aula porque magoei o pé. Levo a justificação amanhã.\n\nObrigado,\nDuarte, 8ºB',
+      correct:'formal', difficulty:'dificil', explain:'O "Olá" é simpático, mas o tratamento por "Professor" e a assinatura com turma mostram que o tom certo é o formal.' },
+    { to:'Loja online', toEmail:'apoio.cliente@loja-web.pt', text:'Boa tarde,\n\nA encomenda 4587 chegou com o ecrã riscado. Como posso pedir a troca?\n\nObrigado,\nAndré Lopes',
+      correct:'formal', difficulty:'dificil', explain:'Quem recebe é uma empresa: mesmo sem fórmulas cerimoniosas, a saudação, o pedido claro e o nome completo fazem dele um e-mail formal.' },
+    { to:'Associação de Estudantes', toEmail:'assoc.estudantes@mail.pt', text:'Bom dia,\n\nGostava de propor uma atividade para o Dia da Escola. Podemos falar esta semana?\n\nCumprimentos,\nLara, 9ºC',
+      correct:'formal', difficulty:'dificil', explain:'É uma proposta a uma associação, feita com saudação e despedida cuidadas — formal, apesar de a frase final ser simples.' },
+    { to:'Professora Sandra (Clube de Teatro)', toEmail:'sandra.pires40@gmail.com', text:'Boa tarde, Professora Sandra,\n\nPodia dizer-me quando são os ensaios?\n\nMuito obrigada,\nMaria',
+      correct:'formal', difficulty:'dificil', explain:'Mesmo sendo uma atividade divertida, o destinatário é uma professora: tratamento por "Professora" e agradecimento pedem o tom formal.' },
+    { to:'Diretora de Turma', toEmail:'ana.cardoso62@hotmail.com', text:'Bom dia, Professora,\n\nA minha mãe pediu-me para lhe dizer que amanhã vou sair mais cedo, às 15h.\n\nObrigado,\nTomás, 7ºB',
+      correct:'formal', difficulty:'dificil', explain:'Fala da mãe e é uma mensagem simples, mas quem recebe é a diretora de turma — o tom cuidado e o tratamento correto tornam-no formal.' },
+    { to:'Empresa de transportes', toEmail:'passes@transportes.pt', text:'Boa tarde,\n\nPerdi o meu passe escolar. Que documentos preciso para pedir um novo?\n\nAgradeço a atenção,\nRita Gomes',
+      correct:'formal', difficulty:'dificil', explain:'Pedido de informação a uma entidade, com "Agradeço a atenção" e nome completo — formal, mesmo sendo curto.' },
+    { to:'Avó', toEmail:'lurdes.ferreira@sapo.pt', text:'Olá, avó!\n\nObrigada pelo bolo de domingo, estava delicioso. Quando é que posso ir aí aprender a fazê-lo?\n\nUm abraço grande,\nCatarina',
+      correct:'informal', difficulty:'dificil', explain:'Está escrito com todo o cuidado, sem abreviaturas, mas é para a avó: tratamento familiar e despedida afetuosa — informal.' },
+    { to:'Irmão mais velho', toEmail:'pedro.almeida93@gmail.com', text:'Boa tarde, Pedro,\n\nPodes emprestar-me o carregador do portátil até amanhã? O meu deixou de funcionar.\n\nObrigada,\nAna',
+      correct:'informal', difficulty:'dificil', explain:'Tem "Boa tarde" e "Obrigada", mas o tratamento por "tu" ("Podes") a um irmão dá-lhe um tom próximo — informal. O que decide é quem recebe.' },
+    { to:'Melhor amiga', toEmail:'sara.lopes17@hotmail.com', text:'Olá, Sara,\n\nGostei muito do livro que me emprestaste. Já o acabei e queria devolver-to amanhã, pode ser?\n\nAté amanhã,\nLeonor',
+      correct:'informal', difficulty:'dificil', explain:'Sem gíria nem emojis, mas o tratamento por "tu", o nome próprio e o "Até amanhã" são de amigas — informal.' },
+    { to:'Primo', toEmail:'miguel.tavares@gmail.com', text:'Boa noite, primo,\n\nVi que ganhaste o torneio de xadrez. Parabéns, foi muito merecido!\n\nUm abraço,\nMiguel',
+      correct:'informal', difficulty:'dificil', explain:'A saudação é cuidada, mas escreve-se a um primo, com tom caloroso e "Um abraço" — informal.' },
+    { to:'Colegas do grupo de Ciências', toEmail:'grupo.ciencias@mail.pt', text:'Olá a todos,\n\nDividi as partes do trabalho de Ciências. Vejam se está tudo bem e digam-me até quinta-feira.\n\nObrigado,\nRúben',
+      correct:'informal', difficulty:'dificil', explain:'Organiza trabalho, mas os destinatários são colegas: o tratamento por "vocês" e o tom descontraído são informais.' },
+    { to:'Equipa de futebol', toEmail:'equipa.sub15@mail.pt', text:'Boa noite a todos,\n\nO treino de amanhã foi adiado para as 18h por causa da chuva. Confirmem que conseguem vir.\n\nObrigado,\nGonçalo',
+      correct:'informal', difficulty:'dificil', explain:'É um aviso claro e bem escrito, mas dirigido a colegas de equipa, com tratamento por "vocês" — informal.' }
   ];
 
   
@@ -1819,6 +1846,41 @@
   /* ---------------- seleção para o Desafio Final (modo 4: mistura os 3 tipos) ----------------
      Tem o seu próprio seletor de nível (#mixed-level); só "Misturado" e "Só fácil" / "Só difícil"
      — sem "Só médio", porque o banco de "Formal ou Informal" não tem itens de nível médio */
+  /* memória (por dispositivo) das perguntas já sorteadas no Desafio Final, para sessões seguidas
+     darem prioridade às que ainda não saíram; cada lista guarda só as mais recentes (60% do banco) */
+  var MIXED_SEEN_KEY = 'vb_mixed_seen_v1';
+  function readMixedSeen(){
+    var base = { detective:[], tone:[], elements:[] };
+    try{
+      var s = JSON.parse(localStorage.getItem(MIXED_SEEN_KEY) || 'null');
+      if(s && typeof s === 'object'){ Object.keys(base).forEach(function(k){ if(Array.isArray(s[k])) base[k] = s[k]; }); }
+    }catch(e){}
+    return base;
+  }
+  function saveMixedSeen(seen){ try{ localStorage.setItem(MIXED_SEEN_KEY, JSON.stringify(seen)); }catch(e){} }
+  /* embaralha e põe primeiro os índices que ainda não saíram */
+  function preferUnseen(pool, type){
+    var seen = readMixedSeen()[type];
+    var fresh = pool.filter(function(i){ return seen.indexOf(i) === -1; });
+    var old = pool.filter(function(i){ return seen.indexOf(i) !== -1; });
+    return shuffle(fresh).concat(shuffle(old));
+  }
+  function rememberMixedSeen(seq){
+    var seen = readMixedSeen();
+    var bankSize = { detective:ALL_ROUNDS.length, tone:TONE_ROUNDS.length, elements:KNOWLEDGE_ITEMS.length };
+    seq.forEach(function(it){
+      var key = it.type === 'detective' ? it.gi : it.type === 'tone' ? it.ti : it.idx;
+      var list = seen[it.type].filter(function(v){ return v !== key; });
+      list.push(key);
+      seen[it.type] = list;
+    });
+    Object.keys(seen).forEach(function(k){
+      var cap = Math.floor(bankSize[k] * 0.6);
+      if(seen[k].length > cap) seen[k] = seen[k].slice(seen[k].length - cap);
+    });
+    saveMixedSeen(seen);
+  }
+
   var MIXED_PER_TYPE = 4; /* valor por omissão: 4 de cada tipo = 12 rondas (o aluno escolhe 3, 4 ou 5 em #mixed-count-select) */
 
   function pickMixedDetectivePicks(total, level){
@@ -1830,7 +1892,7 @@
     var nPhish = Math.floor(total / 2) + Math.floor(Math.random() * 3) - 1;
     nPhish = Math.max(2, Math.min(nPhish, total - 2, phishIdx.length));
     var nSafe = Math.min(total - nPhish, safeIdx.length);
-    var chosen = shuffle(phishIdx).slice(0, nPhish).concat(shuffle(safeIdx).slice(0, nSafe));
+    var chosen = preferUnseen(phishIdx, 'detective').slice(0, nPhish).concat(preferUnseen(safeIdx, 'detective').slice(0, nSafe));
     return orderByDifficulty(chosen, ALL_ROUNDS);
   }
 
@@ -1840,7 +1902,7 @@
       if(level !== 'misto' && r.difficulty !== level) return;
       pool.push(i);
     });
-    var chosen = shuffle(pool).slice(0, Math.min(total, pool.length));
+    var chosen = preferUnseen(pool, 'tone').slice(0, Math.min(total, pool.length));
     return orderByDifficulty(chosen, TONE_ROUNDS);
   }
 
@@ -1855,14 +1917,14 @@
     var perType = Math.floor(total / types.length);
     var chosen = [];
     types.forEach(function(t){
-      var pool = shuffle(byType[t]);
+      var pool = preferUnseen(byType[t], 'elements');
       chosen = chosen.concat(pool.slice(0, Math.min(perType, pool.length)));
     });
     var remainingPool = [];
     types.forEach(function(t){
       remainingPool = remainingPool.concat(byType[t].filter(function(i){ return chosen.indexOf(i) === -1; }));
     });
-    remainingPool = shuffle(remainingPool);
+    remainingPool = preferUnseen(remainingPool, 'elements');
     var need = Math.max(0, Math.min(total - chosen.length, remainingPool.length));
     chosen = chosen.concat(remainingPool.slice(0, need));
     return orderByDifficulty(chosen, KNOWLEDGE_ITEMS);
@@ -1899,6 +1961,7 @@
     }
     var maxScore = 0;
     seq.forEach(function(it){ maxScore += mixedMaxPts(it); });
+    rememberMixedSeen(seq);
     state.mixed = { seq:seq, index:0, score:0, maxScore:maxScore, results:seq.map(function(){ return null; }) };
     showScreen('game'); /* renderMixedRound troca já para o ecrã certo consoante a 1ª ronda */
     renderMixedRound();
@@ -1924,6 +1987,7 @@
     document.getElementById('mixed-transition-label').textContent = 'A seguir: ' + info.label;
     box.style.display = 'flex';
     box.classList.add('show');
+    sfxNext();
     setTimeout(function(){
       box.classList.remove('show');
       setTimeout(function(){ box.style.display = 'none'; }, 180);
