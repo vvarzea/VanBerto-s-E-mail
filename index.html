@@ -166,7 +166,7 @@
     font-size:12.5px; line-height:1.45; color: var(--ink-dim); text-align:center;
   }
 
-  /* aviso de que os recordes ficam guardados neste computador (localStorage) */
+  /* aviso de que os recordes ficam guardados neste dispositivo (localStorage) */
   .device-note{
     max-width:460px; margin: 0 auto 18px; font-size:12px; line-height:1.5;
     color: var(--ink-dim); text-align:center;
@@ -188,7 +188,7 @@
   .resume-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
   .resume-actions .btn{ padding:9px 18px; font-size:14px; }
 
-  /* resumo do que ainda vale a pena rever, juntando os 3 modos (dados guardados neste computador) */
+  /* resumo do que ainda vale a pena rever, juntando os 3 modos (dados guardados neste dispositivo) */
   .review-summary{
     max-width:560px; margin: 4px auto 22px; padding:16px 22px;
     border:1px solid var(--line); border-radius: var(--radius);
@@ -608,9 +608,9 @@
         <input id="player-turma" type="text" placeholder="Turma / nº (opcional)" maxlength="12">
       </div>
       <div class="device-note" id="device-note">
-        🖥️ Os recordes ficam guardados neste computador, associados ao nome (e turma/nº, se preenchida).
+        🖥️ Os recordes ficam guardados neste dispositivo, associados ao nome (e turma/nº, se preenchida).
         <button type="button" class="link-btn" id="btn-clear-own">Apagar só o meu registo</button>
-        <button type="button" class="link-btn" id="btn-clear-device">Limpar recordes deste computador</button>
+        <button type="button" class="link-btn" id="btn-clear-device">Limpar recordes deste dispositivo</button>
       </div>
 
       <div class="resume-banner" id="resume-banner" style="display:none;" role="status">
@@ -926,7 +926,7 @@
           <li>Trocar um ponto por um hífen: <span class="cheat-code bad">edu-azores-gov.pt</span> em vez de <span class="cheat-code ok">edu.azores.gov.pt</span></li>
           <li>Usar uma terminação diferente: <span class="cheat-code bad">amazon-pt.com</span> em vez do domínio oficial da Amazon</li>
           <li>Trocar letras parecidas: <span class="cheat-code bad">instagrarn-ajuda.com</span> tem "rn" a fingir um "m" — parece "instagram" a olhar depressa</li>
-          <li>Esconder o domínio a seguir a "www": em <span class="cheat-code bad">amazon.com-pagamentos.info</span> o domínio real é <span class="cheat-code ok">pagamentos.info</span>, não a Amazon — o que conta é a parte mesmo antes da primeira barra "/"</li>
+          <li>Esconder o nome da marca no início: em <span class="cheat-code bad">amazon.com.pagamentos-seguros.info</span> o domínio real é <span class="cheat-code ok">pagamentos-seguros.info</span>, não a Amazon — o que conta é o fim do endereço, mesmo antes da primeira barra "/"</li>
         </ul>
         <div class="cheat-box danger">
           <div class="lbl">Regra prática</div>
@@ -1379,7 +1379,7 @@
       body:'A tua encomenda está retida nos correios. Paga uma pequena taxa aduaneira nas proximas 2 horas ou a encomenda sera devolvida ao remetente.',
       link:'ctt-pagar-taxa.info', icon:'📦',
       trueClues:['sender','brand','subjectAlarm','link','urgency','typo'], correctAction:'eliminar', difficulty:'media',
-      note:'O site verdadeiro dos CTT é ctt.pt. Este e-mail vem de "ctt-entregas-pt.info" — acrescenta palavras a mais e troca o final para .info, um domínio que qualquer pessoa pode registar. Pedir dinheiro para "libertar" uma encomenda por e-mail é sempre motivo de desconfiança.' },
+      note:'O site verdadeiro dos CTT é ctt.pt. Este e-mail vem de "ctt-entregas-pt.info" — acrescenta palavras a mais e muda o final para .info; qualquer pessoa pode registar endereços assim. Pedir dinheiro para "libertar" uma encomenda por e-mail é sempre motivo de desconfiança.' },
 
     { sender:'recrutamento@trabalha-facil24.com', subject:'Ganha 300€ por semana sem sair de casa!',
       body:'Selecionamos jovens para um trabalho online simples. Envia o teu nome completo, morada e número de contribuinte para começares já hoje!',
@@ -1445,7 +1445,7 @@
       body:'O teu perfil foi aprovado para receber o selo de verificado. Descarrega o certificado em anexo e segue as instruçoes nas proximas 24 horas para ativares o teu novo estatuto.',
       attach:'Certificado_Selo.zip', icon:'✅',
       trueClues:['sender','brand','subjectAlarm','caps','attach','urgency','typo'], correctAction:'eliminar', difficulty:'facil',
-      note:'Pediste alguma vez um "selo azul"? Se não, já é suspeito receberes uma "aprovação" que nunca pediste. O domínio certo do TikTok é tiktok.com, não "tiktok-selo.co", e o anexo .zip é outro sinal de perigo — evita abrir compactados que não esperavas.' },
+      note:'Pediste alguma vez um "selo azul"? Se não, já é suspeito receberes uma "aprovação" que nunca pediste. O domínio certo do TikTok é tiktok.com, não "tiktok-selo.co", e o anexo .zip é outro sinal de perigo — evita abrir ficheiros compactados que não esperavas.' },
 
     { sender:'prof.pedro.melo@edu.azores.gov.pt', subject:'Aula de Educação Musical adiada',
       body:'Bom dia. A aula de Educação Musical de amanhã foi adiada para sexta-feira. Cumprimentos, Prof. Pedro Melo.',
@@ -1535,7 +1535,7 @@
       body:'Olá! Detetámos um novo início de sessão na tua conta Google, num telemóvel Android, hoje às 15:42. Se foste tu, não precisas de fazer nada. Se não reconheces, altera a tua palavra-passe diretamente em myaccount.google.com.',
       icon:'🔔',
       trueClues:[], correctAction:'confiar', difficulty:'media',
-      note:'Os alertas de segurança verdadeiros existem. Este vem do domínio certo (accounts.google.com), não te obriga a agir já e não pede a palavra-passe no e-mail. Mesmo assim, se tiveres dúvidas, não cliques em nada: abre tu próprio o site, escrevendo o endereço no browser.' },
+      note:'Os alertas de segurança verdadeiros existem. Este vem do domínio certo (accounts.google.com), não te obriga a agir já e não pede a palavra-passe no e-mail. Mesmo assim, se tiveres dúvidas, não cliques em nada: abre tu próprio o site, escrevendo o endereço no navegador.' },
 
     /* --- falsos mais credíveis: .pt, sem erros, sem maiúsculas --- */
     { sender:'apoio@mbway-seguranca.pt', subject:'Pedido de pagamento MB WAY pendente',
@@ -1560,10 +1560,10 @@
       body:'Recebemos o pedido n.º 48291 no valor de 89,90 €. Se não reconheces esta compra, cancela-a no link abaixo com o teu nome de utilizador e palavra-passe:',
       link:'amazon-pt.com/cancelar-pedido', icon:'📦',
       trueClues:['sender','brand','link','urgency'], correctAction:'eliminar', difficulty:'media',
-      note:'Não fizeste nenhuma encomenda? Então o e-mail é falso — e usa um truque muito comum: assustar-te com uma compra que não fizeste, para clicares sem pensares. O endereço amazon-pt.com não é da Amazon, e nenhuma loja verdadeira te pede a palavra-passe num link de e-mail. Na dúvida, abre tu próprio o site da loja, escrevendo o endereço no browser.' },
+      note:'Não fizeste nenhuma encomenda? Então o e-mail é falso — e usa um truque muito comum: assustar-te com uma compra que não fizeste, para clicares sem pensares. O endereço amazon-pt.com não é da Amazon, e nenhuma loja verdadeira te pede a palavra-passe num link de e-mail. Na dúvida, abre tu próprio o site da loja, escrevendo o endereço no navegador.' },
 
     { sender:'no-reply@roblox.com', subject:'Boa! O teu amigo aceitou o pedido',
-      body:'Olá! Boas notícias: o teu pedido de amizade foi aceite. Já podem jogar juntos nas experiências que seguem.',
+      body:'Olá! Boas notícias: o teu pedido de amizade foi aceite. Já podem jogar juntos.',
       icon:'🎮',
       trueClues:[], correctAction:'confiar', difficulty:'facil',
       note:'O domínio é exatamente roblox.com e a mensagem não pede palavra-passe nem dados. É o tipo de notificação normal de um jogo — o que interessa é sempre confirmar o domínio, não o nome do jogo.' },
@@ -1603,12 +1603,12 @@
       body:'Bom dia. Para garantires o teu lugar no próximo ano letivo, confirma os dados da tua matrícula no endereço abaixo até ao fim da semana. Cumprimentos, Secretaria.',
       link:'edu.azores.gov.pt.acesso-alunos.com/entrar', icon:'🏫',
       trueClues:['sender','brand','link','urgency'], correctAction:'eliminar', difficulty:'dificil',
-      note:'O endereço começa com edu.azores.gov.pt, mas o que manda é o fim: o domínio verdadeiro é acesso-alunos.com. O que vem antes é só enfeite para enganar. Nas escolas a sério, o endereço termina em edu.azores.gov.pt.' },
+      note:'O endereço começa com edu.azores.gov.pt, mas o que manda é o fim: o domínio verdadeiro é acesso-alunos.com. O que vem antes é só enfeite para enganar. O endereço verdadeiro da escola termina sempre em edu.azores.gov.pt.' },
     { sender:'prof.carla.matos@edu.azores.gov.pt', subject:'Ficha partilhada contigo',
       body:'Olá! Partilhei contigo a ficha de exercícios. Para a abrires, inicia sessão com a tua conta Google no link abaixo.',
       link:'docs-partilha-google.com/ficha', icon:'📄',
       trueClues:['brand','link'], correctAction:'eliminar', difficulty:'dificil',
-      note:'O remetente parece mesmo uma professora, mas contas reais também podem ser pirateadas. O link finge ser do Google e o domínio verdadeiro é docs-partilha-google.com, e o Google não te pede para iniciares sessão por um link estranho. Confirma com a professora, ao vivo, antes de clicares.' },
+      note:'O remetente parece mesmo uma professora, mas contas reais também podem ser pirateadas. O link finge ser do Google, mas o domínio verdadeiro é docs-partilha-google.com. O Google não te pede para iniciares sessão por um link estranho. Confirma com a professora, ao vivo, antes de clicares.' },
     { sender:'seguranca@instagram-verificacao.com', subject:'Alguém tentou entrar na tua conta',
       body:'Detetámos um início de sessão a partir de outro país. Se não foste tu, confirma a tua identidade nos próximos 30 minutos para proteger a conta.',
       link:'instagram-verificacao.com/confirmar', icon:'📸',
@@ -1618,7 +1618,7 @@
       body:'Bom dia. Estou a atualizar os contactos da turma. Responde a este e-mail com o teu nome completo, a data de nascimento e o telemóvel dos teus pais.',
       icon:'📋',
       trueClues:['sender','urgency'], correctAction:'eliminar', difficulty:'dificil',
-      note:'Está bem escrito e o nome parece de uma professora, mas vem de um endereço Gmail e não da conta da escola (@edu.azores.gov.pt). Pede dados pessoais teus e da tua família, o que uma escola nunca faz por e-mail solto. Quando há dúvida, pergunta à professora na aula.' },
+      note:'Está bem escrito e o nome parece de uma professora, mas vem de um endereço Gmail e não da conta da escola (@edu.azores.gov.pt). Pede dados pessoais teus e da tua família, o que uma escola não faz assim, por e-mail. Quando há dúvida, pergunta à professora na aula.' },
     { sender:'faturas@meo-clientes.info', subject:'Fatura de setembro disponível',
       body:'Segue em anexo a fatura do telemóvel. Abre o ficheiro para veres o valor a pagar.',
       attach:'Fatura_Setembro.zip', icon:'🧾',
@@ -1654,9 +1654,9 @@
       body:'Foi iniciada sessão na tua conta num novo dispositivo. Se foste tu, não precisas de fazer nada. Se não reconheces, abre a aplicação Google no telemóvel e vai a Segurança, sem usares links de e-mails.',
       icon:'🔐',
       trueClues:[], correctAction:'confiar', difficulty:'dificil',
-      note:'«Alerta de segurança» soa a alarme, mas o domínio é o verdadeiro (accounts.google.com), não traz links nem pede a palavra-passe e até te aconselha a não usares links de e-mails. Um aviso a sério manda-te para a app, e um falso manda-te para um link.' },
+      note:'Um aviso de segurança soa a alarme, mas o domínio é o verdadeiro (accounts.google.com), não traz links nem pede a palavra-passe e até te aconselha a não usares links de e-mails. Um aviso a sério manda-te para a app, e um falso manda-te para um link.' },
     { sender:'beatriz.faria@edu.azores.gov.pt', subject:'Apresentação de Geografia',
-      body:'Oi! Já acabei a minha parte da apresentação de Geografia, está na pasta partilhada da turma. Vê se falta alguma coisa e diz-me até quinta-feira.',
+      body:'Olá! Já acabei a minha parte da apresentação de Geografia, está na pasta partilhada da turma. Vê se falta alguma coisa e diz-me até quinta-feira.',
       link:'edu.azores.gov.pt/turma', icon:'🗺️',
       trueClues:[], correctAction:'confiar', difficulty:'dificil',
       note:'Uma colega da turma, com o teu trabalho em grupo, e um link para o domínio certo da escola. Tudo bate certo com o que estavas à espera. Desconfiar de tudo também não é a solução: confia quando o remetente, o pedido e o link fazem sentido.' },
@@ -1670,10 +1670,10 @@
       note:'A escola escreve sempre de @edu.azores.gov.pt, e «escola-azores.net» não é esse domínio. Um horário raramente vem num .zip, e não devias abrir anexos que não esperavas. Pergunta primeiro à secretaria, por outro meio.' },
     { sender:'no-reply@tiktok-suporte.com', subject:'Cumpres os requisitos para o selo de verificação', body:'A tua conta pode receber o selo de verificação. Inicia sessão no link abaixo nas próximas 48 horas para o receberes:', link:'tiktok-selo-verificado.com', icon:'🎵',
       trueClues:['sender','brand','subjectAlarm','link','urgency'], correctAction:'eliminar', difficulty:'media',
-      note:'Uma oferta boa demais para ser verdade, com prazo curto. O endereço não é do TikTok e o link pede-te que inicies sessão, ou seja, que entregues a palavra-passe. As redes sociais não dão selos por e-mail.' },
+      note:'Uma oferta boa demais para ser verdade, com prazo curto. O endereço não é do TikTok e o link pede-te que inicies sessão, ou seja, que entregues a palavra-passe. Um selo de verificação não se pede nem se recebe assim, por um link num e-mail: confirma as regras dentro da própria app.' },
     { sender:'trocas@steam-comunidade.net', subject:'Recebeste uma troca de itens raros', body:'Um jogador enviou-te uma troca de itens raros. Aceita a oferta no link abaixo antes de ela expirar:', link:'steam-troca-itens.net', icon:'🎮',
       trueClues:['sender','brand','link','urgency'], correctAction:'eliminar', difficulty:'media',
-      note:'A Steam verdadeira usa steampowered.com, não «steam-comunidade.net». Estes golpes aproveitam a vontade de ganhar itens e apressam-te com «antes de expirar». Aceita trocas só dentro da app oficial.' },
+      note:'Os sites oficiais da Steam são steampowered.com e steamcommunity.com; «steam-comunidade.net» não é nenhum deles. Estes golpes aproveitam a vontade de ganhar itens e apressam-te com «antes de expirar». Aceita trocas só dentro da app oficial.' },
     { sender:'no-reply@classroom.google.com', subject:'Novo trabalho: Ficha de Ciências', body:'A professora Sandra publicou um novo trabalho na turma 9.º B. Prazo de entrega: sexta-feira.', link:'classroom.google.com', icon:'🎓',
       trueClues:[], correctAction:'confiar', difficulty:'media',
       note:'Tem um prazo, mas isso não o torna suspeito. O domínio é exatamente o do Google Classroom, não pede palavras-passe nem dados e diz respeito a uma turma em que já estás.' },
@@ -1844,7 +1844,7 @@
   /* ---------------- fase 3 (extra): estrutura do endereço ---------------- */
   var ADDRESS_ROUNDS = [
     { address:'joao.silva@escola.pt', valid:true, reason:'Tem a forma utilizador@domínio, sem espaços nem acentos — está tudo em ordem.', difficulty:'facil' },
-    { address:'joão.silva@escola.pt', valid:false, reason:'Tem um acento ("ã"), e um endereço de e-mail não pode ter acentos.', difficulty:'facil' },
+    { address:'joão.silva@escola.pt', valid:false, reason:'Tem um acento ("ã"). Os endereços de e-mail da escola não levam acentos.', difficulty:'facil' },
     { address:'joao silva@escola.pt', valid:false, reason:'Tem um espaço antes do "@", e um endereço de e-mail não pode ter espaços.', difficulty:'facil' },
     { address:'beatriz_costa9b@edu.azores.gov.pt', valid:true, reason:'O sublinhado e os números no nome de utilizador são permitidos; sem espaços nem acentos, o endereço está correto.', difficulty:'facil' },
     { address:'mariasilva@', valid:false, reason:'Falta o domínio depois do "@" (a entidade que fornece o serviço).', difficulty:'facil' },
@@ -2353,7 +2353,7 @@
     var nameEl = document.getElementById('player-name');
     var turmaEl = document.getElementById('player-turma');
     var who = (nameEl.value||'').trim() + (turmaEl.value ? ' — ' + turmaEl.value.trim() : '');
-    if(!confirm('Isto apaga só o registo de "' + who + '" (as tuas pontuações e recordes em todos os modos) neste computador. Continuar?')) return;
+    if(!confirm('Isto apaga só o registo de "' + who + '" (as tuas pontuações e recordes em todos os modos) neste dispositivo. Continuar?')) return;
     try{
       Object.keys(MODE_INFO).forEach(function(mode){
         var raw = localStorage.getItem(MODE_INFO[mode].storageKey);
@@ -2369,7 +2369,7 @@
 
   document.getElementById('btn-clear-device').addEventListener('click', function(){
     sfxClick();
-    if(!confirm('Isto apaga os recordes e o resumo de revisão guardados neste computador (de todos os alunos que já jogaram aqui). Continuar?')) return;
+    if(!confirm('Isto apaga os recordes e o resumo de revisão guardados neste dispositivo (de todos os alunos que já jogaram aqui). Continuar?')) return;
     try{
       Object.keys(MODE_INFO).forEach(function(mode){ localStorage.removeItem(MODE_INFO[mode].storageKey); });
       localStorage.removeItem(SESSION_SAVE_KEY);
@@ -2831,7 +2831,7 @@
       paint('vb-feedback','happy'); paint('vb-game','happy');
       sfxGood();
     } else {
-      verdictEl.textContent = r.correctAction==='eliminar' ? 'Cuidado — este era uma armadilha.' : 'Calma — este e-mail era seguro.';
+      verdictEl.textContent = r.correctAction==='eliminar' ? 'Cuidado — este e-mail era uma armadilha.' : 'Calma — este e-mail era seguro.';
       verdictEl.className = 'verdict bad';
       paint('vb-feedback','sad'); paint('vb-game','sad');
       sfxBad();
@@ -3739,7 +3739,7 @@
         link.click();
         document.body.removeChild(link);
       }catch(e){
-        alert('Não foi possível gerar a imagem neste browser. Usa "Guardar em PDF" em alternativa.');
+        alert('Não foi possível gerar a imagem neste navegador. Usa "Guardar em PDF" em alternativa.');
       }
     }
     if(document.fonts && document.fonts.ready){
