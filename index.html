@@ -903,6 +903,7 @@
       <button class="cheat-tab" id="cheat-tab-remetente" role="tab" aria-selected="false" aria-controls="cheat-pane-remetente" data-tab="remetente">🕵️ Remetente</button>
       <button class="cheat-tab" id="cheat-tab-tom" role="tab" aria-selected="false" aria-controls="cheat-pane-tom" data-tab="tom">💬 Tom</button>
       <button class="cheat-tab" id="cheat-tab-elementos" role="tab" aria-selected="false" aria-controls="cheat-pane-elementos" data-tab="elementos">📧 Elementos e endereços</button>
+      <button class="cheat-tab" id="cheat-tab-netiqueta" role="tab" aria-selected="false" aria-controls="cheat-pane-netiqueta" data-tab="netiqueta">🤝 Netiqueta</button>
     </div>
     <div class="cheat-body">
 
@@ -1012,6 +1013,12 @@
           <div class="lbl">💡 Curiosidade</div>
           <p>O e-mail entre computadores diferentes foi inventado em 1971 por Ray Tomlinson, um engenheiro que trabalhava na rede ARPANET (a antepassada da Internet). Foi ele que escolheu o símbolo @ para separar o nome do utilizador do computador que devia receber a mensagem — e conta que nem se lembra do que escreveu na primeira, porque era só um teste.</p>
         </div>
+      </div>
+
+      <!-- aba: netiqueta -->
+      <div class="cheat-pane" id="cheat-pane-netiqueta" role="tabpanel" aria-labelledby="cheat-tab-netiqueta">
+        <p>As regras de boa educação na Internet, tal como as vemos nas aulas — não são só sobre e-mail, mas sobre qualquer conversa online.</p>
+        <img src="netiqueta.jpg" alt="Cartaz Netiqueta VanBerto's — 10 regras para comunicar e conviver online: 1) Sê respeitador e educado. 2) Não insultes nem humilhes. 3) Evita escrever tudo em maiúsculas. 4) Pensa antes de publicar ou enviar. 5) Pede autorização antes de partilhar fotos. 6) Revê antes de publicar. 7) Respeita os outros, mesmo quando discordas. 8) Não alimentes provocações ou cyberbullying. 9) Se algo te incomodar, pede ajuda. 10) Protege os teus dados pessoais." style="width:100%; height:auto; display:block; border-radius:12px; margin-top:6px;" loading="lazy">
       </div>
 
     </div>
@@ -1839,7 +1846,7 @@
     { text:'ASSUNTO: PRECISO DE AJUDA JÁ!!!\nPROFESSORA, PODE RESPONDER-ME O MAIS DEPRESSA POSSÍVEL???', ruleIdx:0, distractors:[6,7], difficulty:'facil' },
     { text:'Boa tarde, professora. N consegui fzr o trabalho hj pq tive treino. Pod ser p amanha? Obg.', ruleIdx:1, distractors:[5,6], difficulty:'facil' },
     { text:'Ei Diretor, tudo fixe contigo? Preciso que me safes de uma cena, ok? Bora lá resolver isso.', ruleIdx:2, distractors:[6,7], difficulty:'media' },
-    { text:'Ora bem, hoje começou a chover e eu estava a pensar no fim de semana em que fui à praia e depois lembrei-me também de perguntar sobre o teste, já agora sabe se sai a matéria toda ou não, já não me lembro se era para entregar hoje ou amanhã...', ruleIdx:3, distractors:[0,6], difficulty:'dificil' },
+    { text:'Ora bem, hoje começou a chover e eu estava a pensar no fim de semana em que fui à praia e depois lembrei-me também de perguntar sobre o teste, já agora sabe se sai a matéria toda ou não, já não me lembro se era para entregar hoje ou amanhã...', ruleIdx:3, distractors:[0,6], difficulty:'media' },
     { text:'Assunto: (em branco)\nBoa tarde, professora. Gostaria de saber se posso entregar o trabalho de Ciências na sexta-feira, por favor.', ruleIdx:4, distractors:[1,6], difficulty:'facil' },
     { text:'O teu trabalho está mesmo mau. Nem sei porque é que ainda estás neste grupo, ninguém quer trabalhar contigo.', ruleIdx:5, distractors:[1,6], difficulty:'facil' },
     { text:'Aproveita já! Desconto de 90% só hoje — clica aqui e ganha um prémio!!! (enviado a toda a turma sem ninguém ter pedido)', ruleIdx:6, distractors:[2,3], difficulty:'media' },
@@ -2646,7 +2653,7 @@
 
   /* cábula: abre a partir de qualquer ecrã (top-controls), com aba adequada ao ecrã ativo;
      fecha por botão, Escape ou clique fora. A bolinha vermelha desaparece após a 1ª abertura. */
-  var CHEAT_TABS = ['remetente', 'tom', 'elementos'];
+  var CHEAT_TABS = ['remetente', 'tom', 'elementos', 'netiqueta'];
   function screenToCheatTab(){
     var activeScreen = document.querySelector('.screen.active');
     if(!activeScreen) return 'remetente';
