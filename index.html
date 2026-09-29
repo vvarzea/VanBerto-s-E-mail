@@ -359,6 +359,13 @@
   .cheat-foot{ font-size:12.5px; font-style:italic; color: var(--ink-dim); border-top:1px dashed var(--line); padding-top:12px; margin-top:4px; }
 
   /* ---------- feedback overlay ---------- */
+  .img-lightbox{
+    position:fixed; inset:0; z-index:60; background:rgba(10,8,30,.92);
+    display:flex; align-items:center; justify-content:center; padding: max(14px, env(safe-area-inset-top,0px)) 14px max(14px, env(safe-area-inset-bottom,0px));
+    opacity:0; pointer-events:none; transition:opacity .18s ease;
+  }
+  .img-lightbox.show{ opacity:1; pointer-events:auto; }
+  .img-lightbox img{ max-width:100%; max-height:100%; border-radius:12px; object-fit:contain; }
   .overlay{
     position:fixed; inset:0; background: rgba(6,4,16,.72);
     display:flex; align-items:flex-start; justify-content:center; padding:18px;
@@ -1017,12 +1024,20 @@
 
       <!-- aba: netiqueta -->
       <div class="cheat-pane" id="cheat-pane-netiqueta" role="tabpanel" aria-labelledby="cheat-tab-netiqueta">
-        <p>As regras de boa educação na Internet, tal como as vemos nas aulas — não são só sobre e-mail, mas sobre qualquer conversa online.</p>
-        <img src="netiqueta.jpg" alt="Cartaz Netiqueta VanBerto's — 10 regras para comunicar e conviver online: 1) Sê respeitador e educado. 2) Não insultes nem humilhes. 3) Evita escrever tudo em maiúsculas. 4) Pensa antes de publicar ou enviar. 5) Pede autorização antes de partilhar fotos. 6) Revê antes de publicar. 7) Respeita os outros, mesmo quando discordas. 8) Não alimentes provocações ou cyberbullying. 9) Se algo te incomodar, pede ajuda. 10) Protege os teus dados pessoais." style="width:100%; height:auto; display:block; border-radius:12px; margin-top:6px;" loading="lazy">
+        <p>As regras de boa educação na Internet, tal como as vemos nas aulas — não são só sobre e-mail, mas sobre qualquer conversa online. Toca na imagem para a ver em ecrã inteiro.</p>
+        <button type="button" id="btn-open-netiqueta-img" style="all:unset; cursor:zoom-in; display:block; width:100%;">
+          <img src="netiqueta.jpg" alt="Cartaz Netiqueta VanBerto's — 10 regras para comunicar e conviver online: 1) Sê respeitador e educado. 2) Não insultes nem humilhes. 3) Evita escrever tudo em maiúsculas. 4) Pensa antes de publicar ou enviar. 5) Pede autorização antes de partilhar fotos. 6) Revê antes de publicar. 7) Respeita os outros, mesmo quando discordas. 8) Não alimentes provocações ou cyberbullying. 9) Se algo te incomodar, pede ajuda. 10) Protege os teus dados pessoais." style="width:100%; height:auto; display:block; border-radius:12px; margin-top:6px;" loading="lazy">
+        </button>
       </div>
 
     </div>
   </div>
+</div>
+
+<!-- cartaz da netiqueta em ecrã inteiro -->
+<div class="img-lightbox" id="netiqueta-lightbox" role="dialog" aria-modal="true" aria-label="Cartaz Netiqueta em ecrã inteiro">
+  <button class="btn ghost" id="btn-close-netiqueta-img" style="position:absolute; top:14px; right:14px; padding:8px 14px; font-size:13px; z-index:2;">✕ Fechar</button>
+  <img src="netiqueta.jpg" alt="Cartaz Netiqueta VanBerto's, em ecrã inteiro">
 </div>
 
 <!-- mail detail modal -->
@@ -2696,6 +2711,24 @@
     try{ if(dot && localStorage.getItem('vb_cheat_seen') === '1') dot.style.display = 'none'; }catch(e){}
   })();
 
+  /* cartaz da netiqueta em ecrã inteiro: abre a partir da cábula, fecha por botão, Escape ou clique fora */
+  var lastFocusedBeforeImg = null;
+  function openNetiquetaImg(){
+    lastFocusedBeforeImg = document.activeElement;
+    document.getElementById('netiqueta-lightbox').classList.add('show');
+    document.getElementById('btn-close-netiqueta-img').focus();
+    sfxClick();
+  }
+  function closeNetiquetaImg(){
+    document.getElementById('netiqueta-lightbox').classList.remove('show');
+    if(lastFocusedBeforeImg){ lastFocusedBeforeImg.focus(); lastFocusedBeforeImg = null; }
+  }
+  document.getElementById('btn-open-netiqueta-img').addEventListener('click', openNetiquetaImg);
+  document.getElementById('btn-close-netiqueta-img').addEventListener('click', closeNetiquetaImg);
+  document.getElementById('netiqueta-lightbox').addEventListener('click', function(e){
+    if(e.target === this) closeNetiquetaImg();
+  });
+
   /* link "Ver cábula" no ecrã final, apontando para a aba certa consoante a missão */
   var END_CHEAT_TAB = { detective:'remetente', tone:'tom', elements:'elementos' };
   var btnEndCheat = document.getElementById('btn-open-cheat-end');
@@ -2710,6 +2743,11 @@
     var overlay = document.getElementById('overlay');
     var modal = document.getElementById('mail-modal');
     var cheatModal = document.getElementById('cheat-modal');
+    var netiquetaImg = document.getElementById('netiqueta-lightbox');
+    if(netiquetaImg.classList.contains('show')){
+      closeNetiquetaImg();
+      return;
+    }
     if(cheatModal.classList.contains('show')){
       cheatModal.classList.remove('show');
       if(lastFocusedEl){ lastFocusedEl.focus(); lastFocusedEl = null; }
@@ -2728,7 +2766,9 @@
     var confirmOverlay = document.getElementById('confirm-overlay');
     var mailModal = document.getElementById('mail-modal');
     var cheatModal = document.getElementById('cheat-modal');
-    var activeModal = overlayFeedback.classList.contains('show') ? overlayFeedback
+    var netiquetaImg = document.getElementById('netiqueta-lightbox');
+    var activeModal = netiquetaImg.classList.contains('show') ? netiquetaImg
+      : overlayFeedback.classList.contains('show') ? overlayFeedback
       : confirmOverlay.classList.contains('show') ? confirmOverlay
       : cheatModal.classList.contains('show') ? cheatModal
       : mailModal.classList.contains('show') ? mailModal

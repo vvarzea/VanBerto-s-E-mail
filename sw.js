@@ -9,7 +9,7 @@
    Coloca este ficheiro na MESMA pasta do index.html para o registo funcionar (e mantém lá
    também o manifest, os ícones e a pasta fonts/). */
 
-const CACHE_NAME = 'vanbertos-detetive-email-v12';
+const CACHE_NAME = 'vanbertos-detetive-email-v13';
 const PAGE_TIMEOUT_MS = 3000;
 const INDEX_URL = new URL('./index.html', self.registration.scope).href;
 const CORE_ASSETS = [
