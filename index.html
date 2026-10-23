@@ -57,7 +57,7 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    padding: calc(24px + env(safe-area-inset-top,0px)) max(16px, env(safe-area-inset-left,0px)) calc(60px + env(safe-area-inset-bottom,0px)) max(16px, env(safe-area-inset-right,0px));
+    padding: calc(24px + env(safe-area-inset-top,0px)) max(16px, env(safe-area-inset-left,0px)) calc(120px + env(safe-area-inset-bottom,0px)) max(16px, env(safe-area-inset-right,0px));
   }
 
   .stage{ width:100%; max-width: 880px; }
@@ -102,6 +102,45 @@
   @keyframes bounce{ 0%{transform:translateY(0)} 30%{transform:translateY(-14px)} 55%{transform:translateY(0)} 75%{transform:translateY(-6px)} 100%{transform:translateY(0)} }
   .vb-shake{ animation: shake .45s ease; }
   @keyframes shake{ 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+
+  /* ---------- VanBerto no canto (mascote com balão) ---------- */
+  @property --vbm-color{ syntax:"<color>"; inherits:true; initial-value:#dcebff; }
+  .vb-mascot{
+    position:fixed; right:max(10px, env(safe-area-inset-right,0px)); bottom:max(10px, env(safe-area-inset-bottom,0px));
+    z-index:30; display:flex; flex-direction:column; align-items:flex-end; gap:14px; pointer-events:none;
+  }
+  .vb-mascot.hidden{ display:none; }
+  .vb-mascot-bubble{
+    --vbm-color:#dcebff; transition: --vbm-color .8s ease-in-out;
+    position:relative; box-sizing:border-box; width:max-content; max-width:min(250px, calc(100vw - 32px)); min-width:130px;
+    margin-right:8px; padding:10px 12px; text-align:center;
+    font-family:var(--font-display); font-weight:700; font-size:15px; line-height:1.25; color:#0f172a;
+    background:linear-gradient(135deg, var(--vbm-color), #ffffff);
+    border:3px solid #0f172a; border-radius:18px; box-shadow:4px 4px 0 #0f172a;
+    display:grid;
+  }
+  .vb-mascot-bubble.off{ display:none; }
+  .vb-mascot-bubble::after{
+    content:""; position:absolute; bottom:-17px; right:34px;
+    border-left:10px solid transparent; border-right:10px solid transparent; border-top:15px solid var(--vbm-color);
+    filter: drop-shadow(2px 2px 0 #0f172a);
+  }
+  .vbm-ghost, .vbm-typed{ grid-area:1 / 1; }
+  .vbm-ghost{ visibility:hidden; }
+  .vb-mascot-btn{
+    pointer-events:auto; background:none; border:0; padding:0; margin:0; cursor:pointer; border-radius:50%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .vb-mascot-btn:focus-visible{ outline:3px solid var(--warn); outline-offset:3px; }
+  .vb-mascot-btn canvas{ display:block; width:96px; height:96px; animation: vbMBob 1.4s ease-in-out infinite; }
+  @keyframes vbMBob{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-2px);} }
+  @media (max-width:520px){
+    .vb-mascot-btn canvas{ width:76px; height:76px; }
+    .vb-mascot-bubble{ font-size:13px; max-width:min(200px, calc(100vw - 28px)); min-width:110px; padding:8px 10px; }
+    .vb-mascot-bubble::after{ right:24px; }
+  }
+  @media (max-height:520px){ .vb-mascot-bubble{ display:none; } }
+  @media (prefers-reduced-motion: reduce){ .vb-mascot-btn canvas{ animation:none; } }
 
   /* ---------- intro ---------- */
   .hero{
@@ -612,7 +651,6 @@
   <section id="screen-intro" class="screen active">
     <div class="hero">
       <div class="badge">🔎 VanBerto's</div>
-      <canvas id="vb-intro" class="vanberto big idle" aria-hidden="true"></canvas>
       <h1>Detetive do <span>E-mail</span></h1>
       <p class="lede">Três missões à tua espera: apanhar armadilhas de phishing, acertar no tom certo e testar tudo sobre o e-mail — elementos, netiqueta e endereços. Escolhe uma para começar.</p>
       <div class="name-row" style="margin-bottom:8px;">
@@ -772,7 +810,6 @@
       <div class="pill player-pill">🕵️ <span id="name-tag-game">Detetive</span></div>
     </div>
     <div class="topbar">
-      <canvas id="vb-game" class="vanberto" style="width:64px;height:64px;" aria-hidden="true"></canvas>
       <div class="progress-wrap" aria-live="polite">
         <div class="progress-label"><span id="round-label">0 de 8 analisados</span><span id="score-label">0 pontos</span></div>
         <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
@@ -793,7 +830,6 @@
       <div class="pill player-pill">🕵️ <span id="name-tag-tone">Detetive</span></div>
     </div>
     <div class="hero" style="padding-top:6px; padding-bottom:0;">
-      <canvas id="vb-tone" class="vanberto" style="width:80px;height:80px;" aria-hidden="true"></canvas>
       <h2 style="font-family:var(--font-display); font-size:24px; margin:10px 0 4px;">Missão 2 — Formal ou Informal?</h2>
       <p class="lede" style="margin:6px auto 18px; font-size:15px;">Lê a mensagem e decide qual é o tom certo.</p>
     </div>
@@ -819,7 +855,6 @@
       <div class="pill player-pill">🕵️ <span id="name-tag-elements">Detetive</span></div>
     </div>
     <div class="hero" style="padding-top:6px; padding-bottom:0;">
-      <canvas id="vb-elements" class="vanberto" style="width:80px;height:80px;" aria-hidden="true"></canvas>
       <h2 style="font-family:var(--font-display); font-size:24px; margin:10px 0 4px;">Missão 3 — Sobre o E-mail</h2>
       <p class="lede" style="margin:6px auto 18px; font-size:15px;">Elementos, netiqueta e endereços — tudo à prova.</p>
     </div>
@@ -1077,6 +1112,14 @@
   </div>
 </div>
 
+<!-- VanBerto no canto: robô com lupa + balão com dicas -->
+<div class="vb-mascot" id="vb-mascot">
+  <div class="vb-mascot-bubble" id="vb-mascot-bubble" aria-hidden="true"><span class="vbm-ghost" id="vbm-ghost"></span><span class="vbm-typed" id="vbm-typed"></span></div>
+  <button type="button" class="vb-mascot-btn" id="vb-mascot-btn" aria-label="VanBerto's: mostrar ou esconder as dicas" aria-pressed="true">
+    <canvas id="vb-mascot-cv" class="vanberto" aria-hidden="true"></canvas>
+  </button>
+</div>
+
 <!-- feedback overlay -->
 <div class="overlay" id="overlay">
   <div class="feedback-card" role="dialog" aria-modal="true" aria-live="assertive" aria-labelledby="fb-verdict">
@@ -1110,7 +1153,7 @@
   }
   function cfVan(ctx,x,y,r,color){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();}
 
-  function drawVanBerto(ctx,blink,step,armsUp){
+  function drawVanBerto(ctx,blink,step,armsUp,lupa,gentle){
     const w=96,h=96;
     ctx.clearRect(0,0,w,h);
     ctx.lineJoin="round"; ctx.lineCap="round";
@@ -1118,7 +1161,7 @@
     const NAVY="#16233e", NAVY2="#26365a", OUT="#101a30";
     function white(x0,y0,x1,y1){const g=ctx.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,"#ffffff");g.addColorStop(0.55,"#e6edf7");g.addColorStop(1,"#b4c4dc");return g;}
 
-    const LIFT=8, STRIDE=3;
+    const LIFT=gentle?4:8, STRIDE=gentle?2.2:3;
     let lTop=70, rTop=70, lDX=0, rDX=0;
     if(step===0){ lTop=70-LIFT; lDX=STRIDE; rDX=-STRIDE; }
     else if(step===1){ rTop=70-LIFT; rDX=STRIDE; lDX=-STRIDE; }
@@ -1139,19 +1182,32 @@
     if(armsUp){ lArmSwing = JUMP_RAISE; rArmSwing = -JUMP_RAISE; }
     else if(step===0){ lArmSwing=-ARM_SWING; rArmSwing=ARM_SWING; }
     else if(step===1){ lArmSwing=ARM_SWING; rArmSwing=-ARM_SWING; }
-    function arm(sx,swing){
+    function arm(sx,swing,tool){
       ctx.save();
       const px=sx+4.5, py=52;
       ctx.translate(px,py); ctx.rotate(swing); ctx.translate(-px,-py);
       rrVan(ctx,sx,52,9,13,4.5); ctx.fillStyle=white(sx,52,sx+9,52); ctx.fill();
       ctx.lineWidth=2.6; ctx.strokeStyle=OUT; ctx.stroke();
+      if(tool){
+        /* lupa do detetive: cabo, lente e reflexo; o vidro muda de cor com o humor (verde = certo, vermelho = errado) */
+        ctx.lineCap="round";
+        ctx.beginPath(); ctx.moveTo(sx+5.9,68.4); ctx.lineTo(sx+12.8,74.9); ctx.lineWidth=5; ctx.strokeStyle=OUT; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(sx+5.9,68.4); ctx.lineTo(sx+12.8,74.9); ctx.lineWidth=2.4; ctx.strokeStyle="#a8692f"; ctx.stroke();
+        const lx=sx+18.2, ly=80.1;
+        ctx.beginPath(); ctx.arc(lx,ly,8.5,0,Math.PI*2);
+        ctx.fillStyle = blink==="happy" ? "rgba(74,222,128,0.42)" : blink==="sad" ? "rgba(255,107,107,0.42)" : "rgba(127,212,255,0.3)";
+        ctx.fill(); ctx.lineWidth=3; ctx.strokeStyle=OUT; ctx.stroke();
+        ctx.beginPath(); ctx.arc(lx,ly,8.5,0,Math.PI*2); ctx.lineWidth=1.3; ctx.strokeStyle="#f5b83d"; ctx.stroke();
+        ctx.beginPath(); ctx.arc(lx,ly,5.6,-2.714,-1.681); ctx.lineWidth=1.7; ctx.strokeStyle="rgba(255,255,255,0.9)"; ctx.stroke();
+      }
       const hx=sx+4.5, hy=67;
       cfVan(ctx,hx,hy,5,NAVY);
       ctx.lineWidth=2.3; ctx.strokeStyle=OUT; ctx.beginPath(); ctx.arc(hx,hy,5,0,Math.PI*2); ctx.stroke();
       cfVan(ctx,hx-2,hy+1.6,1.4,NAVY2); cfVan(ctx,hx+0.5,hy+2.4,1.4,NAVY2); cfVan(ctx,hx+2.5,hy+1.6,1.4,NAVY2);
       ctx.restore();
     }
-    arm(17,lArmSwing); arm(70,rArmSwing);
+    arm(17,lArmSwing);
+    if(typeof lupa==="number"){ arm(70,lupa,true); } else { arm(70,rArmSwing); }
 
     rrVan(ctx,26,44,44,32,15); ctx.fillStyle=white(28,46,68,46); ctx.fill();
     ctx.save(); rrVan(ctx,26,44,44,32,15); ctx.clip();
@@ -1249,41 +1305,132 @@
     ctx.restore();
   }
 
-  var vbCtxMap = {}, vbBusyMap = {};
+  var vbCtxMap = {}, vbState = {};
+  var VB_LUPA_REST = -140*Math.PI/180;          /* lupa levantada, ao lado da cabeça */
+  var VB_MASCOT = 'vb-mascot-cv';
+  /* os robôs que antes estavam nos ecrãs passam a ser o mascote do canto */
+  var VB_ALIAS = { 'vb-intro':VB_MASCOT, 'vb-game':VB_MASCOT, 'vb-tone':VB_MASCOT, 'vb-elements':VB_MASCOT };
+  var vbReduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   function vbInit(id, scale){
     var el = document.getElementById(id);
+    if(!el) return;
     el.width = 96*scale; el.height = 96*scale;
     var ctx = el.getContext('2d');
     ctx.scale(scale, scale);
     vbCtxMap[id] = ctx;
+    vbState[id] = { blink:false, armsUp:false, react:'neutral', phrase:false };
   }
+  function vbMood(m){ return m==='happy' ? 'happy' : m==='sad' ? 'sad' : m==='wink' ? 'wink' : false; }
   function paint(id, mood, armsUp){
-    var ctx = vbCtxMap[id];
+    id = VB_ALIAS[id] || id;
+    var ctx = vbCtxMap[id], s = vbState[id];
     if(!ctx) return;
-    var blink = mood==='happy' ? 'happy' : mood==='sad' ? 'sad' : mood==='wink' ? 'wink' : false;
-    drawVanBerto(ctx, blink, -1, !!armsUp);
+    if(id === VB_MASCOT){
+      /* mascote: guarda a reação ao jogo (acerto/erro); o desenho é feito no ciclo abaixo */
+      var cv = document.getElementById(id);
+      if(cv && !vbReduce && mood !== s.react && (mood==='happy' || mood==='sad')){
+        var cls = mood==='happy' ? 'vb-bounce' : 'vb-shake';
+        cv.classList.remove('vb-bounce','vb-shake'); void cv.offsetWidth; cv.classList.add(cls);
+      }
+      s.react = mood || 'neutral';
+      s.armsUp = !!armsUp;
+      vbDrawMascot(performance.now());
+      return;
+    }
+    s.blink = vbMood(mood);
+    s.armsUp = !!armsUp;
+    drawVanBerto(ctx, s.blink, -1, s.armsUp, VB_LUPA_REST);
   }
-  function vbBlinkOnce(id){
-    if(vbBusyMap[id]) return;
-    var ctx = vbCtxMap[id];
-    drawVanBerto(ctx, true, -1, false);
-    setTimeout(function(){ if(!vbBusyMap[id]) drawVanBerto(ctx, false, -1, false); }, 180);
+  function vbDrawMascot(now){
+    var ctx = vbCtxMap[VB_MASCOT], s = vbState[VB_MASCOT];
+    if(!ctx || !s) return;
+    var t = now/1000;
+    var mood = s.react !== 'neutral' ? vbMood(s.react) : s.phrase;
+    var ang = VB_LUPA_REST, step = -1;
+    if(!vbReduce){
+      var k = 0.5 - 0.5*Math.cos(t*2*Math.PI/4.4);
+      ang = (-146 + 10*k)*Math.PI/180;      /* a lupa percorre devagar a zona */
+      step = Math.floor(t/0.45) % 2;        /* passinhos no lugar, sempre */
+      if(mood === false && (t % 5.5) < 0.16) mood = true;   /* pisca de vez em quando */
+    }
+    drawVanBerto(ctx, mood, step, s.armsUp, ang, true);
   }
-  function vbWalkOnce(id){
-    if(vbBusyMap[id]) return;
-    vbBusyMap[id] = true;
-    var ctx = vbCtxMap[id], i = 0;
-    var iv = setInterval(function(){
-      drawVanBerto(ctx, false, i%2===0?0:1, false); i++;
-      if(i >= 6){ clearInterval(iv); drawVanBerto(ctx, false, -1, false); vbBusyMap[id] = false; }
-    }, 170);
+  ['vb-end','vb-feedback','vb-cert'].forEach(function(id){ vbInit(id, 3); paint(id,'neutral'); });
+  vbInit(VB_MASCOT, 3); paint(VB_MASCOT, 'neutral');
+  if(!vbReduce){
+    var vbLast = 0;
+    (function vbLoop(now){
+      requestAnimationFrame(vbLoop);
+      if(now - vbLast < 45) return;
+      vbLast = now;
+      var wrap = document.getElementById('vb-mascot');
+      if(!wrap || wrap.classList.contains('hidden') || document.hidden) return;
+      vbDrawMascot(now);
+    })(0);
   }
-  ['vb-intro','vb-game','vb-tone','vb-elements','vb-end','vb-feedback','vb-cert'].forEach(function(id){ vbInit(id, 3); paint(id,'neutral'); });
-  setInterval(function(){
-    if(!document.getElementById('screen-intro').classList.contains('active')) return;
-    if(vbBusyMap['vb-intro']) return;
-    if(Math.random() < 0.4) vbWalkOnce('vb-intro'); else vbBlinkOnce('vb-intro');
-  }, 4200);
+
+  /* ---------------- mascote do canto: balão com dicas por ecrã ---------------- */
+  var VBM_LINES = {
+    intro: [
+      ["Olá, detetive! Sou o VanBerto's! 🕵️", '#dcebff', 'happy'],
+      ['Escreve o teu nome e escolhe uma missão! 📋', '#ede9fe', 'wink'],
+      ['Há casos à tua espera na caixa de entrada! 📥', '#fef9c3', false]
+    ],
+    game: [
+      ['Lê o endereço completo, depois do @! 🔎', '#cffafe', false],
+      ['Será que este e-mail é de confiança? 🤔', '#fef9c3', false],
+      ['Cuidado com prémios e pedidos urgentes! ⚠️', '#fecdd3', 'sad'],
+      ['Marca o que te parece suspeito! 🖍️', '#dcfce7', 'happy']
+    ],
+    tone: [
+      ['Formal ou informal? Depende de quem recebe! 💬', '#dcfce7', false],
+      ['Repara na saudação e na despedida! 👀', '#fef9c3', false],
+      ['Emojis e abreviaturas pedem tom informal! 😄', '#f5d0fe', 'happy']
+    ],
+    elements: [
+      ['Cc, Bcc, Reencaminhar… sabes a diferença? 📧', '#f5d0fe', false],
+      ['Um endereço válido tem um só @! 🔎', '#cffafe', false],
+      ['Válido não é o mesmo que de confiança! ⚠️', '#fecdd3', 'sad']
+    ]
+  };
+  var vbmScreen = 'intro', vbmIdx = 0, vbmTimer = null, vbmTipsOff = false;
+  function vbmSay(){
+    if(vbmTimer){ clearTimeout(vbmTimer); vbmTimer = null; }
+    var wrap = document.getElementById('vb-mascot'), bubble = document.getElementById('vb-mascot-bubble'),
+        ghost = document.getElementById('vbm-ghost'), typed = document.getElementById('vbm-typed');
+    if(!wrap || !bubble) return;
+    var list = VBM_LINES[vbmScreen];
+    if(!list){ wrap.classList.add('hidden'); return; }       /* no ecrã final fica só o robô grande */
+    wrap.classList.remove('hidden');
+    var L = list[vbmIdx % list.length];
+    var st = vbState[VB_MASCOT]; if(st) st.phrase = vbMood(L[2]);
+    bubble.style.setProperty('--vbm-color', L[1]);
+    ghost.textContent = L[0];
+    typed.textContent = '';
+    if(vbReduce){ typed.textContent = L[0]; vbmTimer = setTimeout(vbmNext, 5500); return; }
+    var chars = Array.from(L[0]), n = 0;
+    (function type(){
+      if(n < chars.length){ typed.textContent += chars[n++]; vbmTimer = setTimeout(type, 45); }
+      else { vbmTimer = setTimeout(vbmNext, 2600); }
+    })();
+  }
+  function vbmNext(){ vbmIdx++; vbmSay(); }
+  function vbMascotScreen(name){
+    vbmScreen = name; vbmIdx = 0;
+    var st = vbState[VB_MASCOT]; if(st){ st.react = 'neutral'; st.armsUp = false; }
+    vbmSay();
+  }
+  (function(){
+    var btn = document.getElementById('vb-mascot-btn'), bubble = document.getElementById('vb-mascot-bubble');
+    if(btn && bubble){
+      btn.addEventListener('click', function(){
+        vbmTipsOff = !vbmTipsOff;
+        bubble.classList.toggle('off', vbmTipsOff);
+        btn.setAttribute('aria-pressed', vbmTipsOff ? 'false' : 'true');
+      });
+    }
+  })();
+  vbmSay();
 
   /* ---------------- sound (Web Audio API, no assets) ---------------- */
   var actx;
@@ -2195,6 +2342,7 @@
   };
   function showScreen(name){
     Object.keys(screens).forEach(function(k){ screens[k].classList.toggle('active', k===name); });
+    vbMascotScreen(name);
   }
 
   function updateNameTags(){
