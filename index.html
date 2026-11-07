@@ -16,6 +16,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Detetive do E-mail">
+<script>
+(function(){ var t='light'; try{ t = localStorage.getItem('vb_theme') || 'light'; }catch(e){} document.documentElement.setAttribute('data-theme', t==='dark'?'dark':'light'); })();
+</script>
 <style>
   /* fontes alojadas localmente (pasta fonts/) — sem pedidos ao Google e a funcionar offline */
   @font-face{ font-family:'Baloo 2'; font-style:normal; font-weight:500; font-display:swap; src:url('fonts/baloo-2-latin-500-normal.woff2') format('woff2'); }
@@ -49,8 +52,11 @@
   body{
     min-height:100vh;
     background:
-      radial-gradient(ellipse at 20% -10%, #2a2258 0%, transparent 55%),
-      radial-gradient(ellipse at 100% 110%, #221b46 0%, transparent 50%),
+      radial-gradient(rgba(255,255,255,.07) 1.3px, transparent 1.7px) 0 0 / 24px 24px,
+      radial-gradient(ellipse 60% 45% at 8% 0%, rgba(124,58,237,.55) 0%, transparent 70%),
+      radial-gradient(ellipse 55% 40% at 100% 35%, rgba(14,165,233,.30) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 45% at 0% 70%, rgba(236,72,153,.28) 0%, transparent 70%),
+      radial-gradient(ellipse 70% 50% at 100% 105%, rgba(249,115,22,.30) 0%, transparent 70%),
       var(--bg);
     color: var(--ink);
     font-family: var(--font-body);
@@ -152,8 +158,32 @@
     padding:6px 14px; border-radius:999px; font-size:13px; color: var(--ink-dim);
     margin-bottom: 18px;
   }
-  .hero h1{ font-size: clamp(30px, 6vw, 46px); line-height:1.05; }
-  .hero h1 span{ color: var(--warn); }
+  .hero-banner{
+    position:relative; overflow:hidden; padding:30px 22px 26px; margin:6px 0 22px;
+    border-radius:30px; border:3px solid #1e1b4b;
+    background:linear-gradient(135deg,#7c3aed 0%,#c026d3 48%,#f97316 100%);
+    box-shadow:0 0 0 3px rgba(255,255,255,.22), 0 9px 0 #0b0820, 0 22px 40px rgba(0,0,0,.4);
+  }
+  .hero-banner::after{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255,255,255,.28), transparent 70%);
+  }
+  .hero-banner > *:not(.deco){ position:relative; z-index:1; }
+  .hero-banner .badge{ background:#fff; color:#1e1b4b; border:2px solid #1e1b4b; font-weight:800; box-shadow:0 3px 0 #1e1b4b; }
+  .hero .hero-banner p.lede{ color:rgba(255,255,255,.95); font-weight:500; }
+  .hero h1{ font-size: clamp(40px, 9vw, 68px); line-height:1; color:#fff; text-shadow:0 4px 0 #1e1b4b, 0 8px 18px rgba(0,0,0,.35); letter-spacing:.01em; }
+  .hero h1 span{ color:#ffe066; display:inline-block; }
+  .deco{ position:absolute; font-size:clamp(26px,5vw,40px); opacity:.9; z-index:0; filter:drop-shadow(0 4px 6px rgba(0,0,0,.3)); animation:decoFloat 5s ease-in-out infinite; }
+  .deco.d1{ left:4%; top:14%; } .deco.d2{ right:5%; top:10%; animation-delay:-1.2s; }
+  .deco.d3{ left:6%; bottom:12%; animation-delay:-2.4s; } .deco.d4{ right:6%; bottom:14%; animation-delay:-3.4s; }
+  @keyframes decoFloat{ 0%,100%{ transform:translateY(0) rotate(-6deg); } 50%{ transform:translateY(-8px) rotate(6deg); } }
+  @media (prefers-reduced-motion: reduce){ .deco{ animation:none; } }
+  @media (max-width:520px){ .deco.d3,.deco.d4{ display:none; } }
+  .acc .mode-card{ background:linear-gradient(180deg,#322a6c 0%,#1f1a3f 100%); border-top-width:6px; }
+  .acc-yellow .mode-card:nth-child(1){ border-top-color:#ff5470; }
+  .acc-yellow .mode-card:nth-child(2){ border-top-color:#2fd9c4; }
+  .acc-yellow .mode-card:nth-child(3){ border-top-color:#ffca4b; }
+  .acc-blue .mode-card{ border-top-color:#4cc9f0; }
   .hero p.lede{ color: var(--ink-dim); font-size:17px; max-width:520px; margin: 14px auto 26px; line-height:1.5; }
 
   .name-row{
@@ -181,6 +211,8 @@
     .mode-card{ flex:1 1 0; max-width:none; min-width:0; }
   }
   .mode-icon{ font-size:34px; line-height:1; }
+  .mode-kicker{ font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-dim); margin-top:4px; }
+  .mode-extra{ margin-top:2px; }
   .mode-card h3{ font-size:16px; margin:2px 0 0; }
   .mode-card p{ font-size:13px; color:var(--ink-dim); line-height:1.5; margin:0; flex:1; }
   .mode-card .btn{ width:100%; margin-top:4px; }
@@ -242,6 +274,32 @@
   .review-summary ul{ margin:0; padding-left:18px; color:var(--ink-dim); font-size:13.5px; line-height:1.6; }
   .review-summary li strong{ color: var(--ink); }
 
+  .acc{ max-width:1000px; margin:14px auto 0; text-align:left; }
+  .acc-head{
+    all:unset; box-sizing:border-box; display:flex; align-items:center; gap:12px; width:100%;
+    padding:16px 20px; border-radius:22px; border:3px solid #1e1b4b; cursor:pointer;
+    font-family:var(--font-display); font-size:20px; font-weight:800; color:#1e1b4b;
+    box-shadow:0 6px 0 #0b0820; transition:transform .12s, box-shadow .12s;
+  }
+  .acc-head:hover{ transform:translateY(-2px); box-shadow:0 8px 0 #0b0820; }
+  .acc-head:focus-visible{ outline:3px solid #fff; outline-offset:3px; }
+  .acc-head .acc-ico{ font-size:26px; line-height:1; }
+  .acc-head .acc-sub{ font-family:var(--font-body, inherit); font-size:13px; font-weight:600; opacity:.75; margin-left:4px; }
+  .acc-head .acc-arrow{ margin-left:auto; font-size:16px; transition:transform .2s; }
+  .acc-head[aria-expanded="true"] .acc-arrow{ transform:rotate(90deg); }
+  .acc-yellow .acc-head{ background:#ffd23f; }
+  .acc-blue .acc-head{ background:#4cc9f0; }
+  .acc-green .acc-head{ background:#2de2a6; }
+  .acc-body{ padding:18px 0 6px; }
+  .acc-body[hidden]{ display:none; }
+  .acc-body .mode-grid.single{ width:auto; max-width:360px; transform:none; margin-left:auto; margin-right:auto; }
+  .acc-body .how-card{ margin-top:0; }
+  .acc-actions{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:14px; }
+  @media (prefers-reduced-motion: reduce){ .acc-head, .acc-head .acc-arrow{ transition:none; } }
+  @media (min-width: 1080px){
+    .acc{ width:1000px; max-width:none; margin-left:50%; transform:translateX(-50%); }
+    .acc .mode-grid{ width:100%; margin-left:0; transform:none; }
+  }
   .how-card{
     background: var(--panel); border:1px solid var(--line); border-radius: var(--radius);
     padding: 20px 22px; max-width:560px; margin: 30px auto 0; text-align:left;
@@ -635,11 +693,69 @@
     .mixed-transition{ transition:none !important; }
   }
   .sr-only{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+
+  /* ===== tema claro (por defeito) — o escuro mantém-se como opção (botão 🌙/☀️) ===== */
+  html[data-theme="dark"]{ color-scheme:dark; }
+  html[data-theme="light"]{
+    color-scheme:light;
+    --bg:#fff8e7; --bg-vignette:#ffecc8; --panel:#ffffff; --panel-2:#fff1cf; --line:#d9c9a0;
+    --ink:#1e1b4b; --ink-dim:#5a5682;
+    --danger:#e11d48; --danger-dim:#ffe4ea; --safe:#0b8a78; --safe-dim:#d7f6ef; --warn:#b45309;
+  }
+  html[data-theme="light"] body{
+    background:
+      radial-gradient(rgba(30,27,75,.09) 1.3px, transparent 1.7px) 0 0 / 24px 24px,
+      radial-gradient(ellipse 60% 45% at 5% 0%, rgba(167,139,250,.45) 0%, transparent 70%),
+      radial-gradient(ellipse 55% 40% at 100% 30%, rgba(125,211,252,.45) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 45% at 0% 75%, rgba(249,168,212,.40) 0%, transparent 70%),
+      radial-gradient(ellipse 70% 50% at 100% 105%, rgba(253,186,116,.50) 0%, transparent 70%),
+      var(--bg);
+  }
+  html[data-theme="light"] .btn:not(.ghost):not(.safe):not(.danger){
+    background:#ffca4b; color:#1e1b4b; border:2px solid #1e1b4b; box-shadow:0 4px 0 #1e1b4b;
+  }
+  html[data-theme="light"] .btn.safe{ background:#2de2a6; color:#06261d; border:2px solid #1e1b4b; box-shadow:0 4px 0 #1e1b4b; }
+  html[data-theme="light"] .btn.danger{ background:#ff7a90; color:#2a0912; border:2px solid #1e1b4b; box-shadow:0 4px 0 #1e1b4b; }
+  html[data-theme="light"] .btn.ghost{ background:#fff; color:#1e1b4b; border:2px solid #1e1b4b; box-shadow:0 3px 0 #1e1b4b; }
+  html[data-theme="light"] .btn:active{ box-shadow:none; }
+  html[data-theme="light"] .top-controls .btn{ box-shadow:0 3px 0 #1e1b4b; }
+  html[data-theme="light"] .progress-fill{ background:linear-gradient(90deg,#2de2a6,#ffca4b); }
+  html[data-theme="light"] .case-tab .dot{ background:#ffca4b; }
+  html[data-theme="light"] .cheat-tab.active{ background:#ffca4b; color:#1e1b4b; border-color:#1e1b4b; }
+  html[data-theme="light"] .clue-chip.on,
+  html[data-theme="light"] .inbox-status.pending{ background:#fff1c2; }
+  html[data-theme="light"] .acc .mode-card{ background:#fff; border-color:var(--line); border-top-width:6px; box-shadow:0 5px 0 rgba(30,27,75,.12); }
+  html[data-theme="light"] .acc-yellow .mode-card:nth-child(1){ border-top-color:#ff5470; }
+  html[data-theme="light"] .acc-yellow .mode-card:nth-child(2){ border-top-color:#2fd9c4; }
+  html[data-theme="light"] .acc-yellow .mode-card:nth-child(3){ border-top-color:#ffca4b; }
+  html[data-theme="light"] .acc-blue .mode-card{ border-top-color:#4cc9f0; }
+  html[data-theme="light"] .name-row input{ border-color:#1e1b4b; background:#fff; }
+  html[data-theme="light"] .acc-head{ box-shadow:0 6px 0 #1e1b4b; }
+  html[data-theme="light"] .hero-banner{ box-shadow:0 0 0 3px rgba(255,255,255,.7), 0 9px 0 #1e1b4b, 0 22px 36px rgba(30,27,75,.25); }
+  /* nome obrigatório */
+  .name-required{ display:none; margin:-10px auto 14px; max-width:480px; padding:9px 14px; border-radius:14px; font-weight:700; font-size:14px;
+    background:#ffe4ea; color:#9f1239; border:2px solid #e11d48; text-align:center; }
+  .name-required.show{ display:block; }
+  .name-row input.need{ border-color:#e11d48 !important; animation:needShake .35s; }
+  @keyframes needShake{ 0%,100%{ transform:translateX(0); } 25%{ transform:translateX(-6px); } 75%{ transform:translateX(6px); } }
+  @media (prefers-reduced-motion: reduce){ .name-row input.need{ animation:none; } }
+
+  .name-pill-row{ display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; margin:2px auto 18px; }
+  .name-pill-row .greet{ font-family:var(--font-display); font-weight:800; font-size:clamp(18px,3.6vw,24px); color:var(--ink); }
+  .name-pill{ all:unset; box-sizing:border-box; cursor:pointer; display:inline-flex; align-items:center; gap:8px;
+    padding:8px 16px; border-radius:999px; background:var(--panel); color:var(--ink); font-weight:800; font-size:15px;
+    border:2px solid var(--ink); box-shadow:0 3px 0 var(--ink); }
+  .name-pill:hover{ transform:translateY(-1px); }
+  .name-pill:focus-visible{ outline:3px solid var(--warn); outline-offset:3px; }
+  .name-pill .pill-edit{ font-weight:600; font-size:12px; color:var(--ink-dim); }
+  .name-row .btn{ padding:11px 22px; font-size:15px; }
 </style>
 </head>
 <body>
 
 <div class="top-controls">
+  <button class="btn ghost" id="btn-theme" title="Mudar entre claro e escuro" aria-label="Mudar para tema escuro">🌙</button>
+  <button class="btn ghost" id="btn-close-game" title="Fechar o jogo" aria-label="Fechar o jogo">✕</button>
   <button class="btn ghost" id="btn-cheatsheet" title="Cábula: dicas rápidas" aria-label="Abrir cábula com dicas rápidas"><span aria-hidden="true">🗒️</span><span class="cheat-dot" id="cheat-dot"></span></button>
   <button class="btn ghost" id="btn-fullscreen" title="Ecrã inteiro" aria-label="Ver em ecrã inteiro">⛶</button>
   <button class="btn ghost" id="btn-mute" title="Ligar/desligar som" aria-label="Som desligado — clicar para ligar">🔇</button>
@@ -650,18 +766,22 @@
   <!-- ============ SCREEN 0: INTRO ============ -->
   <section id="screen-intro" class="screen active">
     <div class="hero">
+      <div class="hero-banner">
+      <span class="deco d1" aria-hidden="true">✉️</span><span class="deco d2" aria-hidden="true">🔎</span><span class="deco d3" aria-hidden="true">🎣</span><span class="deco d4" aria-hidden="true">🛡️</span>
       <div class="badge">🔎 VanBerto's</div>
       <h1>Detetive do <span>E-mail</span></h1>
-      <p class="lede">Três missões à tua espera: apanhar armadilhas de phishing, acertar no tom certo e testar tudo sobre o e-mail — elementos, netiqueta e endereços. Escolhe uma para começar.</p>
+      <p class="lede">Três missões e um Desafio Final à tua espera: apanhar armadilhas de phishing, acertar no tom certo e testar tudo sobre o e-mail — elementos, netiqueta e endereços. Escolhe uma para começar.</p>
+      </div>
       <div class="name-row" style="margin-bottom:8px;">
-        <input id="player-name" type="text" placeholder="Como te chamas, detetive?" maxlength="24">
+        <input id="player-name" type="text" placeholder="O teu nome (obrigatório)" maxlength="24" required aria-describedby="name-required" autocomplete="off">
         <input id="player-turma" type="text" placeholder="Turma / n.º (opcional)" maxlength="12">
+        <button type="button" class="btn" id="btn-confirm-name">Entrar ▶</button>
       </div>
-      <div class="device-note" id="device-note">
-        🖥️ Os recordes ficam guardados neste dispositivo, associados ao nome (e turma/n.º, se preenchida).
-        <button type="button" class="link-btn" id="btn-clear-own">Apagar só o meu registo</button>
-        <button type="button" class="link-btn" id="btn-clear-device">Limpar recordes deste dispositivo</button>
+      <div class="name-pill-row" id="name-pill-row" style="display:none;">
+        <span class="greet" id="greet-text">Olá, detetive! Escolhe a tua missão.</span>
+        <button type="button" class="name-pill" id="btn-change-name" title="Mudar de nome" aria-label="Mudar de nome">👤 <span id="pill-name"></span><span class="pill-edit">✏️ Mudar</span></button>
       </div>
+      <div class="name-required" id="name-required" role="alert">✏️ Escreve o teu nome para começar, detetive!</div>
 
       <div class="resume-banner" id="resume-banner" style="display:none;" role="status">
         <div id="resume-text">Tens uma sessão em curso.</div>
@@ -686,9 +806,15 @@
         <ul id="review-summary-list"></ul>
       </div>
 
+      <div class="acc acc-yellow">
+        <button type="button" class="acc-head" id="acc-h-missoes" aria-expanded="true" aria-controls="acc-b-missoes">
+          <span class="acc-ico" aria-hidden="true">🕵️</span>Missões<span class="acc-sub">3 modos para treinar</span><span class="acc-arrow" aria-hidden="true">▶</span>
+        </button>
+        <div class="acc-body" id="acc-b-missoes" role="region" aria-labelledby="acc-h-missoes">
       <div class="mode-grid">
         <div class="mode-card">
           <div class="mode-icon">🕵️</div>
+          <div class="mode-kicker">Missão 1</div>
           <h3>Deteção de Phishing</h3>
           <p>Inspeciona a caixa de entrada, marca as pistas suspeitas e decide: confias ou eliminas?</p>
           <div class="mode-setup">
@@ -715,6 +841,7 @@
 
         <div class="mode-card">
           <div class="mode-icon">💬</div>
+          <div class="mode-kicker">Missão 2</div>
           <h3>Formal ou Informal?</h3>
           <p>Lê cada mensagem e decide qual é o tom certo — formal ou informal.</p>
           <div class="mode-setup">
@@ -741,8 +868,9 @@
 
         <div class="mode-card">
           <div class="mode-icon">📧</div>
+          <div class="mode-kicker">Missão 3</div>
           <h3>Elementos do E-mail</h3>
-          <p>Elementos, regras de netiqueta e endereços de e-mail — quanto sabes de cada um?</p>
+          <p>Elementos, as 10 regras da netiqueta e endereços de e-mail — quanto sabes de cada um?</p>
           <div class="mode-setup">
             <label for="elements-count-select">📧 Perguntas:</label>
             <select id="elements-count-select">
@@ -762,12 +890,24 @@
             <span class="level-count" id="elements-level-count"></span>
           </div>
           <button class="btn" id="start-elements-btn">Pôr o e-mail à prova</button>
+          <button type="button" class="link-btn mode-extra" id="btn-open-netiqueta-card">📜 Ver o cartaz da Netiqueta</button>
           <div class="mode-best" id="best-elements" style="display:none;"></div>
         </div>
 
+      </div>
+        </div>
+      </div>
+
+      <div class="acc acc-blue">
+        <button type="button" class="acc-head" id="acc-h-final" aria-expanded="false" aria-controls="acc-b-final">
+          <span class="acc-ico" aria-hidden="true">🏁</span>Desafio Final<span class="acc-sub">as 3 missões misturadas</span><span class="acc-arrow" aria-hidden="true">▶</span>
+        </button>
+        <div class="acc-body" id="acc-b-final" role="region" aria-labelledby="acc-h-final" hidden>
+      <div class="mode-grid single">
         <div class="mode-card">
           <div class="mode-icon">🏁</div>
-          <h3>Desafio Final</h3>
+          <div class="mode-kicker">Desafio Final</div>
+          <h3>Todas as missões</h3>
           <p>Rondas que saltam entre os 3 tipos de pergunta, sem avisar qual vem a seguir.</p>
           <div class="mode-setup">
             <label for="mixed-count-select">🏁 Rondas:</label>
@@ -791,14 +931,28 @@
         </div>
       </div>
 
+        </div>
+      </div>
+
+      <div class="acc acc-green">
+        <button type="button" class="acc-head" id="acc-h-ajuda" aria-expanded="false" aria-controls="acc-b-ajuda">
+          <span class="acc-ico" aria-hidden="true">🗒️</span>Como se joga e cábula<span class="acc-sub">regras e netiqueta</span><span class="acc-arrow" aria-hidden="true">▶</span>
+        </button>
+        <div class="acc-body" id="acc-b-ajuda" role="region" aria-labelledby="acc-h-ajuda" hidden>
       <div class="how-card">
         <h3>🕵️ Como se joga</h3>
         <ul>
-          <li>Escolhe um dos quatro modos acima — podes jogar só um ou repetir todos.</li>
+          <li>Abre uma barra (toca na seta ▶), escolhe um modo e joga — podes jogar só um ou repetir todos.</li>
           <li>Cada modo tem a sua própria pontuação, ranking e certificado.</li>
           <li>O Desafio Final mistura perguntas dos outros três modos numa só sessão, saltando de tipo em tipo.</li>
           <li>No fim de cada modo, podes rever as respostas, treinar só as que falhaste ou voltar ao menu para escolher outro.</li>
         </ul>
+        <div class="acc-actions">
+          <button type="button" class="btn ghost" id="btn-open-cheat-menu">🗒️ Abrir a cábula</button>
+          <button type="button" class="btn ghost" id="btn-open-netiqueta-menu">📜 Ver o cartaz da Netiqueta</button>
+        </div>
+      </div>
+        </div>
       </div>
     </div>
   </section>
@@ -2002,7 +2156,14 @@
     { short:'Escolher um assunto adequado', full:'O destinatário deve perceber rapidamente o tema da mensagem.' },
     { short:'Respeitar os outros', full:'Não uses o e-mail para insultar, ameaçar ou divulgar conteúdos inadequados.' },
     { short:'Não enviar spam', full:'Não envies mensagens não solicitadas ou publicidade indesejada.' },
-    { short:'Não reencaminhar correntes', full:'Não reencaminhes correntes ou mensagens duvidosas — verifica a informação antes de a partilhares.' }
+    { short:'Não reencaminhar correntes', full:'Não reencaminhes correntes ou mensagens duvidosas — verifica a informação antes de a partilhares.' },
+    { short:'Pensar antes de publicar ou enviar', full:'Na Internet, nem tudo desaparece: pensa antes de enviar ou publicar, porque o que partilhas pode ficar online muito tempo.' },
+    { short:'Pedir autorização antes de partilhar fotos', full:'A privacidade dos outros também importa: pede autorização antes de partilhares fotos onde aparecem outras pessoas.' },
+    { short:'Rever antes de publicar', full:'Relê antes de enviar: é verdade? É adequado? Posso estar a magoar alguém? Pensa na tua pegada digital.' },
+    { short:'Respeitar quem pensa de forma diferente', full:'Opiniões diferentes também fazem parte da Internet: podes discordar, mas sem desrespeitar.' },
+    { short:'Não alimentar provocações nem fazer ciberbullying', full:'Ignora, bloqueia e pede ajuda. Entrar na brincadeira ou reencaminhar piadas sobre alguém alimenta o problema.' },
+    { short:'Pedir ajuda quando algo incomoda', full:'Se algo te incomodar online, fala com um adulto de confiança — pedir ajuda é sempre uma boa decisão.' },
+    { short:'Proteger os dados pessoais', full:'Não partilhes palavras-passe, moradas, contactos ou outras informações privadas.' }
   ];
   var NETIQUETA_ROUNDS = [
     { text:'ASSUNTO: PRECISO DE AJUDA JÁ!!!\nPROFESSORA, PODE RESPONDER-ME O MAIS DEPRESSA POSSÍVEL???', ruleIdx:0, distractors:[6,7], difficulty:'facil' },
@@ -2012,7 +2173,14 @@
     { text:'Assunto: (em branco)\nBoa tarde, professora. Gostaria de saber se posso entregar o trabalho de Ciências na sexta-feira, por favor.', ruleIdx:4, distractors:[1,6], difficulty:'facil' },
     { text:'O teu trabalho está mesmo mau. Nem sei porque é que ainda estás neste grupo, ninguém quer trabalhar contigo.', ruleIdx:5, distractors:[1,6], difficulty:'facil' },
     { text:'Aproveita já! Desconto de 90% só hoje — clica aqui e ganha um prémio!!! (enviado a toda a turma sem ninguém ter pedido)', ruleIdx:6, distractors:[2,3], difficulty:'media' },
-    { text:'Reencaminha esta mensagem a 10 amigos até à meia-noite ou terás azar durante 7 anos!', ruleIdx:7, distractors:[1,2], difficulty:'facil' }
+    { text:'Reencaminha esta mensagem a 10 amigos até à meia-noite ou terás azar durante 7 anos!', ruleIdx:7, distractors:[1,2], difficulty:'facil' },
+    { text:'Estava chateada com a Marta, por isso escrevi tudo o que me veio à cabeça e carreguei logo em Enviar, sem pensar. Agora a turma inteira já leu.', ruleIdx:8, distractors:[1,6], difficulty:'media' },
+    { text:'Tirei uma fotografia à turma no recreio e já a enviei para o grupo do clube e para a lista de contactos. Ninguém sabia, mas ficou tão engraçada!', ruleIdx:9, distractors:[4,6], difficulty:'media' },
+    { text:'Enviei o e-mail ao diretor de turma com o nome da professora errado e uma frase sem sentido. Nem o li antes de enviar.', ruleIdx:10, distractors:[6,7], difficulty:'media' },
+    { text:'Dizes isso porque não percebes nada do assunto. A tua opinião é ridícula e não devias nem falar.', ruleIdx:11, distractors:[0,6], difficulty:'dificil' },
+    { text:'Toda a gente no grupo anda a gozar com o Tomás. Respondi \'hahaha\' e reencaminhei as piadas aos meus amigos para também se rirem.', ruleIdx:12, distractors:[6,3], difficulty:'dificil' },
+    { text:'Recebi mensagens de um desconhecido que me deixaram desconfortável. Apaguei tudo e não contei a ninguém porque tive vergonha.', ruleIdx:13, distractors:[7,4], difficulty:'dificil' },
+    { text:'Esqueci-me do código de acesso da escola, por isso deixei-o escrito num e-mail para a turma, junto com a minha morada e o meu telemóvel.', ruleIdx:14, distractors:[3,6], difficulty:'facil' }
   ];
 
   /* ---------------- fase 3 (extra): estrutura do endereço ---------------- */
@@ -2518,7 +2686,7 @@
   document.getElementById('player-name').addEventListener('input', refreshPlayerPanels);
   document.getElementById('player-turma').addEventListener('input', refreshPlayerPanels);
 
-  document.getElementById('btn-clear-own').addEventListener('click', function(){
+  (document.getElementById('btn-clear-own')||document.createElement('i')).addEventListener('click', function(){
     sfxClick();
     var key = currentPlayerKey();
     if(!key){
@@ -2542,7 +2710,7 @@
     refreshPlayerPanels();
   });
 
-  document.getElementById('btn-clear-device').addEventListener('click', function(){
+  (document.getElementById('btn-clear-device')||document.createElement('i')).addEventListener('click', function(){
     sfxClick();
     if(!confirm('Isto apaga os recordes e o resumo de revisão guardados neste dispositivo (de todos os alunos que já jogaram aqui). Continuar?')) return;
     try{
@@ -2872,6 +3040,7 @@
     if(lastFocusedBeforeImg){ lastFocusedBeforeImg.focus(); lastFocusedBeforeImg = null; }
   }
   document.getElementById('btn-open-netiqueta-img').addEventListener('click', openNetiquetaImg);
+  document.getElementById('btn-open-netiqueta-card').addEventListener('click', openNetiquetaImg);
   document.getElementById('btn-close-netiqueta-img').addEventListener('click', closeNetiquetaImg);
   document.getElementById('netiqueta-lightbox').addEventListener('click', function(e){
     if(e.target === this) closeNetiquetaImg();
@@ -4058,6 +4227,123 @@
       navigator.serviceWorker.register('sw.js').catch(function(){ /* ambiente sem suporte — ignorar */ });
     });
   }
+</script>
+<div id="closed-screen" role="dialog" aria-modal="true" aria-label="Jogo fechado" style="display:none; position:fixed; inset:0; z-index:9999; background:#140f2b; color:#fff; align-items:center; justify-content:center; text-align:center; padding:24px;">
+  <div>
+    <div style="font-size:56px; line-height:1;">🔎</div>
+    <h2 style="font-family:var(--font-display); margin:10px 0 6px;">Jogo fechado</h2>
+    <p style="margin:0 0 16px; opacity:.8;">O teu progresso fica guardado neste dispositivo.</p>
+    <button type="button" class="btn" id="btn-reopen-game">▶ Abrir o Detetive outra vez</button>
+  </div>
+</div>
+<script>
+/* Abrir e fechar, como nos outros jogos VanBerto's:
+   - dentro de uma janela/overlay (iframe): avisa a página-mãe para fechar o overlay;
+   - aberto noutro separador por link: fecha o separador;
+   - aberto diretamente: mostra o ecrã "Jogo fechado" com botão para reabrir. */
+(function(){
+  var closed = document.getElementById('closed-screen');
+  document.getElementById('btn-close-game').addEventListener('click', function(){
+    var m = document.getElementById('mail-modal'); if(m) m.classList.remove('show');
+    if(window.parent && window.parent !== window){
+      window.parent.postMessage({ source:'vanbertos-detetive', action:'close' }, '*');
+      return;
+    }
+    if(window.opener){ window.close(); }
+    closed.style.display = 'flex';
+    document.getElementById('btn-reopen-game').focus();
+  });
+  document.getElementById('btn-reopen-game').addEventListener('click', function(){ closed.style.display = 'none'; });
+})();
+</script>
+<script>
+/* barras que abrem e fecham (menu inicial) */
+(function(){
+  var heads = document.querySelectorAll('.acc-head');
+  Array.prototype.forEach.call(heads, function(h){
+    h.addEventListener('click', function(){
+      var open = h.getAttribute('aria-expanded') === 'true';
+      h.setAttribute('aria-expanded', open ? 'false' : 'true');
+      document.getElementById(h.getAttribute('aria-controls')).hidden = open;
+    });
+  });
+  function openBar(id){
+    var h = document.getElementById(id); if(!h || h.getAttribute('aria-expanded') === 'true') return;
+    h.click();
+  }
+  /* se há uma sessão a retomar ou o menu pede o Desafio, as barras certas já ficam à mão */
+  document.getElementById('btn-open-cheat-menu').addEventListener('click', function(){ document.getElementById('btn-cheatsheet').click(); });
+  document.getElementById('btn-open-netiqueta-menu').addEventListener('click', function(){ document.getElementById('btn-open-netiqueta-card').click(); });
+  window.vbDetetiveOpenBar = openBar;
+})();
+</script>
+<script>
+/* tema claro/escuro */
+(function(){
+  var btn=document.getElementById('btn-theme'), root=document.documentElement;
+  function paint(){ var dark=root.getAttribute('data-theme')==='dark';
+    btn.textContent = dark ? '☀️' : '🌙';
+    btn.setAttribute('aria-label', dark ? 'Mudar para tema claro' : 'Mudar para tema escuro');
+    var mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute('content', dark ? '#140f2b' : '#fff8e7'); }
+  btn.addEventListener('click', function(){
+    var next = root.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next); try{ localStorage.setItem('vb_theme', next); }catch(e){} paint();
+  });
+  paint();
+})();
+/* nome obrigatório: sem nome escrito, nenhum modo arranca */
+(function(){
+  var name=document.getElementById('player-name'), msg=document.getElementById('name-required');
+  var starts=['start-detective-btn','start-tone-btn','start-elements-btn','start-mixed-btn'];
+  function clearNeed(){ name.classList.remove('need'); msg.classList.remove('show'); }
+  name.addEventListener('input', function(){ if(name.value.trim()) clearNeed(); });
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('button'); if(!b || starts.indexOf(b.id) < 0) return;
+    if(name.value.trim()) return;
+    e.stopImmediatePropagation(); e.preventDefault();
+    name.classList.remove('need'); void name.offsetWidth; name.classList.add('need'); msg.classList.add('show');
+    name.scrollIntoView({ behavior:'smooth', block:'center' }); name.focus();
+  }, true);
+})();
+</script>
+<script>
+/* nome guardado neste dispositivo (como na Hora do Código): pede-se uma vez, depois aparece como 👤 nome */
+(function(){
+  var K_N='vb_det_name', K_T='vb_det_turma';
+  var name=document.getElementById('player-name'), turma=document.getElementById('player-turma');
+  var row=document.querySelector('.name-row'), pillRow=document.getElementById('name-pill-row');
+  var pillName=document.getElementById('pill-name'), greet=document.getElementById('greet-text');
+  var msg=document.getElementById('name-required');
+  function get(k){ try{ return (localStorage.getItem(k)||'').trim(); }catch(e){ return ''; } }
+  function set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  function ping(){ name.dispatchEvent(new Event('input',{bubbles:true})); }
+  function showPill(){
+    var n=name.value.trim(), t=turma.value.trim();
+    pillName.textContent = n + (t ? ' · ' + t : '');
+    greet.textContent = 'Olá, ' + n + '! Escolhe a tua missão.';
+    row.style.display='none'; pillRow.style.display='flex'; msg.classList.remove('show'); name.classList.remove('need');
+  }
+  function showEdit(){
+    pillRow.style.display='none'; row.style.display='flex'; name.focus(); name.select();
+  }
+  window.vbConfirmName = function(){
+    var n=name.value.trim(); if(!n) return false;
+    set(K_N,n); set(K_T,turma.value.trim()); showPill(); ping(); return true;
+  };
+  document.getElementById('btn-confirm-name').addEventListener('click', function(){
+    if(!window.vbConfirmName()){ name.classList.add('need'); msg.classList.add('show'); name.focus(); }
+  });
+  document.getElementById('btn-change-name').addEventListener('click', showEdit);
+  /* Enter no campo do nome/turma confirma (e arranca a investigação, como antes) */
+  /* nome já guardado: preenche e mostra a pílula */
+  var n0=get(K_N);
+  if(n0){ name.value=n0; turma.value=get(K_T); showPill(); ping(); }
+  /* ao arrancar um modo com nome escrito mas ainda não confirmado, confirma-o */
+  document.addEventListener('click', function(e){
+    var b=e.target.closest && e.target.closest('button');
+    if(b && /^start-.*-btn$/.test(b.id) && name.value.trim() && row.style.display!=='none') window.vbConfirmName();
+  }, true);
+})();
 </script>
 </body>
 </html>
