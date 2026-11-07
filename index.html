@@ -169,6 +169,7 @@
     background:radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255,255,255,.28), transparent 70%);
   }
   .hero-banner > *:not(.deco){ position:relative; z-index:1; }
+  .badge-bot{ vertical-align:-7px; margin-right:2px; }
   .hero-banner .badge{ background:#fff; color:#1e1b4b; border:2px solid #1e1b4b; font-weight:800; box-shadow:0 3px 0 #1e1b4b; }
   .hero .hero-banner p.lede{ color:rgba(255,255,255,.95); font-weight:500; }
   .hero h1{ font-size: clamp(40px, 9vw, 68px); line-height:1; color:#fff; text-shadow:0 4px 0 #1e1b4b, 0 8px 18px rgba(0,0,0,.35); letter-spacing:.01em; }
@@ -610,12 +611,18 @@
   /* até tablet: os botões ficam no topo da página (reservam o seu espaço e saem com o scroll),
      em vez de flutuarem por cima do texto; só em ecrãs largos ficam fixos no canto */
   @media (max-width:1180px){
-    .top-controls{ position:static; width:100%; max-width:880px; justify-content:flex-end; margin:0 0 6px; }
+    .top-controls{
+      position:sticky; top:0; z-index:40; width:100%; max-width:880px; justify-content:flex-end; flex-wrap:wrap;
+      margin:0 0 6px; padding:6px 4px; background:color-mix(in srgb, var(--bg) 70%, transparent); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); border-radius:0 0 18px 18px;
+    }
+    .top-controls #btn-home{ margin-right:auto; }
   }
+  /* o botão casa só aparece fora do menu inicial */
+  body[data-screen="intro"] #btn-home{ display:none; }
 
   /* ---------- status bar (Início + nome do jogador), visível nas fases 1-3 ---------- */
   .status-bar{
-    display:flex; align-items:center; justify-content:space-between;
+    display:flex; align-items:center; justify-content:flex-start;
     gap:10px; flex-wrap:wrap; margin-bottom:16px;
   }
   .status-bar .btn{ padding:8px 15px; font-size:13px; flex-shrink:0; min-height:44px; }
@@ -751,9 +758,10 @@
   .name-row .btn{ padding:11px 22px; font-size:15px; }
 </style>
 </head>
-<body>
+<body data-screen="intro">
 
 <div class="top-controls">
+  <button class="btn ghost restart-btn" id="btn-home" title="Voltar ao início" aria-label="Voltar ao início"><span aria-hidden="true">🏠</span></button>
   <button class="btn ghost" id="btn-theme" title="Mudar entre claro e escuro" aria-label="Mudar para tema escuro">🌙</button>
   <button class="btn ghost" id="btn-close-game" title="Fechar o jogo" aria-label="Fechar o jogo">✕</button>
   <button class="btn ghost" id="btn-cheatsheet" title="Cábula: dicas rápidas" aria-label="Abrir cábula com dicas rápidas"><span aria-hidden="true">🗒️</span><span class="cheat-dot" id="cheat-dot"></span></button>
@@ -768,9 +776,9 @@
     <div class="hero">
       <div class="hero-banner">
       <span class="deco d1" aria-hidden="true">✉️</span><span class="deco d2" aria-hidden="true">🔎</span><span class="deco d3" aria-hidden="true">🎣</span><span class="deco d4" aria-hidden="true">🛡️</span>
-      <div class="badge">🔎 VanBerto's</div>
+      <div class="badge"><svg class="badge-bot" viewBox="22 -2 52 54" width="26" height="27" aria-hidden="true" stroke-linejoin="round" stroke-linecap="round"><defs><linearGradient id="bbW" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#e6edf7"/><stop offset="1" stop-color="#b4c4dc"/></linearGradient><linearGradient id="bbV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd4ff"/><stop offset=".5" stop-color="#2a9bf0"/><stop offset="1" stop-color="#1366c6"/></linearGradient></defs><polygon points="45,16 51,16 49.2,8 46.8,8" fill="#16233e"/><circle cx="48" cy="5" r="5.5" fill="#48b4ff" stroke="#101a30" stroke-width="2"/><circle cx="25" cy="32" r="6" fill="#16233e" stroke="#101a30" stroke-width="2.3"/><circle cx="71" cy="32" r="6" fill="#16233e" stroke="#101a30" stroke-width="2.3"/><rect x="26" y="14" width="44" height="34" rx="17" fill="url(#bbW)" stroke="#101a30" stroke-width="3"/><rect x="30" y="20" width="36" height="23" rx="12" fill="#16233e"/><rect x="32.5" y="22" width="31" height="19" rx="10" fill="url(#bbV)"/><path d="M44.71 32.2 A3.9 3.9 0 0 1 37.29 32.2 M58.71 32.2 A3.9 3.9 0 0 1 51.29 32.2" fill="none" stroke="#0a0f1c" stroke-width="3.2"/><path d="M42 35.5 A6 4 0 0 0 54 35.5 Z" fill="#0a0f1c"/></svg> VanBerto's</div>
       <h1>Detetive do <span>E-mail</span></h1>
-      <p class="lede">Três missões e um Desafio Final à tua espera: apanhar armadilhas de phishing, acertar no tom certo e testar tudo sobre o e-mail — elementos, netiqueta e endereços. Escolhe uma para começar.</p>
+      <p class="lede">Apanha o phishing, acerta no tom e domina o e-mail. Escolhe uma missão!</p>
       </div>
       <div class="name-row" style="margin-bottom:8px;">
         <input id="player-name" type="text" placeholder="O teu nome (obrigatório)" maxlength="24" required aria-describedby="name-required" autocomplete="off">
@@ -960,7 +968,6 @@
   <!-- ============ SCREEN 1: GAME ============ -->
   <section id="screen-game" class="screen">
     <div class="status-bar">
-      <button class="btn ghost restart-btn" title="Voltar ao início">🏠 Início</button>
       <div class="pill player-pill">🕵️ <span id="name-tag-game">Detetive</span></div>
     </div>
     <div class="topbar">
@@ -980,7 +987,6 @@
   <!-- ============ SCREEN 2: TOM DO E-MAIL ============ -->
   <section id="screen-tone" class="screen">
     <div class="status-bar">
-      <button class="btn ghost restart-btn" title="Voltar ao início">🏠 Início</button>
       <div class="pill player-pill">🕵️ <span id="name-tag-tone">Detetive</span></div>
     </div>
     <div class="hero" style="padding-top:6px; padding-bottom:0;">
@@ -1005,7 +1011,6 @@
   <!-- ============ SCREEN 3: ELEMENTOS DO E-MAIL ============ -->
   <section id="screen-elements" class="screen">
     <div class="status-bar">
-      <button class="btn ghost restart-btn" title="Voltar ao início">🏠 Início</button>
       <div class="pill player-pill">🕵️ <span id="name-tag-elements">Detetive</span></div>
     </div>
     <div class="hero" style="padding-top:6px; padding-bottom:0;">
@@ -1258,10 +1263,23 @@
 <div class="overlay" id="confirm-overlay">
   <div class="feedback-card" role="dialog" aria-modal="true" style="max-width:380px;">
     <div class="verdict" style="font-size:18px;">Voltar ao início?</div>
-    <p style="color:var(--ink-dim); font-size:14px; margin:6px 0 20px;">Vais perder o progresso desta partida.</p>
+    <p style="color:var(--ink-dim); font-size:14px; margin:6px 0 20px;">O teu progresso fica guardado: podes continuar mais tarde, no menu inicial.</p>
     <div class="action-row">
-      <button class="btn ghost" id="btn-confirm-cancel">Cancelar</button>
-      <button class="btn danger" id="btn-confirm-restart">Sim, voltar ao início</button>
+      <button class="btn ghost" id="btn-confirm-cancel">Ficar aqui</button>
+      <button class="btn" id="btn-confirm-restart">🏠 Ir para o início</button>
+    </div>
+  </div>
+</div>
+
+<!-- ao reabrir: continuar a sessão guardada? -->
+<div class="overlay" id="resume-overlay">
+  <div class="feedback-card" role="dialog" aria-modal="true" aria-labelledby="resume-title" style="max-width:400px;">
+    <div style="font-size:42px; line-height:1;" aria-hidden="true">🕵️</div>
+    <div class="verdict" id="resume-title" style="font-size:20px;">Queres continuar?</div>
+    <p id="resume-modal-text" style="color:var(--ink-dim); font-size:14px; margin:6px 0 20px;"></p>
+    <div class="action-row">
+      <button class="btn ghost" id="btn-resume-new">🗑️ Começar de novo</button>
+      <button class="btn" id="btn-resume-go">▶️ Continuar</button>
     </div>
   </div>
 </div>
@@ -1615,7 +1633,8 @@
   }
   function sfxClick(){ tone(520,.08,'square',.04); }
   function sfxGood(){ tone(660,.12,'triangle',.06); setTimeout(function(){tone(880,.16,'triangle',.06);},110); }
-  function sfxBad(){ tone(180,.22,'sawtooth',.05); }
+  function vibrateBad(){ try{ if(navigator.vibrate) navigator.vibrate([140,70,140]); }catch(e){} } /* vibra ao errar (telemóveis Android; o iPhone não suporta) */
+  function sfxBad(){ tone(180,.22,'sawtooth',.05); vibrateBad(); }
   function sfxNext(){ tone(440,.07,'triangle',.05); setTimeout(function(){tone(587,.1,'triangle',.05);},80); }
   function sfxWin(){ [523,659,784,1046].forEach(function(f,i){ setTimeout(function(){tone(f,.18,'triangle',.06);}, i*120); }); }
 
@@ -2510,6 +2529,7 @@
   };
   function showScreen(name){
     Object.keys(screens).forEach(function(k){ screens[k].classList.toggle('active', k===name); });
+    document.body.setAttribute('data-screen', name);
     vbMascotScreen(name);
   }
 
@@ -2741,7 +2761,7 @@
   /* ---------------- sessão em curso: guardar e retomar (neste computador) ----------------
      Se a aula for interrompida a meio de uma ronda, o progresso não se perde ao reabrir a página. */
   var SESSION_SAVE_KEY = 'vb_session_save2';
-  var SESSION_MAX_AGE_MS = 8 * 60 * 60 * 1000; /* ignora sessões com mais de 8h (ex.: aluno de outro dia neste computador) */
+  var SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; /* ignora sessões com mais de 7 dias; num computador partilhado, outro aluno pode escolher 'Começar de novo' */
 
   function saveSession(){
     try{
@@ -2820,7 +2840,8 @@
     setTimeout(focusPrimaryAnswer, 0);
   }
 
-  function checkForResumableSession(){
+  function closeResumeModal(){ document.getElementById('resume-overlay').classList.remove('show'); }
+  function checkForResumableSession(askNow){
     var raw;
     try{ raw = localStorage.getItem(SESSION_SAVE_KEY); }catch(e){ raw = null; }
     if(!raw) return;
@@ -2832,10 +2853,23 @@
     if(!banner || !textEl) return;
     textEl.textContent = 'Tens uma sessão em curso: ' + describeSession(s);
     banner.style.display = 'block';
-    document.getElementById('btn-resume-continue').onclick = function(){ sfxClick(); restoreSession(s); };
-    document.getElementById('btn-resume-discard').onclick = function(){ sfxClick(); clearSessionSave(); hideResumeBanner(); };
+    var goOn = function(){ sfxClick(); closeResumeModal(); restoreSession(s); };
+    var fresh = function(){ sfxClick(); closeResumeModal(); clearSessionSave(); hideResumeBanner(); };
+    document.getElementById('btn-resume-continue').onclick = goOn;
+    document.getElementById('btn-resume-discard').onclick = fresh;
+    document.getElementById('btn-resume-go').onclick = goOn;
+    document.getElementById('btn-resume-new').onclick = fresh;
+    if(askNow){
+      document.getElementById('resume-modal-text').textContent = describeSession(s);
+      document.getElementById('resume-overlay').classList.add('show');
+      setTimeout(function(){ document.getElementById('btn-resume-go').focus(); }, 30);
+    }
   }
-  checkForResumableSession();
+  checkForResumableSession(true);
+  /* guarda sempre que o separador fica em segundo plano ou é fechado */
+  function saveIfPlaying(){ if(document.body.getAttribute('data-screen') !== 'intro' && document.body.getAttribute('data-screen') !== 'end') saveSession(); }
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) saveIfPlaying(); });
+  window.addEventListener('pagehide', saveIfPlaying);
 
   document.getElementById('start-detective-btn').addEventListener('click', function(){
     capturePlayerName();
@@ -3084,7 +3118,9 @@
     var mailModal = document.getElementById('mail-modal');
     var cheatModal = document.getElementById('cheat-modal');
     var netiquetaImg = document.getElementById('netiqueta-lightbox');
-    var activeModal = netiquetaImg.classList.contains('show') ? netiquetaImg
+    var resumeOv = document.getElementById('resume-overlay');
+    var activeModal = resumeOv.classList.contains('show') ? resumeOv
+      : netiquetaImg.classList.contains('show') ? netiquetaImg
       : overlayFeedback.classList.contains('show') ? overlayFeedback
       : confirmOverlay.classList.contains('show') ? confirmOverlay
       : cheatModal.classList.contains('show') ? cheatModal
@@ -3124,7 +3160,7 @@
 
   function currentAnswerOptions(){
     if(document.getElementById('overlay').classList.contains('show')) return null;
-    if(document.getElementById('confirm-overlay').classList.contains('show')) return null;
+    if(document.getElementById('confirm-overlay').classList.contains('show') || document.getElementById('resume-overlay').classList.contains('show')) return null;
     if(document.getElementById('cheat-modal').classList.contains('show')) return null;
     if(document.getElementById('mail-modal').classList.contains('show')){
       return document.querySelectorAll('#mail-modal .action-row button:not([disabled])');
@@ -3826,7 +3862,12 @@
   Array.prototype.forEach.call(document.querySelectorAll('.restart-btn'), function(btn){
     btn.addEventListener('click', function(){
       sfxClick();
+      if(document.body.getAttribute('data-screen') === 'end'){ /* nada a perder: volta logo */
+        document.getElementById('cheat-modal').classList.remove('show');
+        showScreen('intro'); window.scrollTo(0,0); checkForResumableSession(); return;
+      }
       document.getElementById('confirm-overlay').classList.add('show');
+      setTimeout(function(){ var b=document.getElementById('btn-confirm-restart'); if(b) b.focus(); }, 30);
     });
   });
   document.getElementById('btn-confirm-cancel').addEventListener('click', function(){
@@ -3838,8 +3879,10 @@
     document.getElementById('mail-modal').classList.remove('show');
     document.getElementById('overlay').classList.remove('show');
     sfxClick();
-    clearSessionSave();
+    saveSession(); /* guarda onde ficou, para poder continuar */
     showScreen('intro');
+    window.scrollTo(0,0);
+    checkForResumableSession();
   });
   document.getElementById('btn-cert').addEventListener('click', function(){
     var c = document.getElementById('certificate');
@@ -4199,7 +4242,7 @@
      isto, continuava a conseguir ler o conteúdo por trás do modal ao mesmo tempo. */
   (function(){
     var bgEls = [document.querySelector('.top-controls'), document.querySelector('.stage')].filter(Boolean);
-    var modalEls = ['mail-modal', 'overlay', 'confirm-overlay'].map(function(id){ return document.getElementById(id); }).filter(Boolean);
+    var modalEls = ['mail-modal', 'overlay', 'confirm-overlay', 'resume-overlay'].map(function(id){ return document.getElementById(id); }).filter(Boolean);
     function anyOpen(){
       return modalEls.some(function(m){ return m.classList.contains('show'); });
     }
