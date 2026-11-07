@@ -146,6 +146,10 @@
     .vb-mascot-bubble::after{ right:24px; }
   }
   @media (max-height:520px){ .vb-mascot-bubble{ display:none; } }
+  /* telemóvel: durante as perguntas o balão não tapa os botões de resposta (fica só o robô) */
+  @media (max-width:700px){
+    body[data-screen="game"] .vb-mascot-bubble, body[data-screen="tone"] .vb-mascot-bubble, body[data-screen="elements"] .vb-mascot-bubble{ display:none; }
+  }
   @media (prefers-reduced-motion: reduce){ .vb-mascot-btn canvas{ animation:none; } }
 
   /* ---------- intro ---------- */
@@ -755,17 +759,37 @@
   .name-pill:focus-visible{ outline:3px solid var(--warn); outline-offset:3px; }
   .name-pill .pill-edit{ font-weight:600; font-size:12px; color:var(--ink-dim); }
   .name-row .btn{ padding:11px 22px; font-size:15px; }
+  /* abanão ao errar (também ajuda no iPhone, que não vibra) */
+  @keyframes vbShake{ 0%,100%{ transform:translateX(0);} 15%{ transform:translateX(-9px) rotate(-1deg);} 35%{ transform:translateX(8px) rotate(1deg);} 55%{ transform:translateX(-6px);} 75%{ transform:translateX(4px);} }
+  .shake-bad{ animation: vbShake .45s ease-in-out 1; }
+  @media (prefers-reduced-motion: reduce){ .shake-bad{ animation:none; } }
+
+  /* ---------- menu "⋯" do topo (telemóvel): agrupa tema, ecrã inteiro e som ---------- */
+  #btn-more{ display:none; }
+  @media (max-width:640px){
+    #btn-more{ display:inline-flex; align-items:center; justify-content:center; }
+    .top-controls .top-more{
+      display:none; position:absolute; right:4px; top:calc(100% + 4px); flex-direction:column; gap:8px; padding:8px;
+      background:var(--panel); border:2px solid #1e1b4b; border-radius:16px; box-shadow:0 6px 0 rgba(30,27,75,.35); z-index:41;
+    }
+    .top-controls.more-open .top-more{ display:flex; }
+  }
+  @media (min-width:641px){ .top-controls .top-more{ display:contents; } }
+  .saved-note{ margin-left:auto; font-size:12px; color:var(--ink-dim); opacity:.85; }
 </style>
 </head>
 <body data-screen="intro">
 
-<div class="top-controls">
+<div class="top-controls" id="top-controls">
   <button class="btn ghost restart-btn" id="btn-home" title="Voltar ao início" aria-label="Voltar ao início"><span aria-hidden="true">🏠</span></button>
-  <button class="btn ghost" id="btn-theme" title="Mudar entre claro e escuro" aria-label="Mudar para tema escuro">🌙</button>
   <button class="btn ghost" id="btn-close-game" title="Fechar o jogo" aria-label="Fechar o jogo">✕</button>
   <button class="btn ghost" id="btn-cheatsheet" title="Cábula: dicas rápidas" aria-label="Abrir cábula com dicas rápidas"><span aria-hidden="true">🗒️</span><span class="cheat-dot" id="cheat-dot"></span></button>
+  <button class="btn ghost" id="btn-more" title="Mais opções" aria-label="Mais opções" aria-expanded="false" aria-controls="top-more"><span aria-hidden="true">⋯</span></button>
+  <div class="top-more" id="top-more">
+  <button class="btn ghost" id="btn-theme" title="Mudar entre claro e escuro" aria-label="Mudar para tema escuro">🌙</button>
   <button class="btn ghost" id="btn-fullscreen" title="Ecrã inteiro" aria-label="Ver em ecrã inteiro">⛶</button>
   <button class="btn ghost" id="btn-mute" title="Ligar/desligar som" aria-label="Som desligado — clicar para ligar">🔇</button>
+  </div>
 </div>
 
 <div class="stage">
@@ -968,6 +992,7 @@
   <section id="screen-game" class="screen">
     <div class="status-bar">
       <div class="pill player-pill">🕵️ <span id="name-tag-game">Detetive</span></div>
+      <span class="saved-note">💾 Progresso guardado</span>
     </div>
     <div class="topbar">
       <div class="progress-wrap" aria-live="polite">
@@ -987,6 +1012,7 @@
   <section id="screen-tone" class="screen">
     <div class="status-bar">
       <div class="pill player-pill">🕵️ <span id="name-tag-tone">Detetive</span></div>
+      <span class="saved-note">💾 Progresso guardado</span>
     </div>
     <div class="hero" style="padding-top:6px; padding-bottom:0;">
       <h2 style="font-family:var(--font-display); font-size:24px; margin:10px 0 4px;">Missão 2 — Formal ou Informal?</h2>
@@ -1011,6 +1037,7 @@
   <section id="screen-elements" class="screen">
     <div class="status-bar">
       <div class="pill player-pill">🕵️ <span id="name-tag-elements">Detetive</span></div>
+      <span class="saved-note">💾 Progresso guardado</span>
     </div>
     <div class="hero" style="padding-top:6px; padding-bottom:0;">
       <h2 style="font-family:var(--font-display); font-size:24px; margin:10px 0 4px;">Missão 3 — Sobre o E-mail</h2>
@@ -1633,7 +1660,15 @@
   function sfxClick(){ tone(520,.08,'square',.04); }
   function sfxGood(){ tone(660,.12,'triangle',.06); setTimeout(function(){tone(880,.16,'triangle',.06);},110); }
   function vibrateBad(){ try{ if(navigator.vibrate) navigator.vibrate([140,70,140]); }catch(e){} } /* vibra ao errar (telemóveis Android; o iPhone não suporta) */
-  function sfxBad(){ tone(180,.22,'sawtooth',.05); vibrateBad(); }
+  function shakeBad(){
+    try{
+      ['#overlay .feedback-card', '#vb-mascot-btn'].forEach(function(sel){
+        var el = document.querySelector(sel); if(!el) return;
+        el.classList.remove('shake-bad'); void el.offsetWidth; el.classList.add('shake-bad');
+      });
+    }catch(e){}
+  }
+  function sfxBad(){ tone(180,.22,'sawtooth',.05); vibrateBad(); shakeBad(); }
   function sfxNext(){ tone(440,.07,'triangle',.05); setTimeout(function(){tone(587,.1,'triangle',.05);},80); }
   function sfxWin(){ [523,659,784,1046].forEach(function(f,i){ setTimeout(function(){tone(f,.18,'triangle',.06);}, i*120); }); }
 
@@ -4320,6 +4355,15 @@
 })();
 </script>
 <script>
+/* menu "⋯" do topo (telemóvel) */
+(function(){
+  var bar=document.getElementById('top-controls'), btn=document.getElementById('btn-more');
+  if(!bar||!btn) return;
+  function set(open){ bar.classList.toggle('more-open', open); btn.setAttribute('aria-expanded', open?'true':'false'); }
+  btn.addEventListener('click', function(e){ e.stopPropagation(); set(!bar.classList.contains('more-open')); });
+  document.addEventListener('click', function(e){ if(!bar.contains(e.target)) set(false); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') set(false); });
+})();
 /* tema claro/escuro */
 (function(){
   var btn=document.getElementById('btn-theme'), root=document.documentElement;
